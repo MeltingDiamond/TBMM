@@ -9,7 +9,7 @@ And can play you can play both vanilla and modded with one install of The Bibite
 Next update will include automatically downloading bibites needed for mods so you can use the mods.
 
 ## simple roadmap
-> 0.05 and is the first alpha
+-> 0.05 is the first alpha
 
 Next version will be 0.06 and will include automatically downloading bibites when you install a mod.
 
