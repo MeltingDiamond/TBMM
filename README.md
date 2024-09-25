@@ -3,15 +3,15 @@ The Bibites Mod Manager is the unofficial mod manager for The Bibite and allows 
 You can download and install mods with a few button clicks.
 And can play you can play both vanilla and modded with one install of The Bibites.
 
-### If you find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to make TBMM better.
+### If you find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to help make TBMM better.
 
 ## Next update
 Next update will include automatically downloading bibites needed for mods so you can use the mods.
 
 ## simple roadmap
--> 0.05 is the first alpha
+-> 0.05 is the first alpha, which was filled with bugs.
 
-Next version will be 0.06 and will include automatically downloading bibites when you install a mod.
+Version 0.06 will include automatically downloading bibites when you install a mod and bugfixes.
 
 Version 0.07, 0.08 and 0.09 will add support for missing mods and and might also add reskin support.
 
