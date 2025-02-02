@@ -3,7 +3,7 @@ The Bibites Mod Manager is the unofficial mod manager for The Bibite programmed 
 You can download and install mods with a few button clicks.
 And can play both vanilla and modded with one install of The Bibites.
 
-If you wish to modify and share TBMM outside of private use please fork it and make pull requests for usefull changes you make. Thank you
+If you wish to modify and share TBMM outside of private use please fork it and make pull requests back to this repository for usefull changes you make. (This is based on trust) Thank you
 
 ### Find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to help make TBMM better.
 
@@ -21,7 +21,7 @@ Next update will include automatically downloading bibites needed for mods so yo
 
 Version 0.06 will include automatically downloading bibites when you install a mod, hide mods that are not made for the selected game version and bugfixes.
 
-When version 0.07 is released TBMM will support mods that replaces the main dll but needs other files. Example of this is MoreMaterialsMod.
+When version 0.07 is released TBMM will support mods that replaces the main dll but needs other files. Example of this is MoreMaterialsMod. Download BepInEx automatically to choosen location (Maybe install it automatically on the selected game path will not be able to choose location if this is the case)
 
 When version 0.08 is released TBMM will have reskin support and might add support for missing mods.
 
