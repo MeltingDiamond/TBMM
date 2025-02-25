@@ -29,11 +29,17 @@ Next update will include automatically downloading bibites needed for mods so yo
 
 Version 0.06 will include automatically downloading bibites when you install a mod, hide mods that are not made for the selected game version and bugfixes.
 
+Version 0.06.1 Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no new functionality will be added.
+
+Version 0.06.2 Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into when needed. No new functionality will be added here.
+
 When version 0.07 is released TBMM will support mods that replaces the main dll but needs other files. Example of this is MoreMaterialsMod. Download BepInEx automatically to choosen location (Maybe install it automatically on the selected game path will not be able to choose location if this is the case)
 
 When version 0.08 is released TBMM will have reskin support and might add support for missing mods.
 
 Version 0.09 will add support for at least 1 missing mod type if there are any.
+
+When version 0.09 is finished TBMM should be completly modular, less chance of breaking and work better.
 
 Version 0.1 will be the version that every mod is compatible and can be installed (dll replace, dll replace + other external files, BepInEx and BepInEx + other external files). I will delay 0.1 untill all mentioned mod types are supported. 
 
