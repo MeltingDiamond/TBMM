@@ -16,7 +16,7 @@ Thank you for your contributions!
 ### Find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to help make TBMM better.
 
 ## Next update
-Next update will include automatically downloading bibites needed for mods so you can use the mods. Mods that aren't made for your selected game version hidden (Can select all to show all mods). You can also download versions of The Bibites that TBMM have mods for directly from TBMM. Tweaks to the UI to make it consistent for if the window is scaled.
+Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no new functionality will be added.
 
 ## not so simple, but still simple roadmap
 ### None version specific goals
@@ -24,10 +24,10 @@ Next update will include automatically downloading bibites needed for mods so yo
 - [ ] Show a prompt to download and setup correct version of The Bibites when choosing a mod. This will set it up in such a way that it is integrated into TBMMs files and can be reused for other mods made for the same version.
 - [ ] Add check to mods that displays if they have compatebility issue with other mods.
 - [ ] Dark mode???????
-### The roadmap
--> 0.05 is the first alpha, which was filled with bugs.
+### The roadmap (-> indicates current released)
+0.05 is the first alpha, which was filled with bugs.
 
-Version 0.06 will include automatically downloading bibites when you install a mod, hide mods that are not made for the selected game version and bugfixes.
+-> 0.06 will include automatically downloading bibites when you install a mod, hide mods that are not made for the selected game version and bugfixes.
 
 Version 0.06.1 Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no new functionality will be added.
 
