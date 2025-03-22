@@ -3,8 +3,12 @@ The Bibites Mod Manager is the unofficial mod manager for The Bibite programmed 
 You can download and install mods with a few button clicks.
 And can play both vanilla and modded with one install of The Bibites.
 
+The final goal for TBMM is for it to be able to download and install any of the most popular mod and reskin types. Any other functionality secondary.
+
 ### Modifying and contributing
-If you'd like to modify TBMM and share your changes, please fork the repository and submit a pull request with any useful changes you've made. Your contributions will help improve the project, making it better for everyone! (This is based on trust.)
+If you'd like to modify TBMM and share your changes, please fork the repository and submit a pull request with useful changes you've made. Your contributions will help improve the project, making it better for everyone. (This is based on trust.)
+
+Anyone that contributes can get their name in the credits tab inside TBMM.
 
 TBMM is licensed under the [GNU General Public License v3 (GPL-3.0)](/LICENSE.md), so you can freely modify and distribute it. However, any changes you make and distribute should also be shared under the same license.
 
@@ -48,6 +52,6 @@ After 0.1 and up I will make it open source and let the community help develop i
 
 Now there won't be any major version with planned features only bumps to the version whenever a new release happens. (New release happens whenever enough changes are done)
 
-When 1.0 is released I hope it works like any other single game mod manager does and can be enjoyed by anyone of any skill level using any version.
+When 1.0 is released I hope it works like any other single game mod manager does and can be enjoyed by anyone of any skill level using any version that have mods.
 
 I hope people will contibute both to TBMM directly and with mods and reskins that can be added to TBMM. Please enjoy TBMM.
