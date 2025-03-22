@@ -16,7 +16,7 @@ Thank you for your contributions!
 ### Find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to help make TBMM better.
 
 ## Next update
-Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no new functionality will be added.
+Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no new functionality will be added, but the backend will support dropbox for downloading mod data from.
 
 ## not so simple, but still simple roadmap
 ### None version specific goals
@@ -29,9 +29,9 @@ Rewrite the code for TBMM. This is to make it easier to work with TBMM in the fu
 
 -> 0.06 will include automatically downloading bibites when you install a mod, hide mods that are not made for the selected game version and bugfixes.
 
-Version 0.06.1 Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no new functionality will be added.
+Version 0.06.1 Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no new functionality will be added. Support for downloading mod data from dropbox will be added.
 
-Version 0.06.2 Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into when needed. No new functionality will be added here.
+Version 0.06.2 Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here.
 
 When version 0.07 is released TBMM will support mods that replaces the main dll but needs other files. Example of this is MoreMaterialsMod. Download BepInEx automatically to choosen location (Maybe install it automatically on the selected game path will not be able to choose location if this is the case)
 
