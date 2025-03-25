@@ -10,8 +10,6 @@ If you'd like to modify TBMM and share your changes, please fork the repository 
 
 Anyone that contributes can get their name in the credits tab inside TBMM.
 
-TBMM is licensed under the [GNU General Public License v3 (GPL-3.0)](/LICENSE.md), so you can freely modify and distribute it. However, any changes you make and distribute should also be shared under the same license.
-
 Thank you for your contributions!
 
 ### Release Candidate
