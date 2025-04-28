@@ -12,9 +12,6 @@ Anyone that contributes can get their name in the credits tab inside TBMM.
 
 Thank you for your contributions!
 
-### Release Candidate
-0.06 Release Candidate 1: Download Here
-
 ### Find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to help make TBMM better.
 
 ## Next update
