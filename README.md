@@ -46,7 +46,7 @@ When version 0.09 is finished TBMM should be completly modular, less chance of b
 
 Version 0.1 will be the version that every mod is compatible and can be installed (dll replace, dll replace + other external files, BepInEx and BepInEx + other external files). I will delay 0.1 untill all mentioned mod types are supported. 
 
-After 0.1 and up I will make it open source and let the community help develop it further, there might be some ui updates to make TBMM look better and issues on the [issues page](https://github.com/MeltingDiamond/TBMM/issues) will be looked at and fixed.
+After ~0.7 and up I will make it open source and let the community help develop it further, there might be some ui updates to make TBMM look better and issues on the [issues page](https://github.com/MeltingDiamond/TBMM/issues) will be looked at and fixed.
 
 Now there won't be any major version with planned features only bumps to the version whenever a new release happens. (New release happens whenever enough changes are done)
 
