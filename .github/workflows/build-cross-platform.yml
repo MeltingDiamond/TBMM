@@ -1,16 +1,20 @@
-# This workflow builds on push to main using nuitka
+# This workflow builds on push to main using nuitka for Windows and Linux
 
 name: Build Cross-Platform
 
 on:
-   push:
-     branches:
-       - main
+  push:
+    branches:
+      - main
 
 jobs:
   build:
-    name: Build TBMM
-    runs-on: windows-latest
+    name: Build TBMM on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
 
     steps:
       - name: Checkout repository
@@ -29,20 +33,21 @@ jobs:
       - name: Verify Nuitka version
         run: nuitka --version
 
-      - name: Build TBMM for Windows
-        run: nuitka ^
-          --onefile ^
-          --follow-imports ^
-          --windows-console-mode=disable ^
-          --windows-icon-from-ico="Images\TBMM icon.ico" ^
-          --include-data-dir="Images=Images" ^
-          --enable-plugin=tk-inter ^
-          --assume-yes-for-downloads ^
-          "The Bibites Mod Manager.py"
+      - name: Build TBMM
+        run: |
+          nuitka \
+            --onefile \
+            --follow-imports \
+            --include-data-dir="Images=Images" \
+            --enable-plugin=tk-inter \
+            --assume-yes-for-downloads \
+            "The Bibites Mod Manager.py"
+        shell: bash
 
       - name: Upload Executable
         uses: actions/upload-artifact@v4
         with:
-          name: TBMM-Windows
+          name: TBMM-${{ matrix.os }}
           path: |
             The Bibites Mod Manager.exe
+            The Bibites Mod Manager.bin
