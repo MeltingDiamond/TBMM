@@ -21,7 +21,7 @@ Start to make TBMM modular. Example would be moving all networking into one file
 
 ## Roadmap
 ### None version specific goals
-- [ ] Linux support (Will be added in the workflow)
+- [x] Linux support (Will be added in the workflow)
 - [ ] Make a document/wiki for how to use TBMM
 - [ ] Show a prompt to download and setup correct version of The Bibites when choosing a mod. This will set it up in such a way that it is integrated into TBMMs files and can be reused for other mods made for the same version.
 - [ ] Add check to mods that displays if they have compatebility issue with other mods.
