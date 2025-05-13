@@ -35,13 +35,7 @@ jobs:
 
       - name: Build TBMM
         run: |
-          nuitka \
-            --onefile \
-            --follow-imports \
-            --include-data-dir="Images=Images" \
-            --enable-plugin=tk-inter \
-            --assume-yes-for-downloads \
-            "The Bibites Mod Manager.py"
+          nuitka --onefile --follow-imports --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
         shell: bash
 
       - name: Upload Executable
