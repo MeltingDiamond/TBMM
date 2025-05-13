@@ -10,16 +10,18 @@ If you'd like to modify TBMM and share your changes, please fork the repository 
 
 Anyone that contributes can get their name in the credits tab inside TBMM.
 
+TBMM is licensed under the [GNU General Public License v3 (GPL-3.0)](/LICENSE.md), so you can freely modify and distribute it. However, any changes you make and distribute should also be shared under the same license.
+
 Thank you for your contributions!
 
 ### Find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to help make TBMM better.
 
-## Next update (ETA. Mai)
-Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no new functionality will be added, but the backend will support dropbox for downloading mod data from.
+## Next update (ETA. May)
+Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here. No major new functionality will be added.Around here TBMM will be officially open sourced
 
 ## Roadmap
 ### None version specific goals
-- [ ] Linux support (This is high priority)
+- [ ] Linux support (Will be added in the workflow)
 - [ ] Make a document/wiki for how to use TBMM
 - [ ] Show a prompt to download and setup correct version of The Bibites when choosing a mod. This will set it up in such a way that it is integrated into TBMMs files and can be reused for other mods made for the same version.
 - [ ] Add check to mods that displays if they have compatebility issue with other mods.
@@ -27,11 +29,11 @@ Rewrite the code for TBMM. This is to make it easier to work with TBMM in the fu
 ### The roadmap (-> indicates current released)
 0.05 is the first alpha, which was filled with bugs.
 
--> 0.06 will include automatically downloading bibites when you install a mod, hide mods that are not made for the selected game version and bugfixes.
+0.06 will include automatically downloading bibites when you install a mod, hide mods that are not made for the selected game version and bugfixes.
 
-0.06.1 Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no new functionality will be added. Support for downloading mod data from dropbox will be added. (almost finished as of writing).
+-> 0.06.1 Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no major new functionality will be added. Support for downloading mod data from dropbox will be added. (almost finished as of writing).
 
-0.06.2 Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here.
+0.06.2 Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here. No major new functionality will be added.
 
 0.06.3 TBMM will be open sourced and it is mostly modularized.
 
@@ -53,3 +55,9 @@ Now there won't be any major version with planned features only bumps to the ver
 When 1.0 is released I hope it works like any other single game mod manager does and can be enjoyed by anyone of any skill level using any version that have mods.
 
 I hope people will contibute both to TBMM directly and with mods and reskins that can be added to TBMM. Please enjoy TBMM.
+
+### Running the .py file
+Install python 3.10 or newer and pip (no need if you already have)<br>
+Download `The Bibites Mod Manager.py`, the `Images` folder and `requirements.txt` and place them in the same folder<br>
+run `pip install -r requirements.txt` to install needed libraries/packages<br>
+You can now run `The Bibites Mod Manager.py`

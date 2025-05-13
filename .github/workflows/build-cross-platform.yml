@@ -1,0 +1,48 @@
+# This workflow builds on push to main using nuitka
+
+name: Build Cross-Platform
+
+on:
+   push:
+     branches:
+       - main
+
+jobs:
+  build:
+    name: Build TBMM
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r build_requirements.txt
+
+      - name: Verify Nuitka version
+        run: nuitka --version
+
+      - name: Build TBMM for Windows
+        run: nuitka ^
+          --onefile ^
+          --follow-imports ^
+          --windows-console-mode=disable ^
+          --windows-icon-from-ico="Images\TBMM icon.ico" ^
+          --include-data-dir="Images=Images" ^
+          --enable-plugin=tk-inter ^
+          --assume-yes-for-downloads ^
+          "The Bibites Mod Manager.py"
+
+      - name: Upload Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: TBMM-Windows
+          path: |
+            The Bibites Mod Manager.exe
