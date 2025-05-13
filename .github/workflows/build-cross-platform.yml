@@ -8,14 +8,8 @@ on:
       - main
 
 jobs:
-  build:
-    name: Build TBMM on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest]
-
+  build-windows:
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,28 +19,46 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install tkinter for Linux
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get update && sudo apt-get install -y python3-tk
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r build_requirements.txt
           pip install nuitka
 
-      - name: Verify Nuitka version
-        run: nuitka --version
-
-      - name: Build TBMM
+      - name: Build TBMM for Windows
         run: |
-          nuitka --onefile --follow-imports --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
-        shell: ${{ matrix.os == 'windows-latest' && 'pwsh' || 'bash' }}
+          nuitka --onefile --follow-imports --windows-console-mode=disable --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
 
       - name: Upload Executable
         uses: actions/upload-artifact@v4
         with:
-          name: TBMM-${{ matrix.os }}
-          path: |
-            The Bibites Mod Manager.exe
-            The Bibites Mod Manager.bin
+          name: TBMM-Windows
+          path: The Bibites Mod Manager.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y python3-tk
+          python -m pip install --upgrade pip
+          pip install -r build_requirements.txt
+          pip install nuitka
+
+      - name: Build TBMM for Linux
+        run: |
+          nuitka --onefile --follow-imports --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
+
+      - name: Upload Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: TBMM-Linux
+          path: The\ Bibites\ Mod\ Manager.bin
