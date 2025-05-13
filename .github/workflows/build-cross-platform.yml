@@ -2,11 +2,6 @@
 
 name: Build Cross-Platform
 
-on:
-  push:
-    branches:
-      - main
-
 jobs:
   build:
     name: Build TBMM on ${{ matrix.os }}
@@ -33,12 +28,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r build_requirements.txt
+          pip install nuitka
 
       - name: Verify Nuitka version
         run: nuitka --version
 
       - name: Build TBMM
-        run: nuitka --onefile --follow-imports --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
+        run: |
+          nuitka --onefile --follow-imports --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
         shell: bash
 
       - name: Upload Executable
