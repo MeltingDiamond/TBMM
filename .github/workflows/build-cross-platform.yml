@@ -25,6 +25,10 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install tkinter for Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y python3-tk
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
