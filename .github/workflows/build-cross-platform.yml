@@ -41,7 +41,7 @@ jobs:
       - name: Build TBMM
         run: |
           nuitka --onefile --follow-imports --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
-        shell: bash
+        shell: ${{ matrix.os == 'windows-latest' && 'pwsh' || 'bash' }}
 
       - name: Upload Executable
         uses: actions/upload-artifact@v4
