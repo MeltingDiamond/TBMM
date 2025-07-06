@@ -31,7 +31,7 @@ Start to make TBMM modular. Example would be moving all networking into one file
 
 0.06 will include automatically downloading bibites when you install a mod, hide mods that are not made for the selected game version and bugfixes.
 
--> 0.06.1 Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no major new functionality will be added. Support for downloading mod data from dropbox will be added. (almost finished as of writing).
+-> 0.06.1 Rewrite the code for TBMM. This is to make it easier to work with TBMM in the future and no major new functionality will be added. Support for downloading mod data from dropbox will be added. TBMM is open sourced.
 
 0.06.2 Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here. No major new functionality will be added.
 
