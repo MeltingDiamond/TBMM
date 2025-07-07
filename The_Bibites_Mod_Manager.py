@@ -1,8 +1,10 @@
 import requests, platform, os, sys, base64, shutil, time, json, subprocess, re, zipfile, io
 from tkinter import Label, Button, filedialog, Frame, Checkbutton, IntVar, Toplevel, messagebox, StringVar, OptionMenu
+from pathlib import Path
 from threading import Thread
 from urllib.parse import urlparse, unquote
-from UI import game_path_label, screen_width, screen_height, window, version_label, log, status_label, installed_mod_label, downloaded_mods_listbox, downloadable_mods_frame, credits_frame, CustomTooltip, main_frame, more_tools_frame, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, script_dir
+
+from UI import create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui, create_more_tools_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
 
 # Gets userpath (Usually C:\Users\username)
 USERPROFILE = os.environ['USERPROFILE']
@@ -38,6 +40,13 @@ Discord_invite_link = "https://discord.gg/ZNPCZPDhCS"
 # Used to display what page the user is on
 page = ''
 
+# Tooltip
+tooltip_state = {
+    'hover_index': None,
+    'hover_widget': None
+}
+tooltips = {} # Dictionary to hold tooltips
+
 # List to store mod names globaly
 downloaded_mods_list = []
 mod_names = []
@@ -53,9 +62,6 @@ cache_duration = 86400  # Cache duration in seconds (24 hours)
 # Settings dictionary
 settings = {}
 Game_folder = None # Default to none because it needs to be initialised on start
-
-# Size of different fonts
-status_label_font_size = 14
 
 # Gets the current time in correct time format to be placed in log.txt
 def get_time():
@@ -283,7 +289,7 @@ def fetch_filenames():
             print(" Did not download any mod names there was an error returns []")
             return []
         else: # No internett
-            log("You have no internett")
+            log("You have no internett", get_time())
             status_label.config(text="You have no internett")
             # Save error to a log file
             with open(log_file, 'a') as file:
@@ -317,7 +323,7 @@ def fetch_from_github(url):
                 error_message = f"GitHub status code: {response.status_code} can't access page"
             if response.status_code == 403:
                 error_message = f"GitHub status code: {response.status_code} GitHub refused access to page"
-            log(error_message)
+            log(error_message, get_time())
             status_label.config(text=error_message)
             
             # Save error to a log file
@@ -349,7 +355,7 @@ def fetch_from_dropbox(url):
             if response.status_code == 403:
                 error_message += " - Dropbox refused access to page"
             
-            log(error_message)
+            log(error_message, get_time())
             status_label.config(text=error_message)
             with open(log_file, 'a') as file:
                 file.write(f"\n{get_time()} {error_message}")
@@ -440,7 +446,7 @@ def get_file_contents(mod_name):
         mod_cache = {}
         for url in mod_repo_urls:
             website_name = get_website_name(url)
-            log(f"Attempting to fetch content from: {website_name}")
+            log(f"Attempting to fetch content from: {website_name}", get_time())
 
             if "github.com" in website_name:
                 mod_cache = get_file_contents_from_github(mod_name)
@@ -567,13 +573,13 @@ def download_file(url, location): # Downloads the file at url and places it in l
         with open(log_file, 'a') as file:
             file.write(f"\n{get_time()} {e}")
 
-        log(e)
+        log(e, get_time())
         status_label.config(text=e)
     except Exception as e:
         # Save error to a log file
         with open(log_file, 'a') as file:
             file.write(f"\n{get_time()} Can not connect to {website}, error: {e}")
-        log(f"Can not connect to {website} to get mod data")
+        log(f"Can not connect to {website} to get mod data", get_time())
         status_label.config(text=f"Can not connect to {website} to get mod data")
         return
 
@@ -589,7 +595,7 @@ def download_file(url, location): # Downloads the file at url and places it in l
             size = file.write(data)
             downloaded += size
             percent_done = int(downloaded / total * 100)
-            log(f"Downloading... {percent_done}%")
+            log(f"Downloading... {percent_done}%", get_time())
             status_label.config(text=f"Downloading... {percent_done}%")
 
     # Check if downloaded size matches the total size
@@ -608,7 +614,7 @@ def download_file(url, location): # Downloads the file at url and places it in l
                     existing_content = existing_file.read()
                 if new_content == existing_content: # Mod exists do nothing
                     mod_exists = True
-                    log(f"{filename} already downloaded")
+                    log(f"{filename} already downloaded", get_time())
                     status_label.config(text=f"{filename} already downloaded")
 
         except Exception as e:
@@ -622,17 +628,17 @@ def download_file(url, location): # Downloads the file at url and places it in l
             with open(log_file, 'a') as file:
                 file.write(f"\n{get_time()} Error downloading {mod_name}: {e}")
 
-            log(f"Error download {mod_name}: {e}")
+            log(f"Error download {mod_name}: {e}", get_time())
             status_label.config(text=f"Error download {mod_name}: {e}")
         
         if error_downloading_file == False and mod_exists == False:
-            log(f"Downloading {mod_name} complete!")
+            log(f"Downloading {mod_name} complete!", get_time())
             status_label.config(text=f"Downloading {mod_name} complete!")
 
 # Function to start the download process
 def start_download(url, location):
     '''Starts downloading a file from a url in a thread'''
-    log("Downloading...")
+    log("Downloading...", get_time())
     status_label.config(text="Downloading...")
     download_thread = Thread(target=download_file, args=(url,location))
     download_thread.start()
@@ -660,7 +666,7 @@ def download_mods():
         if var.get() == 1: # The mod is selected and will be downloaded
             mod_folder_name = mod_names[i]
             if mod_folder_name in downloaded_mods_list: # Check if mod is downloaded
-                log(f"{mod_names[i].split('.')[0]} already downloaded")
+                log(f"{mod_names[i].split('.')[0]} already downloaded", get_time())
                 status_label.config(text=f"{mod_names[i].split('.')[0]} already downloaded")
             else: # Mod is not downloaded
                 url = get_mod_url(mod_names[i])
@@ -674,7 +680,7 @@ def download_mods():
                     # Add mod name to the list
                     downloaded_mods_list.append(mod_folder_name)
                 else:
-                    log(f"URL for {mod_names[i]} not found.")
+                    log(f"URL for {mod_names[i]} not found.", get_time())
                     status_label.config(text=f"URL for {mod_names[i]} not found.")
     with open(downloaded_mods, "w") as downloaded_mods_file:
         downloaded_mods_file.write('\n'.join(downloaded_mods_list))
@@ -685,7 +691,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
         # If mod isnt installed and no other mod is installed
         if f'{not_installed_mod_path}' not in os.listdir(not_installed_mod_folder) and len(installed_mods_list) == 0 and not os.path.exists(f'{Game_folder}/The Bibites_Data/Managed/BibitesAssembly.dll.TBM'):
             log_message = f"Installing {mod_name}"
-            log(log_message)
+            log(log_message, get_time())
             status_label.config(text=log_message)
             shutil.move(f'{not_installed_mod_path}', f'{Game_folder}/The Bibites_Data/Managed') # Move the mod
             installed_mods_list = mod_name
@@ -694,7 +700,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
                 file.write(installed_mods_list)
 
             log_message = f"Installed {mod_name}"
-            log(log_message)
+            log(log_message, get_time())
             status_label.config(text=log_message)
         
         # If any other mod is installed replace the curent one
@@ -704,7 +710,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
                 log_message = f"{log_message}{mod} "
             
             log_message = f"Replacing {log_message}with {mod_name}"
-            log(log_message)
+            log(log_message, get_time())
             status_label.config(text=log_message)
 
             # Check if mod you are trying to install is installed if it isn't install it
@@ -728,7 +734,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
                 
                 # Display that mod is installed
                 log_message = f"Installd {mod_name}"
-                log(log_message)
+                log(log_message, get_time())
                 status_label.config(text=log_message)
 
                 installed_mods_list_pretty_for_display = [] # List stores the installed mods without .TBM to make it prettier
@@ -743,12 +749,12 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
         # Save error to a log file
         with open(log_file, 'a') as file:
             file.write(f"\n{get_time()} Unexpected error: {e}")
-        log(f"Unexpected error: {e}")
+        log(f"Unexpected error: {e}", get_time())
 
 def download_bibites(bibites_to_download):
     for bibite in bibites_to_download:
         filename = get_filename_from_response(bibite) # Get filename to determin if it is .bb8 or .bb8template
-        log(f"Downloading bibite {filename}")
+        log(f"Downloading bibite {filename}", get_time())
         if OS_TYPE == "Windows":
             if filename.endswith(".bb8"):
                 location = f'{USERPROFILE}/AppData/LocalLow/The Bibites/The Bibites/Bibites'
@@ -761,7 +767,7 @@ def install_mods(): # Install a mod so you can play modded
     '''Installs the selected downloaded mods'''
 
     if os.path.exists(Game_path) == False:
-        log(f"Game path is {Game_path}, you need to set a game path to be able to install mods correctly")
+        log(f"Game path is {Game_path}, you need to set a game path to be able to install mods correctly", get_time())
         status_label.config(text=f"Game path is {Game_path}, you need to set a game path to be able to install mods correctly")
         return
     
@@ -799,24 +805,24 @@ def install_mods(): # Install a mod so you can play modded
                     download_bibites(bibites_to_download)
 
             elif install_instruction == "replace+":
-                log(f"Install instruction \"replace+\" is not yet added")
+                log(f"Install instruction \"replace+\" is not yet added", get_time())
                 status_label.config(text=f"Install instruction \"replace+\" is not yet added")
 
             elif install_instruction == "BepInEx":
-                log(f"Install instruction \"BepInEx\" will be implemented after \"replace\" is implemented")
+                log(f"Install instruction \"BepInEx\" will be implemented after \"replace\" is implemented", get_time())
                 status_label.config(text=f"Install instruction \"BepInEx\" will be implemented after \"replace\" is implemented")
             
             elif install_instruction == "BepInEx+":
-                log(f"Install instruction \"BepInEx+\" is not yet added")
+                log(f"Install instruction \"BepInEx+\" is not yet added", get_time())
                 status_label.config(text=f"Install instruction \"BepInEx+\" is not yet added")
 
             else: # TBMM can't install the mod yet
-                log(f"{mod_name} can't be installed because TBMM does not have instructions implemented for: {install_instruction}")
+                log(f"{mod_name} can't be installed because TBMM does not have instructions implemented for: {install_instruction}", get_time())
                 status_label.config(text=f"{mod_name} can't be installed because TBMM does not have instructions implemented for: {install_instruction}")
 
         # The mod you are trying to install ia already installed
         else:
-            log(f"{mod_name} is aleady installed")
+            log(f"{mod_name} is aleady installed", get_time())
             status_label.config(text=f"{mod_name} is aleady installed") # Display that mod is already installed
             installed_mods_list_pretty_for_display = [] # List stores the installed mods without .TBM to make it prettier
             for mod in installed_mods_list:
@@ -832,7 +838,7 @@ def save_cache_to_file():
     all_cache_data = {"mod_names_cache" : mod_names_cache,"cache_time" : cache_time, "mod_content_cache" : mod_content_cache}
     with open(cache_file, 'w') as file:
         json.dump(all_cache_data, file)
-    log("Saved cache to file.")
+    log("Saved cache to file.", get_time())
     status_label.config(text="Saved cache to file.")
 
 # Function to reset and cleanup cache
@@ -859,13 +865,13 @@ def reset_cache():
                 # Save error to a log file
                 with open(log_file, 'a') as file:
                     file.write(f"\n{get_time()} Invalid mod content, removing: {mod_name}")
-                log(f"Invalid mod content, removing: {mod_name}")
+                log(f"Invalid mod content, removing: {mod_name}", get_time())
                 status_label.config(text=f"Invalid mod content, removing: {mod_name}")
         else:
             # Save error to a log file
             with open(log_file, 'a') as file:
                 file.write(f"\n{get_time()} Mod not in mod_names_cache, removing: {mod_name}")
-            log(f"Mod not in mod_names_cache, removing: {mod_name}")
+            log(f"Mod not in mod_names_cache, removing: {mod_name}", get_time())
             status_label.config(text=f"Mod not in mod_names_cache, removing: {mod_name}")
 
     # Update mod_content_cache with only valid mods that are also in mod_names_cache
@@ -874,7 +880,7 @@ def reset_cache():
 
     # Save the cleaned cache to file
     save_cache_to_file()
-    log("Cache reset, and invalid mods removed.")
+    log("Cache reset, and invalid mods removed.", get_time())
     status_label.config(text="Cache reset, and invalid mods removed.")
 
 def save_settings(): # Save to settings file
@@ -929,7 +935,7 @@ def list_downloaded_mods():
                     tooltips[index] = CustomTooltip(downloaded_mods_listbox, mod_info)
 
                 # Bind mouse motion to detect item under cursor
-                downloaded_mods_listbox.bind("<Motion>", lambda event, lb=downloaded_mods_listbox, t=tooltips: on_hover(event, lb, t))
+                downloaded_mods_listbox.bind("<Motion>", lambda event, lb=downloaded_mods_listbox, t=tooltips: on_hover(event, lb, t, tooltip_state))
                 downloaded_mods_listbox.bind("<Leave>", lambda event, t=tooltips: hide_all_tooltips(t))
         page = "Main Page"
 
@@ -1015,7 +1021,7 @@ def credits_page():
         page = "Credits"
 
 def populate_checkbuttons(mod_names):
-    global mod_vars, tooltips, current_hover_widget
+    global mod_vars, tooltips, tooltip_state
     tooltips = {}
     current_hover_widget = None  # Track which widget is being hovered
 
@@ -1040,8 +1046,8 @@ def populate_checkbuttons(mod_names):
             tooltips[chk] = CustomTooltip(chk, mod_info)
 
             # Bind motion and leave events
-            chk.bind("<Motion>", lambda event, c=chk: on_checkbutton_hover(event, c))
-            chk.bind("<Leave>", lambda event: on_checkbutton_leave())
+            chk.bind("<Motion>", lambda event, c=chk: on_checkbutton_hover(event, c, tooltips, tooltip_state))
+            chk.bind("<Leave>", lambda event: on_checkbutton_leave(tooltips, tooltip_state))
 
             added_mods.add(mod_name)
 
@@ -1061,7 +1067,7 @@ def play_game(Modded):
 
             try:
                 subprocess.Popen([Game_path]) # Run The Bibites without mods.
-                log("Playing without mods")
+                log("Playing without mods", get_time())
                 status_label.config(text="Playing without mods")
 
             # Catch and display error to the user
@@ -1072,7 +1078,7 @@ def play_game(Modded):
                 with open(log_file, 'a') as file:
                     file.write(f"\n{get_time()} Error running the game: {e}")
                 
-                log(f"Error running the game: {e}")
+                log(f"Error running the game: {e}", get_time())
                 status_label.config(text=f"Error running the game: {e}") # Display error on status label
             except Exception as e:
                 messagebox.showerror("Error", f"Unexpected error: {e}") # Display message box with error
@@ -1081,7 +1087,7 @@ def play_game(Modded):
                 with open(log_file, 'a') as file:
                     file.write(f"\n{get_time()} Unexpected error: {e}")
                 
-                log(f"Unexpected error: {e}")
+                log(f"Unexpected error: {e}", get_time())
                 status_label.config(text=f"Unexpected error: {e}") # Display error on status label
 
         if Modded == ('Yes'):
@@ -1089,10 +1095,10 @@ def play_game(Modded):
                 ScriptingAssembliesText['names'][68] = 'BibitesAssembly.dll.TBM' # Edit what dll is loaded to the modded one
                 with open(ScriptingAssemblies, "w") as file:                     # Write the info
                     json.dump(ScriptingAssembliesText, file)
-                log(f"You have installed a replace mod assuming you want to use that")
+                log(f"You have installed a replace mod assuming you want to use that", get_time())
                 status_label.config(text=f"You have installed a replace mod assuming you want to use that")
             else:
-                log(f"You haven't installed a replace mod assuming you have intalled BepInEx mods")
+                log(f"You haven't installed a replace mod assuming you have intalled BepInEx mods", get_time())
                 status_label.config(text=f"You haven't installed a replace mod assuming you have intalled BepInEx mods")
 
             try:
@@ -1103,7 +1109,7 @@ def play_game(Modded):
                     for mod in installed_mods_list:
                         mod = mod.split('.')[0]
                         installed_mods_list_pretty_for_display.append(mod)
-                log(f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}")
+                log(f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}", get_time())
                 status_label.config(text=f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}")
 
             # Catch and display error to the user
@@ -1114,7 +1120,7 @@ def play_game(Modded):
                 with open(log_file, 'a') as file:
                     file.write(f"\n{get_time()} Error running the game: {e}")
                 
-                log(f"Error running the game: {e}")
+                log(f"Error running the game: {e}", get_time())
                 status_label.config(text=f"Error running the game: {e}") # Display error on status label
             except Exception as e:
                 messagebox.showerror("Error", f"Unexpected error: {e}") # Display message box with error
@@ -1123,11 +1129,113 @@ def play_game(Modded):
                 with open(log_file, 'a') as file:
                     file.write(f"\n{get_time()} Unexpected error: {e}")
                 
-                log(f"Unexpected error: {e}")
+                log(f"Unexpected error: {e}", get_time())
                 status_label.config(text=f"Unexpected error: {e}") # Display error on status label
     else:
-        log(f"{Game_path} does not exist, you need to set a valid game path to be able to run the game")
+        log(f"{Game_path} does not exist, you need to set a valid game path to be able to run the game", get_time())
         status_label.config(text=f"{Game_path} does not exist, you need to set a valid game path to be able to run the game")
+
+def log(message, time):
+    timestamp = time
+    log_text.config(state='normal')
+    log_text.insert('end', f"{timestamp} {message}" + '\n')
+    log_text.see('end')  # Auto-scroll
+    log_text.config(state='disabled')
+
+# Get the script dir
+script_dir = Path(__file__).parent.absolute()
+images_folder = f'{script_dir}/Images' # Path to folder with images
+
+# Setup UI links with UI.py
+# Create window
+window_widgets = create_window(images_folder, version_number, Discord_invite_link, handlers={
+    'list_downloaded_mods': list_downloaded_mods,
+    'download_mods_page': download_mods_page,
+    'more_tools_page': more_tools_page,
+    'credits_page': credits_page
+})
+
+window = window_widgets['window']
+screen_width = window_widgets['screen_width']
+screen_height = window_widgets['screen_height']
+status_label = window_widgets['status_label']
+display_downloaded_mods_button = window_widgets['display_downloaded_mods_button']
+find_mods_button = window_widgets['find_mods_button']
+more_tools_button = window_widgets['more_tools_button']
+credits_button = window_widgets['credits_button']
+Bibite_Research_Conglomerate_hyperlink = window_widgets['Bibite_Research_Conglomerate_hyperlink']
+
+# Create the main page UI and store widgets
+main_page_widgets = create_main_page_ui(window, handlers={
+    'get_game_path': get_game_path,
+    'get_game_version': get_game_version,
+    'install_mods': install_mods,
+    'play_vanilla': lambda: play_game('No'),
+    "Play Modded": lambda: play_game('Yes'),
+    'reset_cache': reset_cache,
+    'get_the_bibites': get_the_bibites
+})
+
+main_frame = main_page_widgets['frame']
+game_path_label = main_page_widgets['game_path_label']
+version_label = main_page_widgets['version_label']
+downloaded_mods_listbox = main_page_widgets['downloaded_mods_listbox']
+installed_mod_label = main_page_widgets['installed_mod_label']
+log_text = main_page_widgets['log_text']
+
+# Create the download mods page UI and store widgets
+downlod_mods_page_widgets = create_download_mods_page_ui(window, handlers={
+    'download_mods': download_mods
+})
+
+downloadable_mods_frame = downlod_mods_page_widgets['frame']
+
+# Create the credits page UI and store widgets
+credits_page_widgets = create_credits_page_ui(window)
+
+credits_frame = credits_page_widgets['frame']
+
+more_tools_page_widgets = create_more_tools_page_ui(window, images_folder)
+
+more_tools_frame = more_tools_page_widgets['frame']
+Einstein_info_lable = more_tools_page_widgets['Einstein_info_lable']
+
+def update_screen_size():
+    global window_width, window_height
+    window_width = window.winfo_width()
+    window_height = window.winfo_height()
+
+# Function moves the buttons on the sides when you scale the window always keping them on screen
+def move_left_buttons(event):
+    update_screen_size()
+
+    button_height = display_downloaded_mods_button.winfo_reqheight() # Button height are so similar the same hight can be used for all buttons
+
+    # Calculate padding based on window height, shrinking as height decreases
+    min_padding = 0  # Minimum padding
+    max_padding = 10  # Maximum padding
+    height_threshold = 500  # Height threshold when padding starts shrinking
+    padding = max(min_padding, min(max_padding, max_padding * (window_height / height_threshold)))  # Shrink padding as height decreases and cap at max_padding
+
+    x = 10 # amount stuff is offset from the left edge of the window
+
+    # Apply button positions
+    display_downloaded_mods_button.place(x=x, y=window_height / 12.5)
+    find_mods_button.place(x=x, y=display_downloaded_mods_button.winfo_y() + button_height + padding)
+    more_tools_button.place(x=x, y=find_mods_button.winfo_y() + button_height + padding)
+    
+    credits_button.place(x=x, y=window_height - button_height - 15)
+
+    # Position Bibite_Research_Conglomerate_hyperlink in bottom-right corner
+    hyperlink_width = Bibite_Research_Conglomerate_hyperlink.winfo_reqwidth()
+    hyperlink_height = Bibite_Research_Conglomerate_hyperlink.winfo_reqheight()
+    Bibite_Research_Conglomerate_hyperlink.place(x=window_width - hyperlink_width - 20, y=window_height - hyperlink_height - 20)
+
+    # Update wraplengt of text to make it look better on smaller windows
+    Einstein_info_lable.configure(wraplength=min(1000, window_width - 375))
+
+# Bind the function to move find_mods_button
+window.bind('<Configure>', move_left_buttons)
 
 # Set path for saving and loading
 if getattr(sys, 'frozen', False):
@@ -1208,10 +1316,10 @@ else:
                 installed_mod_label.config(text=f"Installed mod: I do not know what mod is installed", font=("Arial", 12))
 
             if error == True:
-                log(f'Error loading settings: {errormessage}')
+                log(f'Error loading settings: {errormessage}', get_time())
                 status_label.config(text=f'Error loading settings: {errormessage}')
             else:
-                log(f'Settings loaded successfully')
+                log(f'Settings loaded successfully', get_time())
                 status_label.config(text=f'Settings loaded successfully')
     
             if 'Game_path' in settings and os.path.isfile(Game_path):
@@ -1220,7 +1328,7 @@ else:
                 game_path_label.config(text=f'Error game path can not be found', font=("Arial", 9))
                 Game_path = ''
     except Exception as e:
-        log(f'Can not read settings file')
+        log(f'Can not read settings file', get_time())
         status_label.config(text=f'Can not read settings file')
 
 # Load cache from json file
