@@ -25,12 +25,15 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Commit and push nightly version
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config --global user.name 'github-actions'
-          git config --global user.email 'github-actions@github.com'
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
           git add version.txt "The Bibites Mod Manager.py"
           git commit -m "Nightly build: update version to ${{ steps.set-version.outputs.version }}" || echo "No changes to commit"
-          git push
+          git push origin HEAD:${{ github.ref_name }}
 
   build-windows:
     needs: generate-nightly-version
