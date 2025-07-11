@@ -20,7 +20,7 @@ OS_TYPE = os_map.get(platform.system(), "Unknown")
 # Version number of the next version to be released, not the bibites game version. Must be string or float
 version_number = "0.06.1"
 
-nightly_version = "__VERSION__"
+nightly_version = "nightly-20250711"
 
 # Store every url that can be used to download TBM mod data from
 # The list should be ordered from most up to date and most uptime to least up to date and least uptime.
