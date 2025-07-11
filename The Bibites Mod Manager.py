@@ -5,6 +5,7 @@ from threading import Thread
 from urllib.parse import urlparse, unquote
 
 from UI import create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui, create_more_tools_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
+from Networking import update_check, download_new_tbmm_version
 
 # Gets userpath (Usually C:\Users\username)
 USERPROFILE = os.environ['USERPROFILE']
@@ -20,7 +21,13 @@ OS_TYPE = os_map.get(platform.system(), "Unknown")
 # Version number of the next version to be released, not the bibites game version. Must be string or float
 version_number = "0.06.1"
 
-nightly_version = "nightly-20250711"
+nightly_version = "__VERSION__" # Gets replaced during workflow build with latest version
+
+# Should it check and download nightly version
+if nightly_version ==  "__VERSION__":
+    is_nightly = False
+else:
+    is_nightly = True
 
 # Store every url that can be used to download TBM mod data from
 # The list should be ordered from most up to date and most uptime to least up to date and least uptime.
@@ -1175,7 +1182,8 @@ main_page_widgets = create_main_page_ui(window, handlers={
     'play_vanilla': lambda: play_game('No'),
     "Play Modded": lambda: play_game('Yes'),
     'reset_cache': reset_cache,
-    'get_the_bibites': get_the_bibites
+    'get_the_bibites': get_the_bibites,
+    'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, False)
 })
 
 main_frame = main_page_widgets['frame']
@@ -1184,6 +1192,7 @@ version_label = main_page_widgets['version_label']
 downloaded_mods_listbox = main_page_widgets['downloaded_mods_listbox']
 installed_mod_label = main_page_widgets['installed_mod_label']
 log_text = main_page_widgets['log_text']
+dowload_new_version_button = main_page_widgets['dowload_new_version_button']
 
 # Create the download mods page UI and store widgets
 downlod_mods_page_widgets = create_download_mods_page_ui(window, handlers={
@@ -1303,6 +1312,13 @@ else:
                 error = True
                 errormessage = errormessage + 'Game_version '
             
+            if 'is_nightly' in settings:
+                nightly_version = settings['is_nightly']
+            else:
+                error = True
+                errormessage = errormessage + 'is_nightly'
+
+            
             if 'installed_mods_list' in settings:
                 try:
                     installed_mods_list = settings['installed_mods_list']
@@ -1349,6 +1365,15 @@ if os.path.isfile(cache_file) and os.stat(cache_file).st_size != 0: # I have no 
 
         if "mod_content_cache" in all_cache_data: # check if mod_content_cache exists in cache
             mod_content_cache = all_cache_data["mod_content_cache"] # Load content of mod files into a cache variable
+
+# Check for newer version
+if is_nightly:
+    newer_version = update_check(nightly_version, is_nightly)
+else:
+    newer_version = update_check(version_number, is_nightly)
+
+if newer_version:
+    dowload_new_version_button.grid(row=2, column=4, pady=80, sticky="n")
 
 list_downloaded_mods()
 

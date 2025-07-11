@@ -163,6 +163,7 @@ def create_main_page_ui(window, handlers):
     Mod_play_button = Button(main_frame, text="Play Modded", command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
     refresh_cache_button = Button(main_frame, text="Refresh cache", command=handlers['reset_cache'], font=("Arial", 12))
     get_the_bibites_button = Button(main_frame, text="Download The Bibites", command=handlers['get_the_bibites'], font=("Arial", 12))
+    dowload_new_version_button = Button(main_frame, text="Download new TBMM update", command=handlers['download_new_tbmm_version'], font=("Arial", 12), bg="#0060e6", fg="#003C00")
 
     # Labels
     game_path_label = Label(main_frame, text="Game path: None", font=("Arial", 14))
@@ -201,7 +202,8 @@ def create_main_page_ui(window, handlers):
         'version_label': version_label,
         'downloaded_mods_listbox': downloaded_mods_listbox,
         'installed_mod_label': installed_mod_label,
-        'log_text': log_text
+        'log_text': log_text,
+        'dowload_new_version_button': dowload_new_version_button
     }
 
 def create_download_mods_page_ui(window, handlers):

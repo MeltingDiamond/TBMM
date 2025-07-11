@@ -16,8 +16,8 @@ Thank you for your contributions!
 
 ### Find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to help make TBMM better.
 
-## Next update (ETA. May)
-Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here. No major new functionality will be added.Around here TBMM will be officially open sourced
+## Next update
+Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here. No major new functionality will be added.Around here TBMM will be officially open sourced. Check for newer version whenever you start TBMM
 
 ## Roadmap
 ### None version specific goals

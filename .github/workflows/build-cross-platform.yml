@@ -23,7 +23,6 @@ jobs:
         run: |
           VERSION=nightly-$(date +'%Y%m%d')
           echo "$VERSION" > version.txt
-          sed -i "s/__VERSION__/$VERSION/" "The Bibites Mod Manager.py"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Commit and push nightly version
@@ -70,6 +69,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r build_requirements.txt
           pip install nuitka
+      
+      - name: Inject nightly version into script
+        shell: powershell
+        run: |
+          (Get-Content "The Bibites Mod Manager.py") -replace '__VERSION__', '${{ needs.generate-nightly-version.outputs.version }}' | Set-Content "The Bibites Mod Manager.py"
 
       - name: Build TBMM for Windows
         run: |
@@ -115,6 +119,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r build_requirements.txt
           pip install nuitka
+
+      - name: Inject nightly version into script
+        run: |
+          sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
 
       - name: Build TBMM for Linux
         run: |
