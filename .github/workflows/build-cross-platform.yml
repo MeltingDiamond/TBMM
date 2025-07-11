@@ -8,18 +8,36 @@ on:
       - main
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+  generate-nightly-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Write nightly version to file and update script
-        shell: powershell
+      - name: Set nightly version
+        id: set-version
         run: |
-          $version = "nightly-$(Get-Date -Format 'yyyyMMdd')"
-          Set-Content -Path "version.txt" -Value $version
-          (Get-Content "The Bibites Mod Manager.py") -replace '__VERSION__', $version | Set-Content "The Bibites Mod Manager.py"
+          VERSION=nightly-$(date +'%Y%m%d')
+          echo "$VERSION" > version.txt
+          sed -i "s/__VERSION__/$VERSION/" "The Bibites Mod Manager.py"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push nightly version
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add version.txt "The Bibites Mod Manager.py"
+          git commit -m "Nightly build: update version to ${{ steps.set-version.outputs.version }}" || echo "No changes to commit"
+          git push
+
+  build-windows:
+    needs: generate-nightly-version
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -59,17 +77,9 @@ jobs:
           path: The Bibites Mod Manager.exe
 
   build-linux:
+    needs: generate-nightly-version
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Write nightly version to file
-        run: |
-          version="nightly-$(date +'%Y%m%d')"
-          echo "$version" > version.txt
-          sed -i "s/__VERSION__/$version/" "The Bibites Mod Manager.py"
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
