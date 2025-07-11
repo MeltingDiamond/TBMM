@@ -11,6 +11,13 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
+      - name: Write nightly version to file and update script
+        shell: powershell
+        run: |
+          $version = "nightly-$(Get-Date -Format 'yyyyMMdd')"
+          Set-Content -Path "version.txt" -Value $version
+          (Get-Content "The Bibites Mod Manager.py") -replace '__VERSION__', $version | Set-Content "The Bibites Mod Manager.py"
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -54,6 +61,12 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
+      - name: Write nightly version to file
+        run: |
+          version="nightly-$(date +'%Y%m%d')"
+          echo "$version" > version.txt
+          sed -i "s/__VERSION__/$version/" "The Bibites Mod Manager.py"
+
       - name: Checkout repository
         uses: actions/checkout@v4
 

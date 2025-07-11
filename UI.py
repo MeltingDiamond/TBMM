@@ -1,3 +1,4 @@
+# Anything that gets displayed. For example tkinter 
 import webbrowser
 from tkinter import Tk, Frame, Label, Button, Listbox, Scrollbar, Text, Toplevel, PhotoImage
 

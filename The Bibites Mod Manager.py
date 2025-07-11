@@ -20,6 +20,8 @@ OS_TYPE = os_map.get(platform.system(), "Unknown")
 # Version number of the next version to be released, not the bibites game version. Must be string or float
 version_number = "0.06.1"
 
+nightly_version = "__VERSION__"
+
 # Store every url that can be used to download TBM mod data from
 # The list should be ordered from most up to date and most uptime to least up to date and least uptime.
 add_first = "https://api.github.com/repos/MeltingDiamond/TBMM-Mods/contents/Mods" # This is the original keep it first unless I say otherwise - MeltingDiamond
