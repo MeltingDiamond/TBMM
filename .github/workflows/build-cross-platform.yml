@@ -21,7 +21,7 @@ jobs:
       - name: Set nightly version
         id: set-version
         run: |
-          VERSION=nightly-$(date +'%Y%m%d')
+          VERSION=nightly-$(date +'%Y%m%d%H%M%S')
           echo "$VERSION" > version.txt
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
