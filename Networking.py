@@ -17,7 +17,7 @@ def download_new_tbmm_version(os, nightly = False):
     else:
         open_link(release_download_link)
 
-def update_check(version, nightly=False):
+def update_check(version, log, nightly=False):
     """
     Checks if the local version is the latest. Only returns True if there is a newer version.
     :param version: the version currently installed
@@ -25,24 +25,24 @@ def update_check(version, nightly=False):
     """
     try:
         if nightly:
-            print("Checking nightly version...")
+            log("Checking nightly version...")
             response = requests.get("https://raw.githubusercontent.com/MeltingDiamond/TBMM/main/version.txt")
             if response.status_code == 200:
                 nightly_version = response.text.strip()  # Get the content and strip newline
-                print(f"Latest nightly version: {nightly_version}")
+                log(f"Latest nightly version: {nightly_version}")
                 if version != nightly_version:
-                    print(f"A newer nightly version is available: {nightly_version}")
+                    log(f"A newer nightly version is available: {nightly_version}")
                     return True
                 else:
-                    print("You are using the latest nightly version.")
+                    log("You are using the latest nightly version.")
                     return False
             else:
-                print("Failed to fetch version info.")
+                log("Failed to fetch version info.")
                 False
         else:
-            print("Checking release version... (not yet implemented)")
+            log("Checking release version... (not yet implemented)")
             # TODO: Implement release version check (e.g. GitHub tags or releases)
     except Exception as e:
-        print(f"Error during version check: {e}")
+        log(f"Error during version check: {e}")
 
 #update_check(1.4, True)

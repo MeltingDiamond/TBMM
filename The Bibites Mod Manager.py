@@ -7,6 +7,8 @@ from urllib.parse import urlparse, unquote
 from UI import create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui, create_more_tools_page_ui, create_game_version_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
 from Networking import update_check, download_new_tbmm_version
 
+# TODO Merge log() and write to log file into one function log()
+
 # Gets userpath (Usually C:\Users\username)
 USERPROFILE = os.environ['USERPROFILE']
 
@@ -266,7 +268,7 @@ def fetch_filenames():
             print(" Did not download any mod names there was an error returns []")
             return []
         else: # No internett
-            log("You have no internett", get_time())
+            log("You have no internett")
             status_label.config(text="You have no internett")
             # Save error to a log file
             with open(log_file, 'a') as file:
@@ -300,7 +302,7 @@ def fetch_from_github(url):
                 error_message = f"GitHub status code: {response.status_code} can't access page"
             if response.status_code == 403:
                 error_message = f"GitHub status code: {response.status_code} GitHub refused access to page"
-            log(error_message, get_time())
+            log(error_message)
             status_label.config(text=error_message)
             
             # Save error to a log file
@@ -332,7 +334,7 @@ def fetch_from_dropbox(url):
             if response.status_code == 403:
                 error_message += " - Dropbox refused access to page"
             
-            log(error_message, get_time())
+            log(error_message)
             status_label.config(text=error_message)
             with open(log_file, 'a') as file:
                 file.write(f"\n{get_time()} {error_message}")
@@ -423,7 +425,7 @@ def get_file_contents(mod_name):
         mod_cache = {}
         for url in mod_repo_urls:
             website_name = get_website_name(url)
-            log(f"Attempting to fetch content from: {website_name}", get_time())
+            log(f"Attempting to fetch content from: {website_name}")
 
             if "github.com" in website_name:
                 mod_cache = get_file_contents_from_github(mod_name)
@@ -550,13 +552,13 @@ def download_file(url, location): # Downloads the file at url and places it in l
         with open(log_file, 'a') as file:
             file.write(f"\n{get_time()} {e}")
 
-        log(e, get_time())
+        log(e)
         status_label.config(text=e)
     except Exception as e:
         # Save error to a log file
         with open(log_file, 'a') as file:
             file.write(f"\n{get_time()} Can not connect to {website}, error: {e}")
-        log(f"Can not connect to {website} to get mod data", get_time())
+        log(f"Can not connect to {website} to get mod data")
         status_label.config(text=f"Can not connect to {website} to get mod data")
         return
 
@@ -572,7 +574,7 @@ def download_file(url, location): # Downloads the file at url and places it in l
             size = file.write(data)
             downloaded += size
             percent_done = int(downloaded / total * 100)
-            log(f"Downloading... {percent_done}%", get_time())
+            log(f"Downloading... {percent_done}%")
             status_label.config(text=f"Downloading... {percent_done}%")
 
     # Check if downloaded size matches the total size
@@ -591,7 +593,7 @@ def download_file(url, location): # Downloads the file at url and places it in l
                     existing_content = existing_file.read()
                 if new_content == existing_content: # Mod exists do nothing
                     mod_exists = True
-                    log(f"{filename} already downloaded", get_time())
+                    log(f"{filename} already downloaded")
                     status_label.config(text=f"{filename} already downloaded")
 
         except Exception as e:
@@ -605,17 +607,17 @@ def download_file(url, location): # Downloads the file at url and places it in l
             with open(log_file, 'a') as file:
                 file.write(f"\n{get_time()} Error downloading {mod_name}: {e}")
 
-            log(f"Error download {mod_name}: {e}", get_time())
+            log(f"Error download {mod_name}: {e}")
             status_label.config(text=f"Error download {mod_name}: {e}")
         
         if error_downloading_file == False and mod_exists == False:
-            log(f"Downloading {mod_name} complete!", get_time())
+            log(f"Downloading {mod_name} complete!")
             status_label.config(text=f"Downloading {mod_name} complete!")
 
 # Function to start the download process
 def start_download(url, location):
     '''Starts downloading a file from a url in a thread'''
-    log("Downloading...", get_time())
+    log("Downloading...")
     status_label.config(text="Downloading...")
     download_thread = Thread(target=download_file, args=(url,location))
     download_thread.start()
@@ -643,7 +645,7 @@ def download_mods():
         if var.get() == 1: # The mod is selected and will be downloaded
             mod_folder_name = mod_names[i]
             if mod_folder_name in downloaded_mods_list: # Check if mod is downloaded
-                log(f"{mod_names[i].split('.')[0]} already downloaded", get_time())
+                log(f"{mod_names[i].split('.')[0]} already downloaded")
                 status_label.config(text=f"{mod_names[i].split('.')[0]} already downloaded")
             else: # Mod is not downloaded
                 url = get_mod_url(mod_names[i])
@@ -657,7 +659,7 @@ def download_mods():
                     # Add mod name to the list
                     downloaded_mods_list.append(mod_folder_name)
                 else:
-                    log(f"URL for {mod_names[i]} not found.", get_time())
+                    log(f"URL for {mod_names[i]} not found.")
                     status_label.config(text=f"URL for {mod_names[i]} not found.")
     with open(downloaded_mods, "w") as downloaded_mods_file:
         downloaded_mods_file.write('\n'.join(downloaded_mods_list))
@@ -668,7 +670,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
         # If mod isnt installed and no other mod is installed
         if f'{not_installed_mod_path}' not in os.listdir(not_installed_mod_folder) and len(installed_mods_list) == 0 and not os.path.exists(f'{Game_folder}/The Bibites_Data/Managed/BibitesAssembly.dll.TBM'):
             log_message = f"Installing {mod_name}"
-            log(log_message, get_time())
+            log(log_message)
             status_label.config(text=log_message)
             shutil.move(f'{not_installed_mod_path}', f'{Game_folder}/The Bibites_Data/Managed') # Move the mod
             installed_mods_list = mod_name
@@ -677,7 +679,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
                 file.write(installed_mods_list)
 
             log_message = f"Installed {mod_name}"
-            log(log_message, get_time())
+            log(log_message)
             status_label.config(text=log_message)
         
         # If any other mod is installed replace the curent one
@@ -687,7 +689,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
                 log_message = f"{log_message}{mod} "
             
             log_message = f"Replacing {log_message}with {mod_name}"
-            log(log_message, get_time())
+            log(log_message)
             status_label.config(text=log_message)
 
             # Check if mod you are trying to install is installed if it isn't install it
@@ -711,7 +713,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
                 
                 # Display that mod is installed
                 log_message = f"Installd {mod_name}"
-                log(log_message, get_time())
+                log(log_message)
                 status_label.config(text=log_message)
 
                 installed_mods_list_pretty_for_display = [] # List stores the installed mods without .TBM to make it prettier
@@ -726,12 +728,12 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
         # Save error to a log file
         with open(log_file, 'a') as file:
             file.write(f"\n{get_time()} Unexpected error: {e}")
-        log(f"Unexpected error: {e}", get_time())
+        log(f"Unexpected error: {e}")
 
 def download_bibites(bibites_to_download):
     for bibite in bibites_to_download:
         filename = get_filename_from_response(bibite) # Get filename to determin if it is .bb8 or .bb8template
-        log(f"Downloading bibite {filename}", get_time())
+        log(f"Downloading bibite {filename}")
         if OS_TYPE == "Windows":
             if filename.endswith(".bb8"):
                 location = f'{USERPROFILE}/AppData/LocalLow/The Bibites/The Bibites/Bibites'
@@ -744,7 +746,7 @@ def install_mods(): # Install a mod so you can play modded
     '''Installs the selected downloaded mods'''
 
     if os.path.exists(Game_path) == False:
-        log(f"Game path is {Game_path}, you need to set a game path to be able to install mods correctly", get_time())
+        log(f"Game path is {Game_path}, you need to set a game path to be able to install mods correctly")
         status_label.config(text=f"Game path is {Game_path}, you need to set a game path to be able to install mods correctly")
         return
     
@@ -782,24 +784,24 @@ def install_mods(): # Install a mod so you can play modded
                     download_bibites(bibites_to_download)
 
             elif install_instruction == "replace+":
-                log(f"Install instruction \"replace+\" is not yet added", get_time())
+                log(f"Install instruction \"replace+\" is not yet added")
                 status_label.config(text=f"Install instruction \"replace+\" is not yet added")
 
             elif install_instruction == "BepInEx":
-                log(f"Install instruction \"BepInEx\" will be implemented after \"replace\" is implemented", get_time())
+                log(f"Install instruction \"BepInEx\" will be implemented after \"replace\" is implemented")
                 status_label.config(text=f"Install instruction \"BepInEx\" will be implemented after \"replace\" is implemented")
             
             elif install_instruction == "BepInEx+":
-                log(f"Install instruction \"BepInEx+\" is not yet added", get_time())
+                log(f"Install instruction \"BepInEx+\" is not yet added")
                 status_label.config(text=f"Install instruction \"BepInEx+\" is not yet added")
 
             else: # TBMM can't install the mod yet
-                log(f"{mod_name} can't be installed because TBMM does not have instructions implemented for: {install_instruction}", get_time())
+                log(f"{mod_name} can't be installed because TBMM does not have instructions implemented for: {install_instruction}")
                 status_label.config(text=f"{mod_name} can't be installed because TBMM does not have instructions implemented for: {install_instruction}")
 
         # The mod you are trying to install ia already installed
         else:
-            log(f"{mod_name} is aleady installed", get_time())
+            log(f"{mod_name} is aleady installed")
             status_label.config(text=f"{mod_name} is aleady installed") # Display that mod is already installed
             installed_mods_list_pretty_for_display = [] # List stores the installed mods without .TBM to make it prettier
             for mod in installed_mods_list:
@@ -815,7 +817,7 @@ def save_cache_to_file():
     all_cache_data = {"mod_names_cache" : mod_names_cache,"cache_time" : cache_time, "mod_content_cache" : mod_content_cache}
     with open(cache_file, 'w') as file:
         json.dump(all_cache_data, file)
-    log("Saved cache to file.", get_time())
+    log("Saved cache to file.")
     status_label.config(text="Saved cache to file.")
 
 # Function to reset and cleanup cache
@@ -842,13 +844,13 @@ def reset_cache():
                 # Save error to a log file
                 with open(log_file, 'a') as file:
                     file.write(f"\n{get_time()} Invalid mod content, removing: {mod_name}")
-                log(f"Invalid mod content, removing: {mod_name}", get_time())
+                log(f"Invalid mod content, removing: {mod_name}")
                 status_label.config(text=f"Invalid mod content, removing: {mod_name}")
         else:
             # Save error to a log file
             with open(log_file, 'a') as file:
                 file.write(f"\n{get_time()} Mod not in mod_names_cache, removing: {mod_name}")
-            log(f"Mod not in mod_names_cache, removing: {mod_name}", get_time())
+            log(f"Mod not in mod_names_cache, removing: {mod_name}")
             status_label.config(text=f"Mod not in mod_names_cache, removing: {mod_name}")
 
     # Update mod_content_cache with only valid mods that are also in mod_names_cache
@@ -857,7 +859,7 @@ def reset_cache():
 
     # Save the cleaned cache to file
     save_cache_to_file()
-    log("Cache reset, and invalid mods removed.", get_time())
+    log("Cache reset, and invalid mods removed.")
     status_label.config(text="Cache reset, and invalid mods removed.")
 
 def save_settings(): # Save to settings file
@@ -1043,7 +1045,7 @@ def play_game(Modded):
 
             try:
                 subprocess.Popen([Game_path]) # Run The Bibites without mods.
-                log("Playing without mods", get_time())
+                log("Playing without mods")
                 status_label.config(text="Playing without mods")
 
             # Catch and display error to the user
@@ -1054,7 +1056,7 @@ def play_game(Modded):
                 with open(log_file, 'a') as file:
                     file.write(f"\n{get_time()} Error running the game: {e}")
                 
-                log(f"Error running the game: {e}", get_time())
+                log(f"Error running the game: {e}")
                 status_label.config(text=f"Error running the game: {e}") # Display error on status label
             except Exception as e:
                 messagebox.showerror("Error", f"Unexpected error: {e}") # Display message box with error
@@ -1063,7 +1065,7 @@ def play_game(Modded):
                 with open(log_file, 'a') as file:
                     file.write(f"\n{get_time()} Unexpected error: {e}")
                 
-                log(f"Unexpected error: {e}", get_time())
+                log(f"Unexpected error: {e}")
                 status_label.config(text=f"Unexpected error: {e}") # Display error on status label
 
         if Modded == ('Yes'):
@@ -1071,10 +1073,10 @@ def play_game(Modded):
                 ScriptingAssembliesText['names'][68] = 'BibitesAssembly.dll.TBM' # Edit what dll is loaded to the modded one
                 with open(ScriptingAssemblies, "w") as file:                     # Write the info
                     json.dump(ScriptingAssembliesText, file)
-                log(f"You have installed a replace mod assuming you want to use that", get_time())
+                log(f"You have installed a replace mod assuming you want to use that")
                 status_label.config(text=f"You have installed a replace mod assuming you want to use that")
             else:
-                log(f"You haven't installed a replace mod assuming you have intalled BepInEx mods", get_time())
+                log(f"You haven't installed a replace mod assuming you have intalled BepInEx mods")
                 status_label.config(text=f"You haven't installed a replace mod assuming you have intalled BepInEx mods")
 
             try:
@@ -1085,7 +1087,7 @@ def play_game(Modded):
                     for mod in installed_mods_list:
                         mod = mod.split('.')[0]
                         installed_mods_list_pretty_for_display.append(mod)
-                log(f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}", get_time())
+                log(f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}")
                 status_label.config(text=f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}")
 
             # Catch and display error to the user
@@ -1096,7 +1098,7 @@ def play_game(Modded):
                 with open(log_file, 'a') as file:
                     file.write(f"\n{get_time()} Error running the game: {e}")
                 
-                log(f"Error running the game: {e}", get_time())
+                log(f"Error running the game: {e}")
                 status_label.config(text=f"Error running the game: {e}") # Display error on status label
             except Exception as e:
                 messagebox.showerror("Error", f"Unexpected error: {e}") # Display message box with error
@@ -1105,14 +1107,14 @@ def play_game(Modded):
                 with open(log_file, 'a') as file:
                     file.write(f"\n{get_time()} Unexpected error: {e}")
                 
-                log(f"Unexpected error: {e}", get_time())
+                log(f"Unexpected error: {e}")
                 status_label.config(text=f"Unexpected error: {e}") # Display error on status label
     else:
-        log(f"{Game_path} does not exist, you need to set a valid game path to be able to run the game", get_time())
+        log(f"{Game_path} does not exist, you need to set a valid game path to be able to run the game")
         status_label.config(text=f"{Game_path} does not exist, you need to set a valid game path to be able to run the game")
 
-def log(message, time):
-    timestamp = time
+def log(message):
+    timestamp = get_time()
     log_text.config(state='normal')
     log_text.insert('end', f"{timestamp} {message}" + '\n')
     log_text.see('end')  # Auto-scroll
@@ -1302,10 +1304,10 @@ else:
                 installed_mod_label.config(text=f"Installed mod: I do not know what mod is installed", font=("Arial", 12))
 
             if error == True:
-                log(f'Error loading settings: {errormessage}', get_time())
+                log(f'Error loading settings: {errormessage}')
                 status_label.config(text=f'Error loading settings: {errormessage}')
             else:
-                log(f'Settings loaded successfully', get_time())
+                log(f'Settings loaded successfully')
                 status_label.config(text=f'Settings loaded successfully')
     
             if 'Game_path' in settings and os.path.isfile(Game_path):
@@ -1314,7 +1316,7 @@ else:
                 game_path_label.config(text=f'Error game path can not be found', font=("Arial", 9))
                 Game_path = ''
     except Exception as e:
-        log(f'Can not read settings file', get_time())
+        log(f'Can not read settings file')
         status_label.config(text=f'Can not read settings file')
 
 # Load cache from json file
@@ -1336,9 +1338,9 @@ if os.path.isfile(cache_file) and os.stat(cache_file).st_size != 0: # I have no 
 
 # Check for newer version
 if is_nightly:
-    newer_version = update_check(nightly_version, is_nightly)
+    newer_version = update_check(nightly_version, log, is_nightly)
 else:
-    newer_version = update_check(version_number, is_nightly)
+    newer_version = update_check(version_number, log, is_nightly)
 
 if newer_version:
     dowload_new_version_button.grid(row=2, column=4, pady=80, sticky="n")
