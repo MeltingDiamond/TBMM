@@ -5,14 +5,17 @@ windows_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workfl
 linux_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Linux.zip"
 release_download_link = "https://github.com/MeltingDiamond/TBMM/releases/latest"
 
+def open_link(url):
+    webbrowser.open_new(url)
+
 def download_new_tbmm_version(os, nightly = False):
     if nightly:
         if os == "Windows":
-                webbrowser.open(windows_nightly_download_link)
+                open_link(windows_nightly_download_link)
         elif os == "Linux":
-            webbrowser.open(windows_nightly_download_link)
+            open_link(windows_nightly_download_link)
     else:
-        webbrowser.open(release_download_link)
+        open_link(release_download_link)
 
 def update_check(version, nightly=False):
     """

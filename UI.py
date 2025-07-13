@@ -1,12 +1,8 @@
 # Anything that gets displayed. For example tkinter 
-import webbrowser
 from tkinter import Tk, Frame, Label, Button, Listbox, Scrollbar, Text, Toplevel, PhotoImage, StringVar, OptionMenu
 
 # Size of different fonts
 status_label_font_size = 14
-
-def open_link(url):
-    webbrowser.open_new(url)
 
 class CustomTooltip:
     def __init__(self, widget, text):
