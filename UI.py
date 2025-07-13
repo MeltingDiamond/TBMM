@@ -1,6 +1,6 @@
 # Anything that gets displayed. For example tkinter 
 import webbrowser
-from tkinter import Tk, Frame, Label, Button, Listbox, Scrollbar, Text, Toplevel, PhotoImage
+from tkinter import Tk, Frame, Label, Button, Listbox, Scrollbar, Text, Toplevel, PhotoImage, StringVar, OptionMenu
 
 # Size of different fonts
 status_label_font_size = 14
@@ -260,4 +260,37 @@ def create_more_tools_page_ui(window, images_folder):
     return {
         'frame': more_tools_frame,
         'Einstein_info_lable': Einstein_info_lable
+    }
+
+def create_game_version_page_ui(window, handlers):
+    Game_version = handlers['Game_version']
+    width_height = f"{int(handlers['screen_width'] / 4)}x{int(handlers['screen_height'] / 3)}"
+
+    game_version_window = Toplevel(window)
+    game_version_window.title("Choose Game Version")
+    game_version_window.geometry(width_height)
+    game_version_window.resizable(False, False)
+
+    game_version_frame = Frame(game_version_window)
+    game_version_frame.pack(pady=20)
+
+    label = Label(game_version_frame, text="Please choose the game version:", font=("Arial", 14))
+    label.pack(pady=10)
+
+    list_of_mod_versions = ["All"] + handlers['list_of_versions']
+    selected_version = StringVar(value=Game_version if Game_version in list_of_mod_versions else list_of_mod_versions[0])
+    version_dropdown = OptionMenu(game_version_frame, selected_version, *list_of_mod_versions)
+    version_dropdown.pack(pady=10)
+
+    Label(game_version_frame, text="If you can't find a version,\nit is because there are no mods for it,\n choose all to show all mods", font=("Arial", 10)).pack(pady=10)
+
+    confirm_button = Button(game_version_frame, text="Confirm")  # No command here
+    confirm_button.pack(pady=10)
+
+    game_version_window.grab_set()  # Block input to main window until closed
+
+    return {
+        'window': game_version_window,
+        'selected_version': selected_version,
+        'confirm_button': confirm_button
     }

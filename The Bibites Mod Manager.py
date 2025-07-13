@@ -4,7 +4,7 @@ from pathlib import Path
 from threading import Thread
 from urllib.parse import urlparse, unquote
 
-from UI import create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui, create_more_tools_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
+from UI import create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui, create_more_tools_page_ui, create_game_version_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
 from Networking import update_check, download_new_tbmm_version
 
 # Gets userpath (Usually C:\Users\username)
@@ -94,61 +94,29 @@ def get_game_path():
         save_settings()
     game_path_label.config(text=f'Game path: {Game_path}', font=("Arial", 9))
 
+# Function to save the selected version and close the window
 def get_game_version():
-    '''UI for selecting game version'''
-    # Calculate the width and height for the window
-    width_height = f"{int(screen_width / 4)}x{int(screen_height / 3)}"
-
-    # Create a new window for selecting the game version
-    game_version_window = Toplevel(window)
-    game_version_window.title("Choose Game Version")
-    game_version_window.geometry(width_height)
-    window.minsize(360, 360)
-    game_version_window.resizable(False, False)
-
-    # Create a frame to hold the game version options
-    game_version_frame = Frame(game_version_window)
-    game_version_frame.pack(pady=20)
-
-    # Label for instructions
-    label = Label(game_version_frame, text="Please choose the game version:", font=("Arial", 14))
-    label.pack(pady=10)
-    
-    # List of game versions
-    list_of_mod_versions = ["All"] + list_of_versions
-
-    # Create a StringVar to store the selected version
-    if Game_version in list_of_mod_versions:
-        selected_version = StringVar(value=Game_version)  # Show the version the user selected last time
-    else:
-        selected_version = StringVar(value=list_of_mod_versions[0])  # Default to the first version in the list
-
-    # Create an OptionMenu (dropdown) for the game versions
-    version_dropdown = OptionMenu(game_version_frame, selected_version, *list_of_mod_versions)
-    version_dropdown.pack(pady=10)
-
-    label = Label(game_version_frame, text="If you can't find a version,\nit is because there are no mods for it,\n choose all to show all mods", font=("Arial", 10))
-    label.pack(pady=10)
-
-    # Function to save the selected version and close the window
     def save_version():
-        global Game_version  # Declare game_version as a global variable to store the selected version
-        Game_version = selected_version.get()  # Store the selected version in the global variable
+        global Game_version
+        Game_version = selected_version.get()
         if Game_version == "All":
             version_label.config(text=f"You have selected {Game_version} game versions.", font=("Arial", 13))
         else:
             version_label.config(text=f"You have selected game version {Game_version}.", font=("Arial", 13))
         settings['Game_version'] = Game_version
         save_settings()
-        game_version_window.destroy()  # Close the window
+        game_version_window.destroy()
 
-    # Add a button to confirm the selection
-    confirm_button = Button(game_version_frame, text="Confirm", command=save_version)
-    confirm_button.pack(pady=10)
+    ui = create_game_version_page_ui(window, handlers={
+        'Game_version': Game_version,
+        'list_of_versions': list_of_versions,
+        'screen_width': window.winfo_screenwidth(),
+        'screen_height': window.winfo_screenheight(),
+    })
 
-    # Wait for the user to select a version and confirm
-    game_version_window.grab_set()  # Prevent interaction with the main window until this one is closed
-    game_version_window.mainloop()  # Start the window's event loop
+    game_version_window = ui['window']
+    selected_version = ui['selected_version']
+    ui['confirm_button'].config(command=save_version)
 
 # Function to extract filename from url
 def get_filename_from_response(url):
@@ -1032,7 +1000,6 @@ def credits_page():
 def populate_checkbuttons(mod_names):
     global mod_vars, tooltips, tooltip_state
     tooltips = {}
-    current_hover_widget = None  # Track which widget is being hovered
 
     # Remove existing checkbuttons
     for widget in downloadable_mods_frame.winfo_children():
@@ -1251,13 +1218,14 @@ window.bind('<Configure>', move_left_buttons)
 # Set path for saving and loading
 if getattr(sys, 'frozen', False):
     # Running as compiled executable
-    downloading = 'Downloading'
-    not_installed_mods = 'not_installed_mods'
-    installed_mods = 'installed_mods.txt'
-    downloaded_mods = 'downloaded_mods.txt'
-    cache_file = 'cache.json'
-    settings_file = 'settings.json'
-    log_file = f'log.txt'
+    executable_path = Path(sys.executable).parent
+    downloading = executable_path/'Downloading'
+    not_installed_mods = executable_path/'not_installed_mods'
+    installed_mods = executable_path/'installed_mods.txt'
+    downloaded_mods = executable_path/'downloaded_mods.txt'
+    cache_file = executable_path/'cache.json'
+    settings_file = executable_path/'settings.json'
+    log_file = executable_path/'log.txt'
 else:
     # Running as a standalone Python script
     downloading = f'{script_dir}/Downloading'

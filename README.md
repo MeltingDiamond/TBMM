@@ -5,6 +5,14 @@ And can play both vanilla and modded with one install of The Bibites.
 
 The final goal for TBMM is for it to be able to download and install any of the most popular mod and reskin types. Any other functionality secondary.
 
+### Downloading TBMM
+The release version can be downloaded here:<br>
+https://github.com/MeltingDiamond/TBMM/releases/latest
+
+For nightly version you cn click the links below:<br>
+Windows: https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Windows.zip<br>
+Linux: https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Linux.zip
+
 ### Modifying and contributing
 If you'd like to modify TBMM and share your changes, please fork the repository and submit a pull request with useful changes you've made. Your contributions will help improve the project, making it better for everyone. (This is based on trust.)
 
@@ -58,6 +66,6 @@ I hope people will contibute both to TBMM directly and with mods and reskins tha
 
 ### Running the .py file
 Install python 3.10 or newer and pip (no need if you already have)<br>
-Download `The Bibites Mod Manager.py`, the `Images` folder and `requirements.txt` and place them in the same folder<br>
+Download all the `.py` files, the `Images` folder and `requirements.txt` and place them in the same folder<br>
 run `pip install -r requirements.txt` to install needed libraries/packages<br>
 You can now run `The Bibites Mod Manager.py`
