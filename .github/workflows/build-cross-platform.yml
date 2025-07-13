@@ -59,8 +59,8 @@ jobs:
       - name: Cache Nuitka
         uses: actions/cache@v4
         with:
-          path: .nuitka-cache
-          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          path: C:\Users\runneradmin\AppData\Local\Nuitka\Cache
+          key: nuitka-${{ runner.os }}
           restore-keys: |
             nuitka-${{ runner.os }}-
 
@@ -77,7 +77,7 @@ jobs:
 
       - name: Build TBMM for Windows
         run: |
-          nuitka --cache-dir=.nuitka-cache --onefile --windows-console-mode=disable --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
+          nuitka --onefile --windows-console-mode=disable --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
 
       - name: Upload Executable
         uses: actions/upload-artifact@v4
@@ -108,8 +108,8 @@ jobs:
       - name: Cache Nuitka
         uses: actions/cache@v4
         with:
-          path: .nuitka-cache
-          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          path: ~/.cache/Nuitka
+          key: nuitka-${{ runner.os }}
           restore-keys: |
             nuitka-${{ runner.os }}-
 
@@ -126,7 +126,7 @@ jobs:
 
       - name: Build TBMM for Linux
         run: |
-          nuitka --cache-dir=.nuitka-cache --onefile --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
+          nuitka --onefile --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
 
       - name: Upload Executable
         uses: actions/upload-artifact@v4
