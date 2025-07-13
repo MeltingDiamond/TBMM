@@ -5,9 +5,18 @@ from threading import Thread
 from urllib.parse import urlparse, unquote
 
 from UI import create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui, create_more_tools_page_ui, create_game_version_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
-from Networking import update_check, download_new_tbmm_version
+from Networking import update_check, download_new_tbmm_version, open_link
 
 # TODO Merge log() and write to log file into one function log()
+# Add a latest_log.txt file used purly for logs from the last time TBMM was ran. 
+# log.txt is a global log file, but maybe cap it at some kind of size.
+# Move more of the UI code from here to UI.py
+# Move more of the networking code from here to Networking.py
+# Finish adding support to linux
+# Start adding support for Mac
+
+# If you want to add support for any other os feel free to do so,
+# but Melting Diamond will only support Windows, Linux and Mac (OSes that the bibites officially supports).
 
 # Gets userpath (Usually C:\Users\username)
 USERPROFILE = os.environ['USERPROFILE']
@@ -1130,7 +1139,8 @@ window_widgets = create_window(images_folder, version_number, Discord_invite_lin
     'list_downloaded_mods': list_downloaded_mods,
     'download_mods_page': download_mods_page,
     'more_tools_page': more_tools_page,
-    'credits_page': credits_page
+    'credits_page': credits_page,
+    'open_link':lambda e: open_link(Discord_invite_link)
 })
 
 window = window_widgets['window']
@@ -1175,7 +1185,10 @@ credits_page_widgets = create_credits_page_ui(window)
 
 credits_frame = credits_page_widgets['frame']
 
-more_tools_page_widgets = create_more_tools_page_ui(window, images_folder)
+more_tools_page_widgets = create_more_tools_page_ui(window, handlers={
+    'open_link':lambda e: open_link("https://github.com/quaris628/EinsteinEditor/releases/latest"),
+    'images_folder':images_folder
+})
 
 more_tools_frame = more_tools_page_widgets['frame']
 Einstein_info_lable = more_tools_page_widgets['Einstein_info_lable']

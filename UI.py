@@ -126,7 +126,7 @@ def create_window(images_folder, version_number, Discord_invite_link, handlers):
     credits_button = Button(window, text="Show Credits", command=handlers['credits_page'], font=("Arial", 12))
 
     Bibite_Research_Conglomerate_hyperlink = Label(window, text="Join Bibite Research Conglomerate Discord Server", fg="blue", cursor="hand2", font=("Arial", 11))
-    Bibite_Research_Conglomerate_hyperlink.bind("<Button-1>", lambda e: open_link(Discord_invite_link))
+    Bibite_Research_Conglomerate_hyperlink.bind("<Button-1>", handlers['open_link'])
 
     # Status Label used to show status to the user
     status_label = Label(window, text="", wraplength=750, font=("Arial", status_label_font_size))
@@ -234,7 +234,7 @@ def create_credits_page_ui(window):
         'frame': credits_frame
     }
 
-def create_more_tools_page_ui(window, images_folder):
+def create_more_tools_page_ui(window, handlers):
     more_tools_frame = Frame(window)
 
     # Label
@@ -242,8 +242,8 @@ def create_more_tools_page_ui(window, images_folder):
     Einstein_lable = Label(more_tools_frame, font=("Arial", 18, "bold"), wraplength=1000, text="Einstein\n(discontinued 0.6.1+)")
     Einstein_info_lable = Label(more_tools_frame, font=("Arial", 12), wraplength=1000, text="Edit brains by interacting with a diagram of neurons and synapses. Zoom and pan around the diagram, paint neurons different colors, automatically convert brains between bibite versions, view neuron values calculated tick-by-tick and discover other bells and whistles.\nEven though its discontinued its still one of the best tools ever made")
     Einstein_hyperlink = Label(more_tools_frame, text="Download Einstein", fg="blue", cursor="hand2", font=("Arial", 12))
-    Einstein_hyperlink.bind("<Button-1>", lambda e: open_link("https://github.com/quaris628/EinsteinEditor/releases/latest"))
-    Einstein_image = PhotoImage(file=f"{images_folder}/Einstein_Review.png")
+    Einstein_hyperlink.bind("<Button-1>", handlers['open_link'])
+    Einstein_image = PhotoImage(file=f"{handlers['images_folder']}/Einstein_Review.png")
     Einstein_image_label = Label(more_tools_frame, image = Einstein_image)
 
     # Layout
