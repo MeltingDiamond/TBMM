@@ -48,6 +48,10 @@ jobs:
         with:
           python-version: '3.12'
       
+      - name: Ensure Nuitka cache directory exists
+        run: |
+          mkdir "C:\Users\runneradmin\AppData\Local\Nuitka\Cache"
+      
       - name: Cache pip
         uses: actions/cache@v4
         with:
