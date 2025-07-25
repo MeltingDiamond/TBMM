@@ -1,5 +1,4 @@
 # This workflow builds on push to main using nuitka for Windows and Linux
-
 name: Build Cross-Platform
 
 on:
