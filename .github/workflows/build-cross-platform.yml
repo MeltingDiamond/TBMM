@@ -120,7 +120,7 @@ jobs:
           name: TBMM-Linux
           path: The\ Bibites\ Mod\ Manager.bin
 
-finalize-nightly-version:
+  finalize-nightly-version:
     needs: [build-windows, build-linux]
     runs-on: ubuntu-latest
     steps:
