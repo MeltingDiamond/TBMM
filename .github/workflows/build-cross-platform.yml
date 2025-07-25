@@ -48,9 +48,9 @@ jobs:
 
           echo "${{ github.workspace }}\ccache-win" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       - name: Set Nuitka cache dir
-  shell: pwsh
-  run: |
-    echo "NUITKA_CACHE_DIR=$env:RUNNER_TEMP\\nuitka_cache" >> $env:GITHUB_ENV
+        shell: pwsh
+        run: |
+          echo "NUITKA_CACHE_DIR=$env:RUNNER_TEMP\\nuitka_cache" >> $env:GITHUB_ENV
       - name: Cache Nuitka compile cache
         uses: actions/cache@v4
         with:
