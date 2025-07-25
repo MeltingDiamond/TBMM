@@ -1,5 +1,5 @@
 # The Bibites Mod Manager
-The Bibites Mod Manager is the unofficial mod manager for The Bibite programmed in python (3.12.10) using tkinter. TBMM allows users to install mods with a simple gui instead off having to replace any dll manualy.
+The Bibites Mod Manager is the unofficial mod manager for The Bibite programmed in python (3.13) using tkinter. TBMM allows users to install mods with a simple gui instead off having to replace any dll manualy.
 You can download and install mods with a few button clicks.
 And can play both vanilla and modded with one install of The Bibites.
 
@@ -9,7 +9,7 @@ The final goal for TBMM is for it to be able to download and install any of the 
 The release version can be downloaded here:<br>
 https://github.com/MeltingDiamond/TBMM/releases/latest
 
-For nightly version you cn click the links below:<br>
+For nightly version you can click the links below:<br>
 Windows: https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Windows.zip<br>
 Linux: https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Linux.zip
 
