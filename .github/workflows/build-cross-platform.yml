@@ -51,7 +51,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: C:\Users\runneradmin\AppData\Local\Nuitka\Cache
-          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          key: nuitka-${{ runner.os }}
           restore-keys: |
             nuitka-${{ runner.os }}-
       - name: Install dependencies
