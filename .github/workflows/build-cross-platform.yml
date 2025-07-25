@@ -39,6 +39,9 @@ jobs:
   build-windows:
     needs: generate-nightly-version
     runs-on: windows-latest
+    env:
+      NUITKA_CACHE_DIR: ${{ runner.temp }}/nuitka_cache
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -48,10 +51,6 @@ jobs:
         with:
           python-version: '3.12'
       
-      - name: Ensure Nuitka cache directory exists
-        run: |
-          mkdir "C:\Users\runneradmin\AppData\Local\Nuitka\Cache"
-      
       - name: Cache pip
         uses: actions/cache@v4
         with:
@@ -59,14 +58,21 @@ jobs:
           key: pip-${{ runner.os }}-${{ hashFiles('**/build_requirements.txt') }}
           restore-keys: |
             pip-${{ runner.os }}-
-      
-      - name: Cache Nuitka
-        uses: actions/cache@v4
-        with:
-          path: 'C:\Users\runneradmin\AppData\Local\Nuitka\Cache'
-          key: nuitka-${{ runner.os }}
-          restore-keys: |
-            nuitka-${{ runner.os }}-
+
+      - name: Install ccache
+      run: |
+        curl -L -o ccache.zip https://github.com/ccache/ccache/releases/download/v4.7.4/ccache-4.7.4-windows.zip
+        powershell Expand-Archive ccache.zip -DestinationPath ccache-win
+    - run: echo "::add-path::$PWD/ccache-win"
+
+      - name: Cache Nuitka compile cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ runner.temp }}/nuitka_cache
+        key: nuitka-${{ runner.os }}-${{ runner.arch }}
+        restore-keys: |
+          nuitka-${{ runner.os }}-${{ runner.arch }}-
+
 
       - name: Install dependencies
         run: |
