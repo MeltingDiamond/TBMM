@@ -10,11 +10,11 @@ permissions:
   contents: write
 
 jobs:
-  build-windows:
-    runs-on: windows-latest
+    build-windows:
     needs: generate-nightly-version
+    runs-on: windows-latest
     env:
-      NUITKA_CACHE_DIR: ${{ runner.temp }}/nuitka_cache
+      NUITKA_CACHE_DIR: ${{ runner.temp }}\nuitka_cache
 
     steps:
       - name: Checkout repository
@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Cache pip
         uses: actions/cache@v4
         with:
@@ -34,26 +34,25 @@ jobs:
             pip-${{ runner.os }}-
 
       - name: Install ccache
-      run: |
-        curl -L -o ccache.zip https://github.com/ccache/ccache/releases/download/v4.7.4/ccache-4.7.4-windows.zip
-        powershell Expand-Archive ccache.zip -DestinationPath ccache-win
-    - run: echo "::add-path::$PWD/ccache-win"
+        run: |
+          curl -L -o ccache.zip https://github.com/ccache/ccache/releases/download/v4.7.4/ccache-4.7.4-windows.zip
+          powershell -Command "Expand-Archive -Path ccache.zip -DestinationPath ccache-win"
+          echo "${{ github.workspace }}\ccache-win" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Cache Nuitka compile cache
-      uses: actions/cache@v4
-      with:
-        path: ${{ runner.temp }}/nuitka_cache
-        key: nuitka-${{ runner.os }}-${{ runner.arch }}
-        restore-keys: |
-          nuitka-${{ runner.os }}-${{ runner.arch }}-
-
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NUITKA_CACHE_DIR }}
+          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            nuitka-${{ runner.os }}-
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r build_requirements.txt
           pip install nuitka
-      
+
       - name: Inject nightly version into script
         shell: powershell
         run: |
@@ -61,7 +60,14 @@ jobs:
 
       - name: Build TBMM for Windows
         run: |
-          nuitka --onefile --windows-console-mode=disable --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
+          nuitka ^
+            --onefile ^
+            --windows-console-mode=disable ^
+            --windows-icon-from-ico="Images\TBMM icon.ico" ^
+            --include-data-dir="Images=Images" ^
+            --enable-plugin=tk-inter ^
+            --assume-yes-for-downloads ^
+            "The Bibites Mod Manager.py"
 
       - name: Upload Executable
         uses: actions/upload-artifact@v4
