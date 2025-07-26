@@ -47,17 +47,6 @@ jobs:
           powershell -Command "Expand-Archive -Path ccache.zip -DestinationPath ccache-win"
 
           echo "${{ github.workspace }}\ccache-win" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      - name: Ensure Nuitka cache directory exists
-        run: |
-          mkdir "${{ env.LOCALAPPDATA }}\Nuitka\Cache"
-        shell: powershell
-      - name: Cache Nuitka compile cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.LOCALAPPDATA }}\Nuitka\Cache
-          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
-          restore-keys: |
-            nuitka-${{ runner.os }}-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -77,6 +66,13 @@ jobs:
         with:
           name: TBMM-Windows
           path: The Bibites Mod Manager.exe
+      - name: Cache Nuitka compile cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.LOCALAPPDATA }}\Nuitka\Cache
+          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            nuitka-${{ runner.os }}-
   build-linux:
     needs: generate-nightly-version
     runs-on: ubuntu-latest
