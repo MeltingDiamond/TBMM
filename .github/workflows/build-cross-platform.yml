@@ -47,6 +47,10 @@ jobs:
           powershell -Command "Expand-Archive -Path ccache.zip -DestinationPath ccache-win"
 
           echo "${{ github.workspace }}\ccache-win" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Ensure Nuitka cache directory exists
+        run: |
+          mkdir "${{ env.LOCALAPPDATA }}\Nuitka\Cache"
+        shell: powershell
       - name: Cache Nuitka compile cache
         uses: actions/cache@v4
         with:
