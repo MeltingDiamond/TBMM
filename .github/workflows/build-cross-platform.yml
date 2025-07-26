@@ -24,7 +24,11 @@ jobs:
   build-windows:
     needs: generate-nightly-version
     runs-on: windows-latest
-    
+    env:
+      CCACHE_DIR: ${{ github.workspace }}\ccache_storage
+      CCACHE_CONFIGPATH: ${{ github.workspace }}\ccache.conf
+      NUITKA_CACHE_DIR: ${{ env.LOCALAPPDATA }}\Nuitka\Cache
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -39,14 +43,26 @@ jobs:
           key: pip-${{ runner.os }}-${{ hashFiles('**/build_requirements.txt') }}
           restore-keys: |
             pip-${{ runner.os }}-
-      - name: Install ccache
-        run: >
-          curl -L -o ccache.zip
-          https://github.com/ccache/ccache/releases/download/v4.7.4/ccache-4.7.4-windows.zip
-
-          powershell -Command "Expand-Archive -Path ccache.zip -DestinationPath ccache-win"
-
+      - name: Cache ccache storage
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}\ccache_storage
+          key: ccache-win-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            ccache-win-
+      - name: Cache Nuitka compile cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NUITKA_CACHE_DIR }}
+          key: nuitka-win-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            nuitka-win-
+      - name: Install official Nuitka ccache (Windows)
+        run: |
+          curl -L -o ccache.zip https://github.com/ccache/ccache/releases/download/v4.7.4/ccache-4.7.4-windows.zip
+          powershell Expand-Archive ccache.zip -DestinationPath ccache-win
           echo "${{ github.workspace }}\ccache-win" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -66,13 +82,7 @@ jobs:
         with:
           name: TBMM-Windows
           path: The Bibites Mod Manager.exe
-      - name: Cache Nuitka compile cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.LOCALAPPDATA }}\Nuitka\Cache
-          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
-          restore-keys: |
-            nuitka-${{ runner.os }}-
+
   build-linux:
     needs: generate-nightly-version
     runs-on: ubuntu-latest
