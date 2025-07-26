@@ -27,7 +27,7 @@ jobs:
     env:
       CCACHE_DIR: ${{ github.workspace }}\ccache_storage
       CCACHE_CONFIGPATH: ${{ github.workspace }}\ccache.conf
-      NUITKA_CACHE_DIR: ${{ env.LOCALAPPDATA }}\Nuitka\Cache
+      NUITKA_CACHE_DIR: C:\Users\runneradmin\AppData\Local\Nuitka\Cache
 
     steps:
       - name: Checkout repository
