@@ -50,7 +50,7 @@ jobs:
       - name: Cache Nuitka compile cache
         uses: actions/cache@v4
         with:
-          path: C:\Users\runneradmin\AppData\Local\Nuitka\Cache
+          path: ${{ env.LOCALAPPDATA }}\Nuitka\Cache
           key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
           restore-keys: |
             nuitka-${{ runner.os }}-
