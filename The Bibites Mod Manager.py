@@ -7,7 +7,7 @@ from urllib.parse import urlparse, unquote
 from UI import create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui, create_more_tools_page_ui, create_game_version_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
 from Networking import update_check, download_new_tbmm_version
 
-# TODO Merge log() and write to log file into one function log()
+# TODO Fix the generated windows exe during nightly build
 
 # Gets userpath (Usually C:\Users\username)
 USERPROFILE = os.environ['USERPROFILE']
