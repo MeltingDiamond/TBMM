@@ -19,30 +19,38 @@ def download_new_tbmm_version(os, nightly = False):
 
 def update_check(version, log, nightly=False):
     """
-    Checks if the local version is the latest. Only returns True if there is a newer version.
-    :param version: the version currently installed
+    Checks if the local version is older than the latest nightly. 
+    Returns True if there is a newer version.
+    
+    :param version: the version currently installed (e.g., "nightly-20250725203538")
     :param nightly: if True, checks against nightly version
     """
     try:
-        if nightly:
-            log("Checking nightly version...")
-            response = requests.get("https://raw.githubusercontent.com/MeltingDiamond/TBMM/main/version.txt")
-            if response.status_code == 200:
-                nightly_version = response.text.strip()  # Get the content and strip newline
-                log(f"Latest nightly version: {nightly_version}")
-                if version != nightly_version:
-                    log(f"A newer nightly version is available: {nightly_version}")
-                    return True
-                else:
-                    log("You are using the latest nightly version.")
-                    return False
-            else:
-                log("Failed to fetch version info.")
-                False
-        else:
-            log("Checking release version... (not yet implemented)")
-            # TODO: Implement release version check (e.g. GitHub tags or releases)
+        if not nightly:
+            log("Release version check not implemented yet.")
+            return False
+            response = requests.get(release_download_link, allow_redirects=True)
+
+        log("Checking nightly version...")
+        response = requests.get("https://raw.githubusercontent.com/MeltingDiamond/TBMM/main/version.txt")
+        if response.status_code != 200:
+            log("Failed to fetch version info.")
+            return False
+
+        latest_version = response.text.strip()
+        log(f"Latest nightly version: {latest_version}")
+
+        # Extract numeric part of nightly version and compare as integers
+        local_num = int(version.split("-")[1])
+        latest_num = int(latest_version.split("-")[1])
+
+        if local_num < latest_num:
+            log(f"A newer nightly version is available: {latest_version}")
+            return True
+
+        log("You are using the latest nightly version.")
+        return False
+
     except Exception as e:
         log(f"Error during version check: {e}")
-
-#update_check(1.4, True)
+        return False
