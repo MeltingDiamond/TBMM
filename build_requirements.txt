@@ -1,3 +1,4 @@
 nuitka
 requests
 tk
+pillow
