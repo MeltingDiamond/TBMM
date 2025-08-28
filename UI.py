@@ -1,5 +1,6 @@
 # Anything that gets displayed. For example tkinter 
 from tkinter import Tk, Frame, Label, Button, Listbox, Scrollbar, Text, Toplevel, PhotoImage, StringVar, OptionMenu
+from PIL import Image, ImageTk
 
 # Size of different fonts
 status_label_font_size = 14
@@ -91,12 +92,18 @@ def on_checkbutton_leave(tooltips, tooltip_state):
             tooltip.hide_tooltip()
         tooltip_state['hover_widget'] = None
 
-def create_window(images_folder, version_number, Discord_invite_link, handlers):
+def create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, handlers):
     # Create Tkinter window
     window = Tk()
     window.title(f"TBMM {version_number}")
 
-    window.iconbitmap(f"{images_folder}/TBMM icon.ico") # Needs to use script dir and have the icon in the root folder
+    # Convert the image into a format tkinter understands (Different for Windows and Linux/Mac)
+    image = Image.open(f"{images_folder}/TBMM icon.ico")
+    app_image = ImageTk.PhotoImage(image)
+    if OS_TYPE == "Windows":
+        window.iconbitmap(app_image)
+    elif OS_TYPE == "Linux" or OS_TYPE == "Mac":
+        window.iconphoto(True, app_image)
 
     # Get screen width and height
     screen_width = window.winfo_screenwidth()
@@ -157,9 +164,11 @@ def create_main_page_ui(window, handlers):
     install_mods_button = Button(main_frame, text="Install mods", command=handlers["install_mods"], font=("Arial", 12)) # Button to install mods
     vanilla_play_button = Button(main_frame, text="Play Vanilla", command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
     Mod_play_button = Button(main_frame, text="Play Modded", command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
+    bepinex_play_button = Button(main_frame, text="Play BepInEx", command=handlers["Play BepInEx"], font=("Arial", 12))
+    refresh_cache_button = Button(main_frame, text="Refresh cache", command=handlers['reset_cache'], font=("Arial", 12)) # Swap between nightly and relese (stable)
     refresh_cache_button = Button(main_frame, text="Refresh cache", command=handlers['reset_cache'], font=("Arial", 12))
     get_the_bibites_button = Button(main_frame, text="Download The Bibites", command=handlers['get_the_bibites'], font=("Arial", 12))
-    dowload_new_version_button = Button(main_frame, text="Download new TBMM update", command=handlers['download_new_tbmm_version'], font=("Arial", 12), bg="#0060e6", fg="#003C00")
+    dowload_new_version_button = Button(main_frame, text="Download new TBMM update", command=handlers['download_new_tbmm_version'], font=("Arial", 12), bg="#0060e5", fg="#003C00")
 
     # Labels
     game_path_label = Label(main_frame, text="Game path: None", font=("Arial", 14))
@@ -183,9 +192,10 @@ def create_main_page_ui(window, handlers):
     version_button.grid(row=0, column=2, columnspan=2, sticky="w")
     downloaded_mods_listbox.grid(row=2, column=0, columnspan=3, sticky="ew")
     scrollbar.grid(row=2, column=3, sticky="nsw")
-    install_mods_button.grid(row=3, column=2, sticky="w")
+    install_mods_button.grid(row=3, column=2, sticky="e")
     vanilla_play_button.grid(row=3, column=0, sticky="w")
-    Mod_play_button.grid(row=3, column=1, sticky="w")
+    Mod_play_button.grid(row=3, column=0, columnspan=2)
+    bepinex_play_button.grid(row=3, column=1, sticky="e")
     refresh_cache_button.grid(row=2, column=4, sticky="n")
     get_the_bibites_button.grid(row=2, column=4, pady=40, sticky="n")
     installed_mod_label.grid(row=4, column=0, columnspan=3, sticky='n', pady=5)

@@ -4,9 +4,9 @@ from pathlib import Path
 from threading import Thread
 
 from UI import create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui, create_more_tools_page_ui, create_game_version_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
-from Networking import update_check, download_new_tbmm_version, open_link, download_modse, fetch_filenames, has_internet_connection, start_download, get_mod_url, get_filename_from_response, get_website_name
+from Networking import update_check, download_new_tbmm_version, open_link, download_modse, fetch_filenames, has_internet_connection, start_download, get_mod_url, get_filename_from_response, get_website_name, get_file_contents
 
-# TODO 
+# TODO Fix the generated windows exe during nightly build
 # Add a latest_log.txt file used purly for logs from the last time TBMM was ran. 
 # log.txt is a global log file, but maybe cap it at some kind of size.
 # Move more of the UI code from here to UI.py
@@ -15,10 +15,7 @@ from Networking import update_check, download_new_tbmm_version, open_link, downl
 # Start adding support for Mac
 
 # If you want to add support for any other os feel free to do so,
-# but Melting Diamond will only support Windows, Linux and Mac (OSes that the bibites officially supports).
-
-# Gets userpath (Usually C:\Users\username)
-USERPROFILE = os.environ['USERPROFILE']
+# but MeltingDiamond will only support Windows, Linux and Mac (OSes that the bibites officially supports).
 
 # What os this is running on
 os_map = {
@@ -28,10 +25,28 @@ os_map = {
 }
 OS_TYPE = os_map.get(platform.system(), "Unknown")
 
-# Version number of the next version to be released, not the bibites game version. Must be string or float
-version_number = "0.06.1"
+# Setup global os specific variables
+if OS_TYPE == "Windows":
+    # Gets userpath (Usually C:\Users\username)
+    USERPROFILE = os.environ['USERPROFILE']
+    FILETYPES = [("Executable files", "*.exe")]
+elif OS_TYPE == "Linux":
+    USERPROFILE = os.environ['HOME']
+    FILETYPES = [("Executable files", "*.x86_64"), ("All files", "*.*")] # First is linux specific format, then all files in case they don't use the linux version
+elif OS_TYPE == "Mac":
+    USERPROFILE = "Unknown" # Someone using MacOS please fix
+    FILETYPES = [("Executable files", "*.app"), ("All files", "*.*")] # First is mac specific format, then all files in case they don't use the linux version
+else:
+    USERPROFILE = os.environ['HOME'] # Just guessing that HOME is what most OSses use
+    FILETYPES = [("All files", "*.*")] # Allow choosing all file types (You can't know which version they are running)
 
-nightly_version = "__VERSION__" # Gets replaced during workflow build with latest version
+# The stable version is the version that gets released on github and is never left in a broken state (No broken code should be in the release version)
+# The nightly version auto built in workflow run might be left slightly broken (Try not to make your last commit leave broken code)
+
+# Version number of the next version to be released, not the bibites game version. Must be string
+version_number = "0.06.1" # (stable version)
+
+nightly_version = "__VERSION__" # Gets replaced during workflow build with latest version (DO NOT CHANGE, unless you change the name in the workflow too)
 
 # Should it check and download nightly version
 if nightly_version ==  "__VERSION__":
@@ -94,9 +109,9 @@ def get_game_path():
     '''User input for getting the path to The Bibites game exe'''
     global Game_path, Game_folder, bepinex_folder
     if Game_folder:
-        Temp_Game_path = filedialog.askopenfile(initialdir=Game_folder, filetypes=[("Executable files", "*.exe")]) # Store game path without overwriting existing game path
+        Temp_Game_path = filedialog.askopenfile(initialdir=Game_folder, filetypes=FILETYPES) # Store game path without overwriting existing game path
     else:
-        Temp_Game_path = filedialog.askopenfile(filetypes=[("Executable files", "*.exe")]) # Store game path without overwriting existing game path
+        Temp_Game_path = filedialog.askopenfile(filetypes=FILETYPES) # Store game path without overwriting existing game path
     if Temp_Game_path:
         Game_path = Temp_Game_path.name
         Game_folder = os.path.dirname(Game_path)
@@ -215,7 +230,7 @@ def get_the_bibites():
 # Function to get the version of the bibites the mod is made for
 def get_mod_game_version(mod_name):
     '''Gets the version a mod is made for'''
-    file_contents = get_file_contents(mod_name)
+    file_contents = get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)
     if file_contents:
         
         lines = file_contents.split('\n') # Split the content into lines
@@ -227,98 +242,8 @@ def get_mod_game_version(mod_name):
             return game_version
     return None
 
-# Function to fetch file contents from GitHub repository
-def get_file_contents_from_github(mod_name):
-    '''Get the content for a mod from github'''
-    global mod_content_cache#, four_zero_three_cache
-    owner = "MeltingDiamond"
-    repo = "TBMM-Mods"
-    path = f"Mods/{mod_name}"
-
-    if path in mod_content_cache and time.time() - mod_content_cache[path]['time'] < cache_duration:
-        return mod_content_cache[path]['content']
-
-    api_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
-    response = requests.get(api_url)
-    if response.status_code == 200:
-        content = response.json().get('content')
-        decoded_content = base64.b64decode(content).decode('utf-8')
-        
-        # Cache the content and save the cache
-        mod_content_cache[path] = {'content': decoded_content, 'time': time.time()}
-        
-        if decoded_content:
-            return True
-
-    return None
-
-def get_file_contents_from_dropbox(mod_name):
-    '''Get the content for a mod from dropbox'''
-    global mod_content_cache
-    path = f"Mods/{mod_name}"
-
-    try:
-        # Download the ZIP file from Dropbox
-        response = requests.get(mod_repo_urls[0], timeout=10)
-        if response.status_code != 200:
-            print(f"Error downloading from Dropbox: {response.status_code}")
-            return None
-        
-        # Open the ZIP file in memory
-        zip_file = zipfile.ZipFile(io.BytesIO(response.content))
-
-        # Look for the requested .TBM file
-        for file in zip_file.namelist():
-            print(file)
-            if file.endswith(f"/{mod_name}") or file == mod_name:
-                with zip_file.open(file) as f:
-                    content = f.read().decode("utf-8")  # Read & decode content
-                    
-                    # Cache the content
-                    mod_content_cache[path] = {'content': content, 'time': time.time()}
-                    
-                    return content  # Return the file's text content
-        
-        print(f"File '{mod_name}' not found in Dropbox ZIP")
-        return None
-
-    except Exception as e:
-        print(f"Error processing Dropbox ZIP: {e}")
-        return None
-
-# Function to fetch file contents
-def get_file_contents(mod_name):
-    '''Gets file content from cache, if that isn't valid either github or dropbox using the name of the mod'''
-    global cache_time, mod_repo_urls
-
-    #owner = "MeltingDiamond"
-    #repo = "TBMM-Mods"
-    path = f"Mods/{mod_name}"
-
-    # Check cache first
-    if path in mod_content_cache and time.time() - mod_content_cache[path]['time'] < cache_duration:
-        return mod_content_cache[path]['content']
-    
-    if has_internet_connection():
-        mod_cache = {}
-        for url in mod_repo_urls:
-            website_name = get_website_name(url)
-            log(f"Attempting to fetch content from: {website_name}", False)
-
-            if "github.com" in website_name:
-                mod_cache = get_file_contents_from_github(mod_name)
-            elif "dropbox.com" in website_name:
-                mod_cache = get_file_contents_from_dropbox(mod_name)
-
-            if mod_cache:
-                cache_time = time.time()
-                save_cache_to_file()
-                return mod_content_cache[path]['content']
-    else:
-        return None
-
 def get_bibites_to_download(mod_name):
-    file_contents = get_file_contents(mod_name)
+    file_contents = get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)
     lines = file_contents.splitlines()
     bibites_to_download = next((line for line in lines if line.startswith('bibites:')), None) # if there are bibites download them into the dibites folder
     if bibites_to_download:
@@ -333,7 +258,7 @@ def get_bibites_to_download(mod_name):
     return None
 
 def get_mod_install_description(mod_name):
-    file_contents = get_file_contents(mod_name)
+    file_contents = get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)
     if file_contents:
         lines = file_contents.split('\n')
         install_line = next((line for line in lines if line.startswith('install: ')), None)
@@ -344,7 +269,7 @@ def get_mod_install_description(mod_name):
 
 def get_mod_description(mod_name):
     '''Get the description of a mod using the name'''
-    file_contents = get_file_contents(mod_name)
+    file_contents = get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)
     if file_contents:
         description = ""
         lines = file_contents.split('\n')
@@ -377,6 +302,7 @@ def get_mod_description(mod_name):
             return f"{description}\nNo detailed information available."
     return f"File content not found, can't get description for {mod_name}"
 
+# Don't use when installing mods only when actually deleting a mod completely
 def safe_unlink(path, retries=3, delay=1):
     """
     Attempt to unlink (delete) a file or folder with retries.
@@ -401,7 +327,7 @@ def safe_unlink(path, retries=3, delay=1):
     return False
 
 def download_mods():
-    download_modse(downloaded_mods, mod_names, mod_vars, not_installed_mods, cache_duration, mod_repo_urls, mod_names_cache, cache_time, downloading, log_file, handlers={
+    download_modse(downloaded_mods, mod_names, mod_vars, not_installed_mods, cache_duration, mod_repo_urls, mod_names_cache, cache_time, downloading, log_file, mod_content_cache, handlers={
         'log': log,
         'get_mod_install_description': get_mod_install_description,
         'save_cache_to_file': save_cache_to_file,
@@ -474,23 +400,28 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
         log(f"Unexpected error: {e}", True)
 
 # Install BepInEx mods
-def install_mod_bepinex(mod_name):
-    
+def install_mod_bepinex(mod_name, not_installed_mod_folder):
     if not bepinex_folder:
-        log("You need to set a path to a bibites installation with BepInEx installed\nAfter doing so try again", False)
+        log("You need to set a path to a bibites installation with BepInEx installed\nAfter doing so try again", save_to_file=False)
         return
-    
-    print(os.path.join(bepinex_folder, 'plugins'))
+
     if not os.path.isdir(os.path.join(bepinex_folder, 'plugins')):
-        log("Your bepinex install is broken\nplease start the game in vanilla once before trying again.", False)
+        log("Your bepinex install is broken\nplease start the game in vanilla once before trying again.", save_to_file=False)
         return
     
-    print('BepInEx is installed')
+    log('BepInEx is installed', save_to_file=False)
     
     if mod_name in installed_mods_list:
         print("Is installed")
         return
-    print(mod + " is not installed")
+    print(mod_name + " is not installed, create softlink (symlink)")
+    files = os.listdir(not_installed_mod_folder)
+    for file in files: 
+        if file.endswith(".dll"):
+            os.symlink(os.path.join(not_installed_mod_folder, file), os.path.join(bepinex_folder, "plugins", file), target_is_directory=False)
+            print("ITS THE MOD")
+        else:
+            print("NOT SAID FILE, I MEAN MOD")
 
 def download_bibites(bibites_to_download):
     for bibite in bibites_to_download:
@@ -501,7 +432,7 @@ def download_bibites(bibites_to_download):
                 location = f'{USERPROFILE}/AppData/LocalLow/The Bibites/The Bibites/Bibites'
             elif filename.endswith(".bb8template"):
                 location = f'{USERPROFILE}/AppData/LocalLow/The Bibites/The Bibites/Bibites/Templates'
-        start_download(bibite, location, downloading, safe_unlink) # Downloads the bibite to the specified location
+        start_download(bibite, location, log, status_label, downloading, safe_unlink, log_file, get_time) # Downloads the bibite to the specified location
 
 
 def install_mods(): # Install a mod so you can play modded
@@ -515,6 +446,7 @@ def install_mods(): # Install a mod so you can play modded
     # Install selected mods
     for mod_index in downloaded_mods_listbox.curselection():
         mod_name = downloaded_mods_listbox.get(mod_index)
+
         install_instruction = get_mod_install_description(mod_name)
         not_installed_mod_folder = f'{not_installed_mods}/{install_instruction}/{mod_name}'
 
@@ -524,7 +456,8 @@ def install_mods(): # Install a mod so you can play modded
             installed_mods_list = file.read().splitlines()
         
         if len(os.listdir(not_installed_mod_folder)) == 0 and mod_name not in installed_mods_list: # Check is mod exists or is installed if it is not any of those download it again
-            url = get_mod_url(mod_name, get_file_contents)
+            file_contents = get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)
+            url = get_mod_url(file_contents)
             if url:
                 start_download(url, not_installed_mod_folder, downloading, safe_unlink)
         
@@ -552,7 +485,7 @@ def install_mods(): # Install a mod so you can play modded
             elif install_instruction == "BepInEx":
                 log(f"Install instruction \"BepInEx\" will be implemented after \"replace\" is implemented", False)
                 status_label.config(text=f"Install instruction \"BepInEx\" will be implemented after \"replace\" is implemented")
-                install_mod_bepinex(mod_name)
+                install_mod_bepinex(mod_name, not_installed_mod_folder)
             
             elif install_instruction == "BepInEx+":
                 log(f"Install instruction \"BepInEx+\" is not yet added", False)
@@ -599,7 +532,7 @@ def reset_cache():
         # Check if the mod is listed in mod_names_cache
         if mod_name_only in mod_names_cache:
             # Check if the mod content can be fetched (valid mod)
-            content = get_file_contents(mod_name_only)  # Using the name to check if mod exists
+            content = get_file_contents(mod_name_only, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)  # Using the name to check if mod exists
 
             if content:  # If mod content can be fetched, keep it
                 cleaned_mod_content_cache[mod_name] = mod_data
@@ -825,8 +758,8 @@ def play_game(Modded):
                 log(f"You have installed a replace mod assuming you want to use that", False)
                 status_label.config(text=f"You have installed a replace mod assuming you want to use that")
             else:
-                log(f"You haven't installed a replace mod assuming you have intalled BepInEx mods", False)
-                status_label.config(text=f"You haven't installed a replace mod assuming you have intalled BepInEx mods")
+                log(f"You haven't installed a replace mod assuming you have intalled BepInEx mods. Please use the BepInEx play button.", False)
+                status_label.config(text=f"You haven't installed a replace mod assuming you have intalled BepInEx mods. Please use the BepInEx play button.")
 
             try:
                 subprocess.Popen([Game_path]) # Run The Bibites without checking for mods.
@@ -854,6 +787,54 @@ def play_game(Modded):
         log(f"{Game_path} does not exist, you need to set a valid game path to be able to run the game", False)
         status_label.config(text=f"{Game_path} does not exist, you need to set a valid game path to be able to run the game")
 
+def play_bepinex():
+    # Only neccesary for OSes where any play button might modify it.
+    ScriptingAssemblies = f'{Game_folder}/The Bibites_Data/ScriptingAssemblies.json'
+    with open(ScriptingAssemblies, "r") as file:
+        ScriptingAssembliesText = json.load(file) # Index of 'BibitesAssembly.dll' is 68
+
+    if OS_TYPE == "Windows": # Playing on windows
+        ScriptingAssembliesText['names'][68] = 'BibitesAssembly.dll' # Edit what dll is loaded to the normal unmodded one
+        with open(ScriptingAssemblies, "w") as file:                 # Write the info
+            json.dump(ScriptingAssembliesText, file)
+
+        try:
+            subprocess.Popen([Game_path]) # Run The Bibites without file dll replace mods.
+            log("Playing with BepInEx mods", False)
+            status_label.config(text="Playing with BepInEx mods")
+
+        except subprocess.CalledProcessError as e:
+            messagebox.showerror("Error running the game", f"Unexpected error: {e}") # Display message box with error
+            
+            log(f"Error running the game: {e}", True)
+            status_label.config(text=f"Error running the game: {e}") # Display error on status label
+        except Exception as e:
+            messagebox.showerror("Error", f"Unexpected error: {e}") # Display message box with error
+            
+            log(f"Unexpected error: {e}", True)
+            status_label.config(text=f"Unexpected error: {e}") # Display error on status label
+    
+    elif OS_TYPE == "Linux": # Playing on Linux
+        ScriptingAssembliesText['names'][68] = 'BibitesAssembly.dll' # Edit what dll is loaded to the normal unmodded one
+        with open(ScriptingAssemblies, "w") as file:                 # Write the info
+            json.dump(ScriptingAssembliesText, file)
+
+        try:
+            subprocess.Popen([f"{Game_folder}/run_bepinex.sh", Game_path, "-force-vulkan"]) # Run The Bibites without file dll replace mods.
+            log("Playing with BepInEx mods", False)
+            status_label.config(text="Playing with BepInEx mods")
+
+        except subprocess.CalledProcessError as e:
+            messagebox.showerror("Error running the game", f"Unexpected error: {e}")        # Display message box with error
+            
+            log(f"Error running the game: {e}", True)
+            status_label.config(text=f"Error running the game: {e}")                        # Display error on status label
+        except Exception as e:
+            messagebox.showerror("Error", f"Unexpected error: {e}")                         # Display message box with error
+            
+            log(f"Unexpected error: {e}", True)
+            status_label.config(text=f"Unexpected error: {e}")                              # Display error on status label
+
 def log(message, save_to_file):
     timestamp = get_time()
     log_text.config(state='normal')
@@ -872,7 +853,7 @@ images_folder = f'{script_dir}/Images' # Path to folder with images
 
 # Setup UI links with UI.py
 # Create window
-window_widgets = create_window(images_folder, version_number, Discord_invite_link, handlers={
+window_widgets = create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, handlers={
     'list_downloaded_mods': list_downloaded_mods,
     'download_mods_page': download_mods_page,
     'more_tools_page': more_tools_page,
@@ -897,6 +878,7 @@ main_page_widgets = create_main_page_ui(window, handlers={
     'install_mods': install_mods,
     'play_vanilla': lambda: play_game('No'),
     "Play Modded": lambda: play_game('Yes'),
+    'Play BepInEx': play_bepinex,
     'reset_cache': reset_cache,
     'get_the_bibites': get_the_bibites,
     'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, False)
@@ -1032,8 +1014,13 @@ else:
                 error = True
                 errormessage = errormessage + 'Game_version '
             
+            if is_nightly:
+                settings['is_nightly'] = True
+            else:
+                settings['is_nightly'] = False
+
             if 'is_nightly' in settings:
-                nightly_version = settings['is_nightly']
+                is_nightly = settings['is_nightly']
             else:
                 error = True
                 errormessage = errormessage + 'is_nightly'

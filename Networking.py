@@ -1,5 +1,5 @@
 # Anything that accesses the internet, for example if "import requests" is needed
-import requests, webbrowser, os, time, re, shutil
+import requests, webbrowser, os, time, re, shutil, zipfile, io, base64
 from threading import Thread
 from urllib.parse import urlparse, unquote
 
@@ -141,10 +141,96 @@ def fetch_from_dropbox(url, mod_names, log, status_label):
 
     return None
 
+# Function to fetch file contents
+def get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls):
+    '''Gets file content from cache, if that isn't valid either github or dropbox using the name of the mod'''
+
+    #owner = "MeltingDiamond"
+    #repo = "TBMM-Mods"
+    path = f"Mods/{mod_name}"
+
+    # Check cache first
+    if path in mod_content_cache and time.time() - mod_content_cache[path]['time'] < cache_duration:
+        return mod_content_cache[path]['content']
+    
+    if has_internet_connection():
+        mod_cache = {}
+        for url in mod_repo_urls:
+            website_name = get_website_name(url)
+            log(f"Attempting to fetch content from: {website_name}", False)
+
+            if "github.com" in website_name:
+                mod_cache = get_file_contents_from_github(mod_name, mod_content_cache, cache_duration)
+            elif "dropbox.com" in website_name:
+                mod_cache = get_file_contents_from_dropbox(mod_name, url)
+
+            if mod_cache:
+                cache_time = time.time()
+                save_cache_to_file()
+                return mod_content_cache[path]['content']
+    else:
+        return None
+
+# Function to fetch file contents from GitHub repository
+def get_file_contents_from_github(mod_name, mod_content_cache, cache_duration):
+    '''Get the content for a mod from github'''
+    owner = "MeltingDiamond"
+    repo = "TBMM-Mods"
+    path = f"Mods/{mod_name}"
+
+    if path in mod_content_cache and time.time() - mod_content_cache[path]['time'] < cache_duration:
+        return mod_content_cache[path]['content']
+
+    api_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
+    response = requests.get(api_url)
+    if response.status_code == 200:
+        content = response.json().get('content')
+        decoded_content = base64.b64decode(content).decode('utf-8')
+        
+        # Cache the content and save the cache
+        mod_content_cache[path] = {'content': decoded_content, 'time': time.time()}
+        
+        if decoded_content:
+            return True
+
+    return None
+
+def get_file_contents_from_dropbox(mod_name, url, mod_content_cache):
+    '''Get the content for a mod from dropbox'''
+    path = f"Mods/{mod_name}"
+
+    try:
+        # Download the ZIP file from Dropbox
+        response = requests.get(url, timeout=10)
+        if response.status_code != 200:
+            print(f"Error downloading from Dropbox: {response.status_code}")
+            return None
+        
+        # Open the ZIP file in memory
+        zip_file = zipfile.ZipFile(io.BytesIO(response.content))
+
+        # Look for the requested .TBM file
+        for file in zip_file.namelist():
+            print(file)
+            if file.endswith(f"/{mod_name}") or file == mod_name:
+                with zip_file.open(file) as f:
+                    content = f.read().decode("utf-8")  # Read & decode content
+                    
+                    # Cache the content
+                    mod_content_cache[path] = {'content': content, 'time': time.time()}
+                    
+                    return content  # Return the file's text content
+        
+        print(f"File '{mod_name}' not found in Dropbox ZIP")
+        return None
+
+    except Exception as e:
+        print(f"Error processing Dropbox ZIP: {e}")
+        return None
+
 # Function to get mod install instructions for chosen mod from GitHub repository based on filename
-def get_mod_url(mod_name, get_file_contents):
+def get_mod_url(file_contents):
     '''Get url from a .TBM file'''
-    file_contents = get_file_contents(mod_name)
     if file_contents:
         
         lines = file_contents.split('\n') # Split the content into lines
@@ -264,7 +350,7 @@ def start_download(url, location, log, status_label, downloading, safe_unlink, l
     download_thread = Thread(target=download_file, args=(url, location, downloading, log, status_label, safe_unlink, log_file, get_time))
     download_thread.start()
 
-def download_modse(downloaded_mods, mod_names, mod_vars, not_installed_mods, cache_duration, mod_repo_urls, mod_names_cache, cache_time, downloading, log_file, handlers):
+def download_modse(downloaded_mods, mod_names, mod_vars, not_installed_mods, cache_duration, mod_repo_urls, mod_names_cache, cache_time, downloading, log_file, mod_content_cache, handlers):
     '''Download selected mods from mod_vars'''
 
     log = handlers['log']
@@ -297,7 +383,8 @@ def download_modse(downloaded_mods, mod_names, mod_vars, not_installed_mods, cac
                 log(f"{mod_names[i].split('.')[0]} already downloaded", False)
                 status_label.config(text=f"{mod_names[i].split('.')[0]} already downloaded")
             else: # Mod is not downloaded
-                url = get_mod_url(mod_names[i], get_file_contents)
+                file_content = get_file_contents(mod_names[i], cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)
+                url = get_mod_url(file_content)
                 urls[i] = url
                 if urls[i]:
                     install_type = get_mod_install_description(mod_names[i])

@@ -1,5 +1,5 @@
 # The Bibites Mod Manager
-The Bibites Mod Manager is the unofficial mod manager for The Bibite programmed in python (3.12.10) using tkinter. TBMM allows users to install mods with a simple gui instead off having to replace any dll manualy.
+The Bibites Mod Manager is the unofficial mod manager for The Bibite programmed in python (3.12) using tkinter. TBMM allows users to install mods with a simple gui instead off having to replace any dll manualy.
 You can download and install mods with a few button clicks.
 And can play both vanilla and modded with one install of The Bibites.
 
@@ -9,9 +9,11 @@ The final goal for TBMM is for it to be able to download and install any of the 
 The release version can be downloaded here:<br>
 https://github.com/MeltingDiamond/TBMM/releases/latest
 
-For nightly version you cn click the links below:<br>
+For nightly version you can click the links below:<br>
 Windows: https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Windows.zip<br>
 Linux: https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Linux.zip
+
+### Find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to help make TBMM better.
 
 ### Modifying and contributing
 If you'd like to modify TBMM and share your changes, please fork the repository and submit a pull request with useful changes you've made. Your contributions will help improve the project, making it better for everyone. (This is based on trust.)
@@ -22,7 +24,13 @@ TBMM is licensed under the [GNU General Public License v3 (GPL-3.0)](/LICENSE.md
 
 Thank you for your contributions!
 
-### Find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to help make TBMM better.
+#### Building localy
+Install python 3.12 (unless you have 3.10 or newer) and pip (no need if you already have)<br>
+Download all the `.py` files, the `Images` folder and `build_requirements.txt` and place them in the same folder<br>
+run `pip install -r build_requirements.txt` to install needed libraries/packages<br>
+Now you have all requirements for running and building TBMM
+To build TBMM run the command: `nuitka --onefile --windows-console-mode=disable --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --enable-plugin=tk-inter "The Bibites Mod Manager.py"`<br>
+This is the excact command that the auto build runs without `--assume-yes-for-downloads` (Only usefull in none interactive build scripts, like github actions).
 
 ## Next update
 Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here. No major new functionality will be added.Around here TBMM will be officially open sourced. Check for newer version whenever you start TBMM
@@ -43,7 +51,7 @@ Start to make TBMM modular. Example would be moving all networking into one file
 
 0.06.2 Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here. No major new functionality will be added.
 
-0.06.3 TBMM will be open sourced and it is mostly modularized.
+0.06.3 TBMM will is mostly modularized.
 
 When version 0.07 is released TBMM will support BepInEx mods and download BepInEx automatically to choosen location (Maybe install it automatically on the selected game path, will not be able to choose location if this is the case)
 
@@ -65,7 +73,7 @@ When 1.0 is released I hope it works like any other single game mod manager does
 I hope people will contibute both to TBMM directly and with mods and reskins that can be added to TBMM. Please enjoy TBMM.
 
 ### Running the .py file
-Install python 3.10 or newer and pip (no need if you already have)<br>
+Install python 3.10 (preferrably 3.12 newest) or newer and pip (no need if you already have)<br>
 Download all the `.py` files, the `Images` folder and `requirements.txt` and place them in the same folder<br>
 run `pip install -r requirements.txt` to install needed libraries/packages<br>
 You can now run `The Bibites Mod Manager.py`
