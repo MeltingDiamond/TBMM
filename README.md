@@ -9,7 +9,7 @@ The final goal for TBMM is for it to be able to download and install any of the 
 The release version can be downloaded here:<br>
 https://github.com/MeltingDiamond/TBMM/releases/latest
 
-For nightly version you can click the links below:<br>
+For nightly version (most up to date version) you can click the links below:<br>
 Windows: https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Windows.zip<br>
 Linux: https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Linux.zip
 
