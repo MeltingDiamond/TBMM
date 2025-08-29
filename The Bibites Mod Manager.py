@@ -486,7 +486,6 @@ def install_mods(): # Install a mod so you can play modded
 
             elif install_instruction == "BepInEx":
                 log(f"Install instruction \"BepInEx\" will be implemented after \"replace\" is implemented", False)
-                status_label.config(text=f"Install instruction \"BepInEx\" will be implemented after \"replace\" is implemented")
                 install_mod_bepinex(mod_name, not_installed_mod_folder)
             
             elif install_instruction == "BepInEx+":
