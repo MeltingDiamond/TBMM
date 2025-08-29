@@ -40,7 +40,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~\AppData\Local\pip\Cache
-          key: pip-${{ runner.os }}-${{ hashFiles('**/build_requirements.txt') }}
+          key: pip-${{ runner.os }}-${{ hashFiles('**/*.py') }}
           restore-keys: |
             pip-${{ runner.os }}-
       - name: Cache ccache storage
@@ -97,7 +97,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: pip-${{ runner.os }}-${{ hashFiles('**/build_requirements.txt') }}
+          key: pip-${{ runner.os }}-${{ hashFiles('**/*.py') }}
           restore-keys: |
             pip-${{ runner.os }}-
       - name: Cache Nuitka
