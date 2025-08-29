@@ -144,9 +144,9 @@ jobs:
           path: The\ Bibites\ Mod\ Manager.bin
 
   build-mac:
-  needs: generate-nightly-version
-  runs-on: macos-latest
-  steps:
+    needs: generate-nightly-version
+    runs-on: macos-latest
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v4
       
