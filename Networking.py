@@ -29,14 +29,14 @@ def update_check(version, log, nightly=False):
     """
     try:
         if not nightly:
-            log("Release version check not implemented yet.")
+            log("Release version check not implemented yet.", save_to_file=False)
             return False
             response = requests.get(release_download_link, allow_redirects=True)
 
-        log("Checking nightly version...")
+        log("Checking nightly version...", save_to_file=False)
         response = requests.get("https://raw.githubusercontent.com/MeltingDiamond/TBMM/main/version.txt")
         if response.status_code != 200:
-            log("Failed to fetch version info.")
+            log("Failed to fetch version info.", save_to_file=False)
             return False
 
         latest_version = response.text.strip()
@@ -47,14 +47,14 @@ def update_check(version, log, nightly=False):
         latest_num = int(latest_version.split("-")[1])
 
         if local_num < latest_num:
-            log(f"A newer nightly version is available: {latest_version}")
+            log(f"A newer nightly version is available: {latest_version}", save_to_file=False)
             return True
 
-        log("You are using the latest nightly version.")
+        log("You are using the latest nightly version.", save_to_file=False)
         return False
 
     except Exception as e:
-        log(f"Error during version check: {e}", True)
+        log(f"Error during version check: {e}", save_to_file=True)
         return False
 
 # Function to fetch filenames from GitHub or Dropbox with caching

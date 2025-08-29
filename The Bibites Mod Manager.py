@@ -418,8 +418,10 @@ def install_mod_bepinex(mod_name, not_installed_mod_folder):
     files = os.listdir(not_installed_mod_folder)
     for file in files: 
         if file.endswith(".dll"):
-            os.symlink(os.path.join(not_installed_mod_folder, file), os.path.join(bepinex_folder, "plugins", file), target_is_directory=False)
-            print("ITS THE MOD")
+            install_location = os.path.join(bepinex_folder, "plugins", file)
+            if not os.path.isfile(install_location):
+                os.symlink(os.path.join(not_installed_mod_folder, file), os.path.join(bepinex_folder, "plugins", file), target_is_directory=False)
+                print("ITS THE MOD")
         else:
             print("NOT SAID FILE, I MEAN MOD")
 
@@ -991,17 +993,25 @@ else:
             error = False # Set to true if error loading any setting
             errormessage = '' # Append what setting is not loaded correctly
             settings = json.load(file)
+            # Only if game path is there should we check the the folders
             if 'Game_path' in settings:
                 Game_path = settings['Game_path']
+
+                if 'Game_folder' in settings:
+                    Game_folder = settings['Game_folder']
+                else:
+                    error = True
+                    errormessage = errormessage + 'Game_folder '
+
+                if 'bepinex_folder' in settings:
+                    bepinex_folder = settings['bepinex_folder']
+                else:
+                    error = True
+                    errormessage = errormessage + 'bepinex_folder '
             else:
                 error = True
                 errormessage = errormessage + 'Game_path '
 
-            if 'Game_folder' in settings:
-                Game_folder = settings['Game_folder']
-            else:
-                error = True
-                errormessage = errormessage + 'Game_folder '
 
             if 'Game_version' in settings:
                 Game_version = settings['Game_version']
