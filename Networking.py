@@ -55,7 +55,6 @@ def update_check(version, log, nightly=False):
 
     except Exception as e:
         log(f"Error during version check: {e}", True)
-        log(f"Error during version check: {e}")
         return False
 
 # Function to fetch filenames from GitHub or Dropbox with caching
