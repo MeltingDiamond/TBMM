@@ -205,7 +205,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: TBMM-MacOS
-          path: "The Bibites Mod Manager.bin"
+          path: "The Bibites Mod Manager.app"
 
   finalize-nightly-version:
     needs: [build-windows, build-linux, build-macos]
