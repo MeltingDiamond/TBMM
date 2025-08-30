@@ -27,7 +27,7 @@ jobs:
     env:
       CCACHE_DIR: ${{ github.workspace }}\ccache_storage
       CCACHE_CONFIGPATH: ${{ github.workspace }}\ccache.conf
-      NUITKA_CACHE_DIR: C:\Users\runneradmin\AppData\Local\Nuitka\Cache
+      NUITKA_CACHE_DIR: ${{ github.workspace }}/.nuitka-cache
 
     steps:
       - name: Checkout repository
@@ -97,6 +97,8 @@ jobs:
   build-linux:
     needs: generate-nightly-version
     runs-on: ubuntu-latest
+    env:
+      NUITKA_CACHE_DIR: ${{ github.workspace }}/.nuitka-cache
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -112,7 +114,7 @@ jobs:
       - name: Cache pip
         uses: actions/cache@v4
         with:
-          path: ~/.cache/pip
+          path: ${{ env.NUITKA_CACHE_DIR }}
           key: pip-${{ runner.os }}-${{ hashFiles('**/*.py') }}
           restore-keys: |
             pip-${{ runner.os }}-
@@ -120,7 +122,7 @@ jobs:
       - name: Cache Nuitka
         uses: actions/cache@v4
         with:
-          path: ~/.cache/Nuitka
+          path: ${{ env.NUITKA_CACHE_DIR }}
           key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
           restore-keys: |
             nuitka-${{ runner.os }}-
@@ -152,6 +154,8 @@ jobs:
   build-macos:
     needs: generate-nightly-version
     runs-on: macos-latest
+    env:
+      NUITKA_CACHE_DIR: ${{ github.workspace }}/.nuitka-cache
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -175,7 +179,7 @@ jobs:
       - name: Cache Nuitka
         uses: actions/cache@v4
         with:
-          path: ~/.cache/Nuitka
+          path: ${{ env.NUITKA_CACHE_DIR }}
           key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
           restore-keys: |
             nuitka-${{ runner.os }}-
@@ -197,7 +201,7 @@ jobs:
           --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
           Manager.py"
       
-      - name: Upload Executable (macOS)
+      - name: Upload Executable
         uses: actions/upload-artifact@v4
         with:
           name: TBMM-MacOS
