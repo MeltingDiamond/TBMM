@@ -143,7 +143,7 @@ jobs:
           name: TBMM-Linux
           path: The\ Bibites\ Mod\ Manager.bin
 
-  build-mac:
+  build-macos:
     needs: generate-nightly-version
     runs-on: macos-latest
     steps:
@@ -163,6 +163,14 @@ jobs:
           restore-keys: |
             pip-${{ runner.os }}-
       
+      - name: Cache Nuitka
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/Nuitka
+          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            nuitka-${{ runner.os }}-
+      
       - name: Install dependencies
         run: |
           brew update
@@ -176,7 +184,7 @@ jobs:
       
       - name: Build TBMM for MacOS
         run: >
-          nuitka --onefile --include-data-dir="Images=Images"
+          nuitka --onefile --mode=app --include-data-dir="Images=Images"
           --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
           Manager.py"
       
@@ -187,7 +195,7 @@ jobs:
           path: "The Bibites Mod Manager.bin"
 
   finalize-nightly-version:
-    needs: [build-windows, build-linux]
+    needs: [build-windows, build-linux, build-macos]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

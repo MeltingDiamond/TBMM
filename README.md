@@ -11,7 +11,8 @@ https://github.com/MeltingDiamond/TBMM/releases/latest
 
 For nightly version (most up to date version) you can click the links below:<br>
 Windows: https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Windows.zip<br>
-Linux: https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Linux.zip
+Linux:   https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Linux.zip<br>
+Mac:     https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-macOS.zip
 
 ### Find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to help make TBMM better.
 
@@ -37,7 +38,8 @@ Start to make TBMM modular. Example would be moving all networking into one file
 
 ## Roadmap
 ### None version specific goals
-- [x] Linux support (Will be added in the workflow)
+- [x] Linux support 
+- [x] Mac support (autobuilt in workflow)
 - [ ] Make a document/wiki for how to use TBMM
 - [ ] Show a prompt to download and setup correct version of The Bibites when choosing a mod. This will set it up in such a way that it is integrated into TBMMs files and can be reused for other mods made for the same version.
 - [ ] Add check to mods that displays if they have compatebility issue with other mods.
