@@ -37,7 +37,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      
+
+      - name: Show pip cache dir
+        run: python -m pip cache dir
+
       - name: Cache pip
         uses: actions/cache@v4
         with:
@@ -102,7 +105,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      
+
+      - name: Show pip cache dir
+        run: python -m pip cache dir
+
       - name: Cache pip
         uses: actions/cache@v4
         with:
@@ -154,7 +160,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      
+
+      - name: Show pip cache dir
+        run: python -m pip cache dir
+
       - name: Cache pip
         uses: actions/cache@v4
         with:
@@ -183,7 +192,7 @@ jobs:
       - name: Upload Executable (macOS)
         uses: actions/upload-artifact@v4
         with:
-          name: TBMM-macOS
+          name: TBMM-MacOS
           path: "The Bibites Mod Manager.bin"
 
   finalize-nightly-version:
