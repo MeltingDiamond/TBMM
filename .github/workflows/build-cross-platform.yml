@@ -193,7 +193,7 @@ jobs:
       
       - name: Build TBMM for MacOS
         run: >
-          nuitka --onefile --mode=app --include-data-dir="Images=Images"
+          nuitka --mode=app --include-data-dir="Images=Images"
           --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
           Manager.py"
       
