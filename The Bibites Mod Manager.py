@@ -1,5 +1,6 @@
 import requests, platform, os, sys, base64, shutil, time, json, subprocess, zipfile, io
-from tkinter import Label, Button, filedialog, Frame, Checkbutton, IntVar, Toplevel, messagebox, StringVar, OptionMenu
+from tkinter import filedialog
+#from tkinter import Label, Button, filedialog, Frame, Checkbutton, IntVar, Toplevel, messagebox, StringVar, OptionMenu
 from pathlib import Path
 from threading import Thread
 
@@ -954,6 +955,10 @@ window.bind('<Configure>', move_left_buttons)
 if getattr(sys, 'frozen', False):
     # Running as compiled executable
     executable_path = Path(sys.executable).parent
+    executable_path_temp = filedialog.askdirectory(title="Folder where you want generated files to be stored")
+    if executable_path_temp != "":
+        executable_path = executable_path_temp
+
     downloading = executable_path/'Downloading'
     not_installed_mods = executable_path/'not_installed_mods'
     installed_mods = executable_path/'installed_mods.txt'
