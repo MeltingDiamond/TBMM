@@ -37,12 +37,13 @@ This is the excact command that the auto build runs without `--assume-yes-for-do
 Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here. No major new functionality will be added.Around here TBMM will be officially open sourced. Check for newer version whenever you start TBMM
 
 ## Roadmap
-### None version specific goals
+### None version specific goals (might or might not happen)
 - [x] Linux support 
 - [x] Mac support (autobuilt in workflow)
-- [ ] Make a document/wiki for how to use TBMM
+- [ ] Make a wiki for how to use TBMM https://github.com/MeltingDiamond/TBMM/wiki WIP
 - [ ] Show a prompt to download and setup correct version of The Bibites when choosing a mod. This will set it up in such a way that it is integrated into TBMMs files and can be reused for other mods made for the same version.
 - [ ] Add check to mods that displays if they have compatebility issue with other mods.
+- [ ] Make use of Kivy for a android version (swapps Tkinter), because why not.
 - [ ] Dark mode???????
 ### The roadmap (-> indicates current released)
 0.05 is the first alpha, which was filled with bugs.

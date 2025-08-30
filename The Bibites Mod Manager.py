@@ -1,11 +1,15 @@
 import requests, platform, os, sys, base64, shutil, time, json, subprocess, zipfile, io
-from tkinter import filedialog
-#from tkinter import Label, Button, filedialog, Frame, Checkbutton, IntVar, Toplevel, messagebox, StringVar, OptionMenu
+
+# Remove all imports from tkinter and have all UI import stuff in UI.py
+# For example instead of importing "from tkinter import filedialog" do from UI import filedialog
+# UI would be the UI backend used here.
+# Network would be the network backend used here.
+from tkinter import Label, Button, filedialog, Frame, Checkbutton, IntVar, Toplevel, messagebox, StringVar, OptionMenu
 from pathlib import Path
 from threading import Thread
 
 from UI import create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui, create_more_tools_page_ui, create_game_version_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
-from Networking import update_check, download_new_tbmm_version, open_link, download_modse, fetch_filenames, has_internet_connection, start_download, get_mod_url, get_filename_from_response, get_website_name, get_file_contents
+from Networking import update_check, download_new_tbmm_version, open_link, download_modse, fetch_filenames, start_download, get_mod_url, get_filename_from_response, get_website_name, get_file_contents
 
 # TODO Fix the generated windows exe during nightly build
 # Add a latest_log.txt file used purly for logs from the last time TBMM was ran. 
@@ -162,7 +166,7 @@ def download_the_bibites_of_x_version(version):
     if not version_to_download:
         messagebox.showerror("Error", "Selected version does not exist.")
         return
-    
+
     bibites_game_name = get_filename_from_response(version_to_download)
 
     # Open a file save dialog
@@ -172,11 +176,11 @@ def download_the_bibites_of_x_version(version):
         title="Save Bibites File As",
         initialfile = bibites_game_name
     )
-    
+
     # If the user cancels the save dialog, exit the function
     if not file_path:
         return
-    
+
     # Simulate the file download (replace with actual download logic)
     def download(version_to_download, file_path):
         try:
@@ -233,7 +237,7 @@ def get_mod_game_version(mod_name):
     '''Gets the version a mod is made for'''
     file_contents = get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)
     if file_contents:
-        
+
         lines = file_contents.split('\n') # Split the content into lines
 
         game_version_line = next((line for line in lines if line.startswith('game version: ')), None) # Find the line containing the URL
@@ -267,14 +271,13 @@ def get_mod_install_description(mod_name):
             instruction = install_line.replace('install:', '').strip()
             return instruction
 
-
 def get_mod_description(mod_name):
     '''Get the description of a mod using the name'''
     file_contents = get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)
     if file_contents:
         description = ""
         lines = file_contents.split('\n')
-        
+
         developer_line = next((line for line in lines if line.startswith('original developer: ')), None)
         if developer_line:
             description = developer_line.replace('original developer:', 'Developer:').strip()
@@ -355,13 +358,13 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
             log_message = f"Installed {mod_name}"
             log(log_message, False)
             status_label.config(text=log_message)
-        
+
         # If any other mod is installed replace the curent one
         else:
             log_message = ""
             for mod in installed_mods_list:
                 log_message = f"{log_message}{mod} "
-            
+
             log_message = f"Replacing {log_message}with {mod_name}"
             log(log_message, False)
             status_label.config(text=log_message)
@@ -372,7 +375,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
                 for mod in installed_mods_list:
                     installed_mod_not_installed_mod_folder = f'{not_installed_mods}/replace/{mod}'
                     shutil.move(f'{Game_folder}/The Bibites_Data/Managed/BibitesAssembly.dll.TBM', installed_mod_not_installed_mod_folder) # Move the mod
-                
+
                 # if there is a mod in the location where there should be none unlink it
                 if os.path.exists(f'{Game_folder}/The Bibites_Data/Managed/BibitesAssembly.dll.TBM'):
                     os.unlink(f'{Game_folder}/The Bibites_Data/Managed/BibitesAssembly.dll.TBM')
@@ -384,7 +387,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
                 installed_mods_list = [mod_name]
                 with open(installed_mods, 'w') as file: # Write the installed_mod_list to keep it after TBMM closes
                     file.write(mod_name)
-                
+
                 # Display that mod is installed
                 log_message = f"Installd {mod_name}"
                 log(log_message, False)
@@ -409,7 +412,7 @@ def install_mod_bepinex(mod_name, not_installed_mod_folder):
     if not os.path.isdir(os.path.join(bepinex_folder, 'plugins')):
         log("Your bepinex install is broken\nplease start the game in vanilla once before trying again.", save_to_file=False)
         return
-    
+
     log('BepInEx is installed', save_to_file=False)
     
     if mod_name in installed_mods_list:
@@ -437,7 +440,6 @@ def download_bibites(bibites_to_download):
                 location = f'{USERPROFILE}/AppData/LocalLow/The Bibites/The Bibites/Bibites/Templates'
         start_download(bibite, location, log, status_label, downloading, safe_unlink, log_file, get_time) # Downloads the bibite to the specified location
 
-
 def install_mods(): # Install a mod so you can play modded
     '''Installs the selected downloaded mods'''
 
@@ -445,7 +447,7 @@ def install_mods(): # Install a mod so you can play modded
         log(f"Game path is {Game_path}, you need to set a game path to be able to install mods correctly", False)
         status_label.config(text=f"Game path is {Game_path}, you need to set a game path to be able to install mods correctly")
         return
-    
+
     # Install selected mods
     for mod_index in downloaded_mods_listbox.curselection():
         mod_name = downloaded_mods_listbox.get(mod_index)
@@ -454,16 +456,16 @@ def install_mods(): # Install a mod so you can play modded
         not_installed_mod_folder = f'{not_installed_mods}/{install_instruction}/{mod_name}'
 
         bibites_to_download = get_bibites_to_download(mod_name)
-        
+
         with open(installed_mods, 'r') as file:
             installed_mods_list = file.read().splitlines()
-        
+
         if len(os.listdir(not_installed_mod_folder)) == 0 and mod_name not in installed_mods_list: # Check is mod exists or is installed if it is not any of those download it again
             file_contents = get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)
             url = get_mod_url(file_contents)
             if url:
                 start_download(url, not_installed_mod_folder, downloading, safe_unlink)
-        
+
         if mod_name not in installed_mods_list: # The mod is not installed and need to get path to install it
             for file in os.listdir(not_installed_mod_folder):
                 if file.endswith('.dll') or file.endswith('dll.TBM'):
@@ -471,7 +473,7 @@ def install_mods(): # Install a mod so you can play modded
                     break
 
             not_installed_mod_path = f'{not_installed_mod_folder}/{dll}'
-            
+
             if install_instruction == "replace":
                 if not_installed_mod_path.endswith('.dll'):
                     os.rename(not_installed_mod_path, f'{not_installed_mod_path}.TBM')
@@ -488,7 +490,7 @@ def install_mods(): # Install a mod so you can play modded
             elif install_instruction == "BepInEx":
                 log(f"Install instruction \"BepInEx\" will be implemented after \"replace\" is implemented", False)
                 install_mod_bepinex(mod_name, not_installed_mod_folder)
-            
+
             elif install_instruction == "BepInEx+":
                 log(f"Install instruction \"BepInEx+\" is not yet added", False)
                 status_label.config(text=f"Install instruction \"BepInEx+\" is not yet added")
@@ -566,12 +568,12 @@ def list_downloaded_mods():
         downloadable_mods_frame.pack_forget()
 
         main_frame.pack()
-    
+
     if page == "More_Tools":
         more_tools_frame.pack_forget()
 
         main_frame.pack()
-    
+
     if page == "Credits":
         credits_frame.pack_forget()
         
