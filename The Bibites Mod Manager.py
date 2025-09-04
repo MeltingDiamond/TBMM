@@ -4,12 +4,14 @@ import requests, platform, os, sys, base64, shutil, time, json, subprocess, zipf
 # For example instead of importing "from tkinter import filedialog" do from UI import filedialog
 # UI would be the UI backend used here.
 # Network would be the network backend used here.
-from tkinter import Label, Button, filedialog, Frame, Checkbutton, IntVar, Toplevel, messagebox, StringVar, OptionMenu
+from tkinter import Label, Button, Frame, Checkbutton, IntVar, Toplevel, messagebox, StringVar, OptionMenu
 from pathlib import Path
 from threading import Thread
 
-from UI import create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui, create_more_tools_page_ui, create_game_version_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
-from Networking import update_check, download_new_tbmm_version, open_link, download_modse, fetch_filenames, start_download, get_mod_url, get_filename_from_response, get_website_name, get_file_contents
+from UI import filedialog_askopenfile, filedialog_asksaveasfilename, create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui
+from UI import create_more_tools_page_ui, create_game_version_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
+from Networking import update_check, download_new_tbmm_version, open_link, download_modse, fetch_filenames, start_download, get_mod_url, get_filename_from_response
+from Networking import get_website_name, get_file_contents
 
 # TODO Fix the generated windows exe during nightly build
 # Add a latest_log.txt file used purly for logs from the last time TBMM was ran. 
@@ -114,9 +116,9 @@ def get_game_path():
     '''User input for getting the path to The Bibites game exe'''
     global Game_path, Game_folder, bepinex_folder
     if Game_folder:
-        Temp_Game_path = filedialog.askopenfile(initialdir=Game_folder, filetypes=FILETYPES) # Store game path without overwriting existing game path
+        Temp_Game_path = filedialog_askopenfile(initialdir=Game_folder, filetypes=FILETYPES) # Store game path without overwriting existing game path
     else:
-        Temp_Game_path = filedialog.askopenfile(filetypes=FILETYPES) # Store game path without overwriting existing game path
+        Temp_Game_path = filedialog_askopenfile(filetypes=FILETYPES) # Store game path without overwriting existing game path
     if Temp_Game_path:
         Game_path = Temp_Game_path.name
         Game_folder = os.path.dirname(Game_path)
@@ -170,7 +172,7 @@ def download_the_bibites_of_x_version(version):
     bibites_game_name = get_filename_from_response(version_to_download)
 
     # Open a file save dialog
-    file_path = filedialog.asksaveasfilename(
+    file_path = filedialog_asksaveasfilename(
         defaultextension=".zip", 
         filetypes=[("ZIP files", "*.zip"), ("All files", "*.*")],
         title="Save Bibites File As",

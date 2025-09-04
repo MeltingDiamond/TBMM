@@ -1,6 +1,16 @@
 # Anything that gets displayed. For example tkinter 
-from tkinter import Tk, Frame, Label, Button, Listbox, Scrollbar, Text, Toplevel, PhotoImage, StringVar, OptionMenu
+from tkinter import Tk, Frame, Label, Button, Listbox, Scrollbar, Text, Toplevel, PhotoImage, StringVar, OptionMenu, filedialog
 from PIL import Image, ImageTk
+
+# Define UI functions that can be used in other parts of TBMM so UI library imports can be isolated to this file
+def filedialog_askopenfile(initialdir, filetypes):
+    return filedialog.askopenfile(initialdir=initialdir, filetypes=filetypes)
+
+def filedialog_asksaveasfilename(defaultextension, filetypes, title, initialfile):
+    return filedialog.asksaveasfilename(defaultextension=defaultextension, filetypes=filetypes, title=title, initialfile=initialfile)
+
+def filedialog_askdirectory(title):
+    return filedialog.askdirectory(titel=titel)
 
 # Size of different fonts
 status_label_font_size = 14
@@ -197,7 +207,7 @@ def create_main_page_ui(window, handlers):
     Mod_play_button.grid(row=3, column=0, columnspan=2)
     bepinex_play_button.grid(row=3, column=1, sticky="e")
     refresh_cache_button.grid(row=2, column=4, sticky="n")
-    get_the_bibites_button.grid(row=2, column=4, pady=40, sticky="n")
+    get_the_bibites_button.grid(row=2, column=4, pady=70, sticky="n")
     installed_mod_label.grid(row=4, column=0, columnspan=3, sticky='n', pady=5)
     log_text.grid(row=6, column=0, columnspan=3, padx=5, pady=(5, 0), sticky="nsew")
     log_scrollbar.grid(row=6, column=3, sticky='nsw')
