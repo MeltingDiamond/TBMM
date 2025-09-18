@@ -56,7 +56,7 @@ version_number = "0.06.1" # (stable version)
 nightly_version = "__VERSION__" # Gets replaced during workflow build with latest version (DO NOT CHANGE, unless you change the name in the workflow too)
 
 # Should it check and download nightly version
-if nightly_version ==  "__VERSION__":
+if nightly_version.startswith("__VERSION"):
     is_nightly = False
 else:
     is_nightly = True
