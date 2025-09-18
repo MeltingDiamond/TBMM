@@ -2,3 +2,4 @@ nuitka
 requests
 tk
 pillow
+pyyaml

@@ -887,7 +887,7 @@ main_page_widgets = create_main_page_ui(window, handlers={
     'Play BepInEx': play_bepinex,
     'reset_cache': reset_cache,
     'get_the_bibites': get_the_bibites,
-    'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, False)
+    'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, is_nightly)
 })
 
 main_frame = main_page_widgets['frame']

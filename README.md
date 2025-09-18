@@ -40,6 +40,7 @@ Start to make TBMM modular. Example would be moving all networking into one file
 ### None version specific goals (might or might not happen)
 - [x] Linux support 
 - [x] Mac support (autobuilt in workflow)
+- [ ] Setup for translation
 - [ ] Make a wiki for how to use TBMM https://github.com/MeltingDiamond/TBMM/wiki WIP
 - [ ] Show a prompt to download and setup correct version of The Bibites when choosing a mod. This will set it up in such a way that it is integrated into TBMMs files and can be reused for other mods made for the same version.
 - [ ] Add check to mods that displays if they have compatebility issue with other mods.

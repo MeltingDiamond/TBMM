@@ -2,6 +2,10 @@
 from tkinter import Tk, Frame, Label, Button, Listbox, Scrollbar, Text, Toplevel, PhotoImage, StringVar, OptionMenu, filedialog
 from PIL import Image, ImageTk
 
+from loadLocalisation import loadLocalisation
+
+localisation = loadLocalisation("en_uk.yaml")
+
 # Define UI functions that can be used in other parts of TBMM so UI library imports can be isolated to this file
 def filedialog_askopenfile(initialdir, filetypes):
     return filedialog.askopenfile(initialdir=initialdir, filetypes=filetypes)
@@ -131,16 +135,16 @@ def create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, h
     title_label.pack(pady=(20, 10))
 
     # Button to display downloaded mods (main page)
-    display_downloaded_mods_button = Button(window, text="Main", command=handlers['list_downloaded_mods'], font=("Arial", 12))
+    display_downloaded_mods_button = Button(window, text=localisation["Main"], command=handlers['list_downloaded_mods'], font=("Arial", 12))
 
     # Button where you find mods to download and install
-    find_mods_button = Button(window, text="Get Mods", command=handlers['download_mods_page'], font=("Arial", 12))
+    find_mods_button = Button(window, text=localisation["Get-Mods"], command=handlers['download_mods_page'], font=("Arial", 12))
 
     # More tool page where you can find good tools
-    more_tools_button = Button(window, text="Community Tools", command=handlers['more_tools_page'], font=("Arial", 12))
+    more_tools_button = Button(window, text=localisation["Community-Tools"], command=handlers['more_tools_page'], font=("Arial", 12))
 
     # Button That takes you to the credits page
-    credits_button = Button(window, text="Show Credits", command=handlers['credits_page'], font=("Arial", 12))
+    credits_button = Button(window, text=localisation["Show-Credits"], command=handlers['credits_page'], font=("Arial", 12))
 
     Bibite_Research_Conglomerate_hyperlink = Label(window, text="Join Bibite Research Conglomerate Discord Server", fg="blue", cursor="hand2", font=("Arial", 11))
     Bibite_Research_Conglomerate_hyperlink.bind("<Button-1>", handlers['open_link'])
