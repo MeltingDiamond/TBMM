@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 
 from loadLocalisation import loadLocalisation
 
-localisation = loadLocalisation("en_uk.yaml")
+localisation = loadLocalisation()
 
 # Define UI functions that can be used in other parts of TBMM so UI library imports can be isolated to this file
 def filedialog_askopenfile(initialdir, filetypes):
@@ -131,7 +131,7 @@ def create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, h
     window.minsize(1000, 550)
 
     # Title label
-    title_label = Label(window, text="The Bibites Mod Manager rewritten", font=("Arial", 24, "bold"))
+    title_label = Label(window, text=localisation["The-Bibites-Mod-Manager"], font=("Arial", 24, "bold"))
     title_label.pack(pady=(20, 10))
 
     # Button to display downloaded mods (main page)
@@ -146,7 +146,7 @@ def create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, h
     # Button That takes you to the credits page
     credits_button = Button(window, text=localisation["Show-Credits"], command=handlers['credits_page'], font=("Arial", 12))
 
-    Bibite_Research_Conglomerate_hyperlink = Label(window, text="Join Bibite Research Conglomerate Discord Server", fg="blue", cursor="hand2", font=("Arial", 11))
+    Bibite_Research_Conglomerate_hyperlink = Label(window, text=localisation["Join-BRC"], fg="blue", cursor="hand2", font=("Arial", 11))
     Bibite_Research_Conglomerate_hyperlink.bind("<Button-1>", handlers['open_link'])
 
     # Status Label used to show status to the user
@@ -173,16 +173,16 @@ def create_main_page_ui(window, handlers):
     main_frame.grid_columnconfigure(2, weight=1)
 
     # Buttons
-    game_path_button = Button(main_frame, text="Get path to game exe", command=handlers['get_game_path'], font=("Arial", 12))
-    version_button = Button(main_frame, text="Game version", command=handlers["get_game_version"], font=("Arial", 12))
-    install_mods_button = Button(main_frame, text="Install mods", command=handlers["install_mods"], font=("Arial", 12)) # Button to install mods
-    vanilla_play_button = Button(main_frame, text="Play Vanilla", command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
-    Mod_play_button = Button(main_frame, text="Play Modded", command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
-    bepinex_play_button = Button(main_frame, text="Play BepInEx", command=handlers["Play BepInEx"], font=("Arial", 12))
-    refresh_cache_button = Button(main_frame, text="Refresh cache", command=handlers['reset_cache'], font=("Arial", 12)) # Swap between nightly and relese (stable)
-    refresh_cache_button = Button(main_frame, text="Refresh cache", command=handlers['reset_cache'], font=("Arial", 12))
-    get_the_bibites_button = Button(main_frame, text="Download The Bibites", command=handlers['get_the_bibites'], font=("Arial", 12))
-    dowload_new_version_button = Button(main_frame, text="Download new TBMM update", command=handlers['download_new_tbmm_version'], font=("Arial", 12), bg="#0060e5", fg="#003C00")
+    game_path_button = Button(main_frame, text=localisation["Get-path-to-game-exe"], command=handlers['get_game_path'], font=("Arial", 12))
+    version_button = Button(main_frame, text=localisation["Game-version"], command=handlers["get_game_version"], font=("Arial", 12))
+    install_mods_button = Button(main_frame, text=localisation["Install-mods"], command=handlers["install_mods"], font=("Arial", 12)) # Button to install mods
+    vanilla_play_button = Button(main_frame, text=localisation["Play-Vanilla"], command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
+    Mod_play_button = Button(main_frame, text=localisation["Play-Modded"], command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
+    bepinex_play_button = Button(main_frame, text=localisation["Play-BepInEx"], command=handlers["Play BepInEx"], font=("Arial", 12))
+    swap_between_nightly_and_stable_button = Button(main_frame, text=localisation["Swap-release-Channel"], command=handlers['swap_between_nightly_and_stable'], font=("Arial", 12)) # Swap between nightly and relese (stable)
+    refresh_cache_button = Button(main_frame, text=localisation["Refresh-cache"], command=handlers['reset_cache'], font=("Arial", 12))
+    get_the_bibites_button = Button(main_frame, text=localisation["Download-The-Bibites"], command=handlers['get_the_bibites'], font=("Arial", 12))
+    dowload_new_version_button = Button(main_frame, text=localisation["Download-new-TBMM-update"], command=handlers['download_new_tbmm_version'], font=("Arial", 12), bg="#0060e5", fg="#003C00")
 
     # Labels
     game_path_label = Label(main_frame, text="Game path: None", font=("Arial", 14))
@@ -210,6 +210,7 @@ def create_main_page_ui(window, handlers):
     vanilla_play_button.grid(row=3, column=0, sticky="w")
     Mod_play_button.grid(row=3, column=0, columnspan=2)
     bepinex_play_button.grid(row=3, column=1, sticky="e")
+    swap_between_nightly_and_stable_button.grid(row=2, column=4, sticky="s")
     refresh_cache_button.grid(row=2, column=4, sticky="n")
     get_the_bibites_button.grid(row=2, column=4, pady=70, sticky="n")
     installed_mod_label.grid(row=4, column=0, columnspan=3, sticky='n', pady=5)

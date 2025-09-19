@@ -40,7 +40,7 @@ def update_check(version, log, nightly=False):
             return False
 
         latest_version = response.text.strip()
-        log(f"Latest nightly version: {latest_version}", ave_to_file=False)
+        log(f"Latest nightly version: {latest_version}", save_to_file=False)
 
         # Extract numeric part of nightly version and compare as integers
         local_num = int(version.split("-")[1])

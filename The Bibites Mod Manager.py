@@ -13,13 +13,13 @@ from UI import create_more_tools_page_ui, create_game_version_page_ui, on_hover,
 from Networking import update_check, download_new_tbmm_version, open_link, download_modse, fetch_filenames, start_download, get_mod_url, get_filename_from_response
 from Networking import get_website_name, get_file_contents
 
-# TODO Fix the generated windows exe during nightly build
+# TODO
 # Add a latest_log.txt file used purly for logs from the last time TBMM was ran. 
 # log.txt is a global log file, but maybe cap it at some kind of size.
 # Move more of the UI code from here to UI.py
 # Move more of the networking code from here to Networking.py
-# Finish adding support to linux
-# Start adding support for Mac
+# Finnish adding support to linux
+# Finnish adding support for Mac
 
 # If you want to add support for any other os feel free to do so,
 # but MeltingDiamond will only support Windows, Linux and Mac (OSes that the bibites officially supports).
@@ -851,7 +851,17 @@ def log(message, save_to_file):
         # Save error to a log file
         with open(log_file, 'a') as file:
             file.write(f"\n{timestamp} {message}")
-        
+
+def swap_between_nightly_and_stable():
+    global is_nightly
+    is_nightly = not is_nightly
+    if is_nightly:
+        status_label.config(text=f'You are now on the nightly branch')
+    else:
+        status_label.config(text=f'You are now on the stable branch')
+    
+    save_settings()
+
 
 # Get the script dir
 script_dir = Path(__file__).parent.absolute()
@@ -885,6 +895,7 @@ main_page_widgets = create_main_page_ui(window, handlers={
     'play_vanilla': lambda: play_game('No'),
     "Play Modded": lambda: play_game('Yes'),
     'Play BepInEx': play_bepinex,
+    'swap_between_nightly_and_stable': swap_between_nightly_and_stable,
     'reset_cache': reset_cache,
     'get_the_bibites': get_the_bibites,
     'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, is_nightly)
