@@ -70,9 +70,6 @@ jobs:
           curl -L -o ccache.zip https://github.com/ccache/ccache/releases/download/v4.7.4/ccache-4.7.4-windows.zip
           powershell Expand-Archive ccache.zip -DestinationPath ccache-win
           echo "${{ github.workspace }}\ccache-win" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      
-      - name: Install MinGW
-        run: choco install mingw -y
 
       - name: Install dependencies
         run: |
