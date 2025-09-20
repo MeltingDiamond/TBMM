@@ -14,12 +14,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      - name: Show version.txt contents before updating
+        run: cat version.txt
+
       - name: Set nightly version
         id: set-version
         run: |
           VERSION=nightly-$(date +'%Y%m%d%H%M%S')
           echo "$VERSION" > version.txt
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      
+      - name: Show version.txt contents after updating
+        run: cat version.txt
 
   build-windows:
     needs: generate-nightly-version
@@ -141,7 +148,7 @@ jobs:
       
       - name: Build TBMM for Linux
         run: >
-          nuitka --onefile --console --include-data-dir="Images=Images" --include-data-dir="translations=translations"
+          nuitka --onefile --include-data-dir="Images=Images" --include-data-dir="translations=translations"
           --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
           Manager.py"
       
@@ -197,7 +204,7 @@ jobs:
       
       - name: Build TBMM for MacOS
         run: >
-          nuitka --mode=app --console --include-data-dir="Images=Images" --include-data-dir="translations=translations" 
+          nuitka --mode=app --include-data-dir="Images=Images" --include-data-dir="translations=translations" 
           --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
           Manager.py"
       
@@ -213,6 +220,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Show version.txt contents before commit
+        run: cat version.txt
 
       - name: Commit and push nightly version
         env:
