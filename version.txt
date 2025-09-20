@@ -1,1 +1,1 @@
-nightly-20250828224331
+needs.generate-nightly-version.outputs.version
