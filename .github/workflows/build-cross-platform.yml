@@ -86,7 +86,7 @@ jobs:
       
       - name: Build TBMM for Windows
         run: |
-          nuitka --mingw64 --onefile --windows-console-mode=disable --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --include-data-dir="translations=translations" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
+          nuitka --mingw64 --onefile --windows-console-mode=enabled --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --include-data-dir="translations=translations" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
       
       - name: Upload Executable
         uses: actions/upload-artifact@v4
@@ -141,7 +141,7 @@ jobs:
       
       - name: Build TBMM for Linux
         run: >
-          nuitka --onefile --include-data-dir="Images=Images" --include-data-dir="translations=translations"
+          nuitka --onefile --console --include-data-dir="Images=Images" --include-data-dir="translations=translations"
           --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
           Manager.py"
       
@@ -197,7 +197,7 @@ jobs:
       
       - name: Build TBMM for MacOS
         run: >
-          nuitka --mode=app --include-data-dir="Images=Images" --include-data-dir="translations=translations" 
+          nuitka --mode=app --console --include-data-dir="Images=Images" --include-data-dir="translations=translations" 
           --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
           Manager.py"
       

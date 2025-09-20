@@ -351,7 +351,10 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
             log_message = f"Installing {mod_name}"
             log(log_message, False)
             status_label.config(text=log_message)
-            shutil.move(f'{not_installed_mod_path}', f'{Game_folder}/The Bibites_Data/Managed') # Move the mod
+
+            os.symlink(not_installed_mod_path, os.path.join(Game_folder, "The Bibites_Data/Managed", "BibitesAssembly.dll.TBM"), target_is_directory=False)
+
+            #shutil.move(f'{not_installed_mod_path}', f'{Game_folder}/The Bibites_Data/Managed') # Move the mod
             installed_mods_list = mod_name
             print(installed_mods_list)
             with open(installed_mods, 'w') as file: # Write the installed_mod_list to keep it after TBMM closes
@@ -970,7 +973,7 @@ window.bind('<Configure>', move_left_buttons)
 if getattr(sys, 'frozen', False):
     # Running as compiled executable
     executable_path = Path(sys.executable).parent
-    executable_path_temp = filedialog.askdirectory(title="Folder where you want generated files to be stored")
+    executable_path_temp = filedialog_askdirectory(title="Folder where you want generated files to be stored")
     if executable_path_temp != "":
         executable_path = executable_path_temp
 
