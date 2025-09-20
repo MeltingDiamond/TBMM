@@ -18,11 +18,10 @@ jobs:
       - name: Show version.txt contents before updating
         run: cat version.txt
 
-      - name: Set nightly version
+      - name: Generate nightly version
         id: set-version
         run: |
           VERSION=nightly-$(date +'%Y%m%d%H%M%S')
-          echo "$VERSION" > version.txt
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       
       - name: Show version.txt contents after updating
@@ -93,7 +92,7 @@ jobs:
       
       - name: Build TBMM for Windows
         run: |
-          nuitka --mingw64 --onefile --windows-console-mode=enabled --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --include-data-dir="translations=translations" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
+          nuitka --mingw64 --onefile --windows-console-mode=attach --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --include-data-dir="translations=translations" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
       
       - name: Upload Executable
         uses: actions/upload-artifact@v4
@@ -221,8 +220,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Show version.txt contents before commit
-        run: cat version.txt
+      - name: Set nightly version
+        run: echo "needs.generate-nightly-version.outputs.version" > version.txt
 
       - name: Commit and push nightly version
         env:
