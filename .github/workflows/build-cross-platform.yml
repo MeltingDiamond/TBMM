@@ -214,7 +214,7 @@ jobs:
           path: "The Bibites Mod Manager.app"
 
   finalize-nightly-version:
-    needs: [build-windows, build-linux, build-macos]
+    needs: [generate-nightly-version, build-windows, build-linux, build-macos]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
