@@ -352,9 +352,8 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
             log(log_message, False)
             status_label.config(text=log_message)
 
-            os.symlink(not_installed_mod_path, os.path.join(Game_folder, "The Bibites_Data/Managed", "BibitesAssembly.dll.TBM"), target_is_directory=False)
+            os.symlink(not_installed_mod_path, os.path.join(Game_folder, "The Bibites_Data", "Managed", "BibitesAssembly.dll.TBM"), target_is_directory=False)
 
-            #shutil.move(f'{not_installed_mod_path}', f'{Game_folder}/The Bibites_Data/Managed') # Move the mod
             installed_mods_list = mod_name
             print(installed_mods_list)
             with open(installed_mods, 'w') as file: # Write the installed_mod_list to keep it after TBMM closes
@@ -378,15 +377,10 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
             if mod_name not in installed_mods_list:
                 # move other mods back to uninstalled location if there is an installed mod in installed_mods.txt
                 for mod in installed_mods_list:
-                    installed_mod_not_installed_mod_folder = f'{not_installed_mods}/replace/{mod}'
-                    shutil.move(f'{Game_folder}/The Bibites_Data/Managed/BibitesAssembly.dll.TBM', installed_mod_not_installed_mod_folder) # Move the mod
-
-                # if there is a mod in the location where there should be none unlink it
-                if os.path.exists(f'{Game_folder}/The Bibites_Data/Managed/BibitesAssembly.dll.TBM'):
-                    os.unlink(f'{Game_folder}/The Bibites_Data/Managed/BibitesAssembly.dll.TBM')
+                    safe_unlink(os.path.join(Game_folder, "The Bibites_Data", "Managed", "BibitesAssembly.dll.TBM"))
 
                 # Install the mod
-                shutil.move(f'{not_installed_mod_path}', f'{Game_folder}/The Bibites_Data/Managed') # Move the mod
+                os.symlink(f'{not_installed_mod_path}', os.path.join(Game_folder, "The Bibites_Data", "Managed", "BibitesAssembly.dll.TBM"), target_is_directory=False) # Move the mod
 
                 # Add the installed mod to the installed_mods_list
                 installed_mods_list = [mod_name]
@@ -443,6 +437,14 @@ def download_bibites(bibites_to_download):
                 location = f'{USERPROFILE}/AppData/LocalLow/The Bibites/The Bibites/Bibites'
             elif filename.endswith(".bb8template"):
                 location = f'{USERPROFILE}/AppData/LocalLow/The Bibites/The Bibites/Bibites/Templates'
+        elif OS_TYPE == "Linux":
+            if filename.endswith(".bb8"):
+                location = f'{USERPROFILE}/.config/unity3d/The Bibites/The Bibites/Bibites'
+            elif filename.endswith(".bb8template"):
+                location = f'{USERPROFILE}/.config/unity3d/The Bibites/The Bibites/Bibites/Templates'
+        else:
+            return
+
         start_download(bibite, location, log, status_label, downloading, safe_unlink, log_file, get_time) # Downloads the bibite to the specified location
 
 def install_mods(): # Install a mod so you can play modded
@@ -469,7 +471,7 @@ def install_mods(): # Install a mod so you can play modded
             file_contents = get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)
             url = get_mod_url(file_contents)
             if url:
-                start_download(url, not_installed_mod_folder, downloading, safe_unlink)
+                start_download(url, not_installed_mod_folder, log, status_label, downloading, safe_unlink, log_file, get_time)
 
         if mod_name not in installed_mods_list: # The mod is not installed and need to get path to install it
             for file in os.listdir(not_installed_mod_folder):
@@ -738,14 +740,24 @@ def play_game(Modded):
             ScriptingAssembliesText = json.load(file) # Index of 'BibitesAssembly.dll' is 68
 
         if Modded == ('No'):
-            ScriptingAssembliesText['names'][68] = 'BibitesAssembly.dll' # Edit what dll is loaded to the normal unmodded one
+            if OS_TYPE == "Windows":
+                ScriptingAssembliesText['names'][68] = 'BibitesAssembly.dll.TBM'    # Edit what dll is loaded to the modded one
+            elif OS_TYPE == "Linux":
+                ScriptingAssembliesText['names'][67] = 'BibitesAssembly.dll.TBM'
+
             with open(ScriptingAssemblies, "w") as file:                 # Write the info
                 json.dump(ScriptingAssembliesText, file)
 
             try:
-                subprocess.Popen([Game_path]) # Run The Bibites without mods.
-                log("Playing without mods", False)
-                status_label.config(text="Playing without mods")
+                if OS_TYPE == "Windows": # Playing on windows
+                    subprocess.Popen([Game_path]) # Run The Bibites without mods.
+                    log("Playing without mods", False)
+                    status_label.config(text="Playing without mods")
+                
+                elif OS_TYPE == "Linux": # Playing on Linux
+                    subprocess.Popen([Game_path, "-force-vulkan"]) # Run The Bibites without mods.
+                    log("Playing without mods", False)
+                    status_label.config(text="Playing without mods")
 
             # Catch and display error to the user
             except subprocess.CalledProcessError as e:
@@ -761,25 +773,41 @@ def play_game(Modded):
 
         if Modded == ('Yes'):
             if os.path.isfile(f'{Game_folder}/The Bibites_Data/Managed/BibitesAssembly.dll.TBM'):
-                ScriptingAssembliesText['names'][68] = 'BibitesAssembly.dll.TBM' # Edit what dll is loaded to the modded one
-                with open(ScriptingAssemblies, "w") as file:                     # Write the info
+                if OS_TYPE == "Windows":
+                    ScriptingAssembliesText['names'][68] = 'BibitesAssembly.dll.TBM'    # Edit what dll is loaded to the modded one
+                elif OS_TYPE == "Linux":
+                    ScriptingAssembliesText['names'][67] = 'BibitesAssembly.dll.TBM'
+                with open(ScriptingAssemblies, "w") as file:                            # Write the info
                     json.dump(ScriptingAssembliesText, file)
                 log(f"You have installed a replace mod assuming you want to use that", False)
                 status_label.config(text=f"You have installed a replace mod assuming you want to use that")
             else:
                 log(f"You haven't installed a replace mod assuming you have intalled BepInEx mods. Please use the BepInEx play button.", False)
                 status_label.config(text=f"You haven't installed a replace mod assuming you have intalled BepInEx mods. Please use the BepInEx play button.")
+                return
 
             try:
-                subprocess.Popen([Game_path]) # Run The Bibites without checking for mods.
-                with open(installed_mods, 'r') as file:
-                    installed_mods_list = file.read().splitlines()
-                    installed_mods_list_pretty_for_display = [] # List stores the installed mods without .TBM to make it prettier
-                    for mod in installed_mods_list:
-                        mod = mod.split('.')[0]
-                        installed_mods_list_pretty_for_display.append(mod)
-                log(f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}", False)
-                status_label.config(text=f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}")
+                if OS_TYPE == "Windows": # Playing on windows
+                    subprocess.Popen([Game_path]) # Run The Bibites without checking for mods.
+                    with open(installed_mods, 'r') as file:
+                        installed_mods_list = file.read().splitlines()
+                        installed_mods_list_pretty_for_display = [] # List stores the installed mods without .TBM to make it prettier
+                        for mod in installed_mods_list:
+                            mod = mod.split('.')[0]
+                            installed_mods_list_pretty_for_display.append(mod)
+                    log(f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}", False)
+                    status_label.config(text=f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}")
+                
+                elif OS_TYPE == "Linux": # Playing on Linux
+                    subprocess.Popen([Game_path, "-force-vulkan"]) # Run The Bibites without checking for mods.
+                    with open(installed_mods, 'r') as file:
+                        installed_mods_list = file.read().splitlines()
+                        installed_mods_list_pretty_for_display = [] # List stores the installed mods without .TBM to make it prettier
+                        for mod in installed_mods_list:
+                            mod = mod.split('.')[0]
+                            installed_mods_list_pretty_for_display.append(mod)
+                    log(f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}", False)
+                    status_label.config(text=f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}")
 
             # Catch and display error to the user
             except subprocess.CalledProcessError as e:
@@ -843,6 +871,27 @@ def play_bepinex():
             
             log(f"Unexpected error: {e}", True)
             status_label.config(text=f"Unexpected error: {e}")                              # Display error on status label
+    
+    else:
+        ScriptingAssembliesText['names'][68] = 'BibitesAssembly.dll' # Edit what dll is loaded to the normal unmodded one
+        with open(ScriptingAssemblies, "w") as file:                 # Write the info
+            json.dump(ScriptingAssembliesText, file)
+
+        try:
+            subprocess.Popen([Game_path]) # Run The Bibites without file dll replace mods.
+            log("Playing with BepInEx mods", False)
+            status_label.config(text="Playing with BepInEx mods")
+
+        except subprocess.CalledProcessError as e:
+            messagebox.showerror("Error running the game", f"Unexpected error: {e}") # Display message box with error
+            
+            log(f"Error running the game: {e}", True)
+            status_label.config(text=f"Error running the game: {e}") # Display error on status label
+        except Exception as e:
+            messagebox.showerror("Error", f"Unexpected error: {e}") # Display message box with error
+            
+            log(f"Unexpected error: {e}", True)
+            status_label.config(text=f"Unexpected error: {e}") # Display error on status label
 
 def log(message, save_to_file):
     timestamp = get_time()

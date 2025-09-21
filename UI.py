@@ -135,7 +135,7 @@ def create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, h
     title_label.pack(pady=(20, 10))
 
     # Button to display downloaded mods (main page)
-    display_downloaded_mods_button = Button(window, text=localisation["Main"], command=handlers['list_downloaded_mods'], font=("Arial", 12))
+    display_downloaded_mods_button = Button(window, text=localisation["Capital-Main"], command=handlers['list_downloaded_mods'], font=("Arial", 12))
 
     # Button where you find mods to download and install
     find_mods_button = Button(window, text=localisation["Get-Mods"], command=handlers['download_mods_page'], font=("Arial", 12))
@@ -172,9 +172,9 @@ def create_main_page_ui(window, handlers):
     main_frame.grid_rowconfigure(6, weight=1)
     main_frame.grid_columnconfigure(2, weight=1)
 
-    # Buttons
+    # Buttonslocalisation
     game_path_button = Button(main_frame, text=localisation["Get-path-to-game-exe"], command=handlers['get_game_path'], font=("Arial", 12))
-    version_button = Button(main_frame, text=localisation["Game-version"], command=handlers["get_game_version"], font=("Arial", 12))
+    version_button = Button(main_frame, text=localisation["Capital-Game"] + localisation["version"], command=handlers["get_game_version"], font=("Arial", 12))
     install_mods_button = Button(main_frame, text=localisation["Install-mods"], command=handlers["install_mods"], font=("Arial", 12)) # Button to install mods
     vanilla_play_button = Button(main_frame, text=localisation["Play-Vanilla"], command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
     Mod_play_button = Button(main_frame, text=localisation["Play-Modded"], command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
@@ -185,7 +185,7 @@ def create_main_page_ui(window, handlers):
     dowload_new_version_button = Button(main_frame, text=localisation["Download-new-TBMM-update"], command=handlers['download_new_tbmm_version'], font=("Arial", 12), bg="#0060e5", fg="#003C00")
 
     # Labels
-    game_path_label = Label(main_frame, text="Game path: None", font=("Arial", 14))
+    game_path_label = Label(main_frame, text=localisation["Capital-Game"] + " path: None", font=("Arial", 14))
     version_label = Label(main_frame, text=f"Game version not specified, defaulting to: {"Game_version"}", font=("Arial", 13)) # Label showing what version of the game is being modded
     installed_mod_label = Label(main_frame, text="Installed mod: I do not know what mod is installed", font=("Arial", 12))
 

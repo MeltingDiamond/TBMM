@@ -1,4 +1,10 @@
-Main: Main
+# Single words
+Capital-Main: Main
+Capital-Game: Game
+Capital-Version: Version
+version: version
+
+# Two or more words
 Get-Mods: Get Mods
 Community-Tools: Community Tools
 Show-Credits: Show Credits

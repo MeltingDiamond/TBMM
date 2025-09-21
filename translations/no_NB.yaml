@@ -1,4 +1,10 @@
-Main: Hoved
+# Single words
+Capital-Main: Hoved
+Capital-Game: Spill
+Capital-Version: Versjon
+version: versjon
+
+# Two or more words
 Get-Mods: Få Mods
 Community-Tools: Felleskap Verktøy
 Show-Credits: Vis Credits

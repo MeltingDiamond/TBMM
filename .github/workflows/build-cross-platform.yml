@@ -221,7 +221,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set nightly version
-        run: echo needs.generate-nightly-version.outputs.version > version.txt
+        run: echo "${{ needs.generate-nightly-version.outputs.version }}" > version.txt
 
       - name: Commit and push nightly version
         env:
