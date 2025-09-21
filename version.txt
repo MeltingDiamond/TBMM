@@ -1,1 +1,1 @@
-needs.generate-nightly-version.outputs.version
+
