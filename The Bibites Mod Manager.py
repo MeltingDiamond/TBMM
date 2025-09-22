@@ -1023,16 +1023,10 @@ def move_left_buttons(event):
 window.bind('<Configure>', move_left_buttons)
 
 # Set path for saving and loading
-if getattr(sys, 'frozen', False):
-    # Running as compiled executable
-    print("Running as compiled executable")
-    executable_path = Path(sys.executable).parent
-    print("Executable path " + executable_path)
-    executable_path_temp = filedialog_askdirectory(title="Folder where you want generated files to be stored")
-    print("Executable path temp " + executable_path_temp)
-    if executable_path_temp != "":
-        executable_path = executable_path_temp
-    print("Executable path " + executable_path)
+
+if "__compiled__" in globals():
+    # This resolves symlinks and returns the actual path to the binary
+    executable_path = Path(os.path.realpath(sys.argv[0])).parent
 
     downloading = executable_path/'Downloading'
     not_installed_mods = executable_path/'not_installed_mods'
@@ -1042,7 +1036,7 @@ if getattr(sys, 'frozen', False):
     settings_file = executable_path/'settings.json'
     log_file = executable_path/'log.txt'
 else:
-    # Running as a standalone Python script
+    # Running in script mode
     downloading = f'{script_dir}/Downloading'
     not_installed_mods = f'{script_dir}/not_installed_mods'
     installed_mods = f'{script_dir}/installed_mods.txt'
