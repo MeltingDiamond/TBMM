@@ -178,7 +178,7 @@ def create_main_page_ui(window, handlers):
     install_mods_button = Button(main_frame, text=localisation["Install-mods"], command=handlers["install_mods"], font=("Arial", 12)) # Button to install mods
     vanilla_play_button = Button(main_frame, text=localisation["Capital-Play"] + " " + localisation["Capital-Vanilla"], command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
     Mod_play_button = Button(main_frame, text=localisation["Capital-Play"] + " " + localisation["Capital-Modded"], command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
-    bepinex_play_button = Button(main_frame, text=localisation["Play-BepInEx"], command=handlers["Play BepInEx"], font=("Arial", 12))
+    bepinex_play_button = Button(main_frame, text=localisation["Capital-Play"] + " " + localisation["Capital-BepInEx"], command=handlers["Play BepInEx"], font=("Arial", 12))
     swap_between_nightly_and_stable_button = Button(main_frame, text=localisation["Swap-release-Channel"], command=handlers['swap_between_nightly_and_stable'], font=("Arial", 12)) # Swap between nightly and relese (stable)
     refresh_cache_button = Button(main_frame, text=localisation["Refresh-cache"], command=handlers['reset_cache'], font=("Arial", 12))
     get_the_bibites_button = Button(main_frame, text=localisation["Download-The-Bibites"], command=handlers['get_the_bibites'], font=("Arial", 12))
@@ -232,7 +232,7 @@ def create_download_mods_page_ui(window, handlers):
     downloadable_mods_frame = Frame(window)
 
     # Buttons
-    download_mods_button = Button(downloadable_mods_frame, text="Download mods", command=handlers['download_mods'], font=("Arial", 16))
+    download_mods_button = Button(downloadable_mods_frame, text=localisation["Capital-Download"] + " " + localisation["mods"], command=handlers['download_mods'], font=("Arial", 16))
 
     # Layout
     download_mods_button.pack(pady=(10, 20), side="bottom")
@@ -263,7 +263,7 @@ def create_more_tools_page_ui(window, handlers):
     more_tools_frame = Frame(window)
 
     # Label
-    Best_tools_lable = Label(more_tools_frame, font=("Arial", 10, "bold"), wraplength=1000, text="Best tools made for The Bibites")
+    Best_tools_lable = Label(more_tools_frame, font=("Arial", 10, "bold"), wraplength=1000, text=localisation["Best-tools-The-Bibites"])
     Einstein_lable = Label(more_tools_frame, font=("Arial", 18, "bold"), wraplength=1000, text="Einstein\n(discontinued 0.6.1+)")
     Einstein_info_lable = Label(more_tools_frame, font=("Arial", 12), wraplength=1000, text="Edit brains by interacting with a diagram of neurons and synapses. Zoom and pan around the diagram, paint neurons different colors, automatically convert brains between bibite versions, view neuron values calculated tick-by-tick and discover other bells and whistles.\nEven though its discontinued its still one of the best tools ever made")
     Einstein_hyperlink = Label(more_tools_frame, text="Download Einstein", fg="blue", cursor="hand2", font=("Arial", 12))
@@ -288,7 +288,7 @@ def create_game_version_page_ui(window, handlers):
     width_height = f"{int(handlers['screen_width'] / 4)}x{int(handlers['screen_height'] / 3)}"
 
     game_version_window = Toplevel(window)
-    game_version_window.title("Choose Game Version")
+    game_version_window.title(localisation["Choose-Game-Version"])
     game_version_window.geometry(width_height)
     game_version_window.resizable(False, False)
 

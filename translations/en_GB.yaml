@@ -1,12 +1,15 @@
-# Single words
+# Single words in en_GB
 Capital-Main: Main
 Capital-Game: Game
 Capital-Play: Play
 Capital-Vanilla: Vanilla
 Capital-Modded: Modded
+Capital-BepInEx: BepInEx
 Capital-Version: Version
 version: version
 Capital-Installed: Installed
+Capital-Download: Download
+mods: mods
 
 # Two or more words
 Get-Mods: Get Mods
@@ -22,3 +25,5 @@ Swap-release-Channel: Swap release Channel
 Refresh-cache: Refresh cache
 Download-The-Bibites: Download The Bibites
 Download-new-TBMM-update: Download new TBMM update
+Choose-Game-Version: Choose Game Version
+Best-tools-The-Bibites: Best tools made for The Bibites

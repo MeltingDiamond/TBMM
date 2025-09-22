@@ -1,12 +1,15 @@
-# Single words
+# Single words in en_GB
 Capital-Main: Hoved
 Capital-Game: Spill
 Capital-Play: Spill
 Capital-Vanilla: Vanilla
 Capital-Modded: Moddet
+Capital-BepInEx: BepInEx
 Capital-Version: Versjon
 version: versjon
 Capital-Installed: Installed
+Capital-Download: Last ned
+mods: mods
 
 # Two or more words
 Get-Mods: Få Mods
@@ -22,3 +25,5 @@ Swap-release-Channel: Bytt release Channel
 Refresh-cache: Refresh cache
 Download-The-Bibites: Last ned The Bibites
 Download-new-TBMM-update: Last ned ny TBMM oppdatering
+Choose-Game-Version: Velg Spill Version
+Best-tools-The-Bibites: Beste verktøy laget for The Bibites

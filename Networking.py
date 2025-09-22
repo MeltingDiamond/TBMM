@@ -64,6 +64,8 @@ def update_check(version, log, nightly=False):
 def fetch_filenames(log, cache_duration, mod_repo_urls, get_website_name, save_cache_to_file, status_label, mod_names, mod_names_cache, cache_time):
     '''Get the file names of all the available mods'''
 
+    print(time.time() - cache_time > cache_duration)
+    print("time.time() - cache_time", time.time() - cache_time, "cache_duration", cache_duration)
     # Check if cache is valid
     if mod_names_cache is None or time.time() - cache_time > cache_duration or mod_names_cache == []:
         # Check if user has intenett access
@@ -78,9 +80,10 @@ def fetch_filenames(log, cache_duration, mod_repo_urls, get_website_name, save_c
                 elif "dropbox.com" in website_name:
                     mod_names_cache = fetch_from_dropbox(url, mod_names, log, status_label)
 
+                print(mod_names_cache)
                 if mod_names_cache:  # Success, stop trying further URLs
                     cache_time = time.time()
-                    save_cache_to_file()
+                    save_cache_to_file(mod_names_cache, cache_time)
                     return mod_names_cache
 
             # failed to fetch mod names from internett return empty list to avoid breaking code.
@@ -179,7 +182,7 @@ def get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_
 
             if mod_cache:
                 cache_time = time.time()
-                save_cache_to_file()
+                save_cache_to_file(mod_names_cache, cache_time)
                 return mod_content_cache[path]['content']
     else:
         return None

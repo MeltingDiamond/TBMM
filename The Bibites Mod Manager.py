@@ -520,10 +520,10 @@ def install_mods(): # Install a mod so you can play modded
             save_settings()
 
 # Function to save cache to a file
-def save_cache_to_file():
+def save_cache_to_file(mod_names_cache, cache_time):
     all_cache_data = {"mod_names_cache" : mod_names_cache,"cache_time" : cache_time, "mod_content_cache" : mod_content_cache}
     with open(cache_file, 'w') as file:
-        json.dump(all_cache_data, file)
+        json.dump(all_cache_data, file, indent=2)
     log("Saved cache to file.", False)
     status_label.config(text="Saved cache to file.")
 
@@ -559,7 +559,7 @@ def reset_cache():
     cache_time = time.time()  # Reset cache time to current time
 
     # Save the cleaned cache to file
-    save_cache_to_file()
+    save_cache_to_file(mod_content_cache, cache_time)
     log("Cache reset, and invalid mods removed.", False)
     status_label.config(text="Cache reset, and invalid mods removed.")
 
@@ -1021,10 +1021,14 @@ window.bind('<Configure>', move_left_buttons)
 # Set path for saving and loading
 if getattr(sys, 'frozen', False):
     # Running as compiled executable
+    print("Running as compiled executable")
     executable_path = Path(sys.executable).parent
+    print("Executable path " + executable_path)
     executable_path_temp = filedialog_askdirectory(title="Folder where you want generated files to be stored")
+    print("Executable path temp " + executable_path_temp)
     if executable_path_temp != "":
         executable_path = executable_path_temp
+    print("Executable path " + executable_path)
 
     downloading = executable_path/'Downloading'
     not_installed_mods = executable_path/'not_installed_mods'
