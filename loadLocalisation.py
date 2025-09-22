@@ -8,8 +8,11 @@ def get_system_language():
     return lang
 
 def loadLocalisation(filename = None):
+
     if filename == None:
         filename = f"{get_system_language()}.yaml"
+    
+    #filename = "no_NB.yaml" # Uncomment to force a specific language
     
     filepath = f"{scriptDir}/translations/{filename}"
 

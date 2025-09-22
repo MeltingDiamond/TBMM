@@ -5,6 +5,7 @@ from urllib.parse import urlparse, unquote
 
 windows_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Windows.zip"
 linux_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Linux.zip"
+mac_nightly_download_link  =  "https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-macOS.zip"
 release_download_link = "https://github.com/MeltingDiamond/TBMM/releases/latest"
 
 def open_link(url):
@@ -15,7 +16,9 @@ def download_new_tbmm_version(os, nightly = False):
         if os == "Windows":
                 open_link(windows_nightly_download_link)
         elif os == "Linux":
-            open_link(windows_nightly_download_link)
+            open_link(linux_nightly_download_link)
+        elif os == "Mac":
+            open_link(mac_nightly_download_link)
     else:
         open_link(release_download_link)
 

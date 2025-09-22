@@ -1161,7 +1161,7 @@ else:
     newer_version = update_check(version_number, log, is_nightly)
 
 if newer_version:
-    dowload_new_version_button.grid(row=2, column=4, pady=80, sticky="n")
+    dowload_new_version_button.grid(row=2, column=4, pady=130, sticky="n")
 
 list_downloaded_mods()
 

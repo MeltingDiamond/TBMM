@@ -1,8 +1,12 @@
 # Single words
 Capital-Main: Main
 Capital-Game: Game
+Capital-Play: Play
+Capital-Vanilla: Vanilla
+Capital-Modded: Modded
 Capital-Version: Version
 version: version
+Capital-Installed: Installed
 
 # Two or more words
 Get-Mods: Get Mods
@@ -11,10 +15,8 @@ Show-Credits: Show Credits
 Join-BRC: Join Bibite Research Conglomerate Discord Server
 The-Bibites-Mod-Manager: The Bibites Mod Manager rewritten
 Get-path-to-game-exe: Get path to game exe
-Game-version: Game version
 Install-mods: Install mods
 Play-Vanilla: Play Vanilla
-Play-Modded: Play Modded
 Play-BepInEx: Play BepInEx
 Swap-release-Channel: Swap release Channel
 Refresh-cache: Refresh cache

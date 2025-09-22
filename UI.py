@@ -174,10 +174,10 @@ def create_main_page_ui(window, handlers):
 
     # Buttonslocalisation
     game_path_button = Button(main_frame, text=localisation["Get-path-to-game-exe"], command=handlers['get_game_path'], font=("Arial", 12))
-    version_button = Button(main_frame, text=localisation["Capital-Game"] + localisation["version"], command=handlers["get_game_version"], font=("Arial", 12))
+    version_button = Button(main_frame, text=localisation["Capital-Game"] + " " + localisation["version"], command=handlers["get_game_version"], font=("Arial", 12))
     install_mods_button = Button(main_frame, text=localisation["Install-mods"], command=handlers["install_mods"], font=("Arial", 12)) # Button to install mods
-    vanilla_play_button = Button(main_frame, text=localisation["Play-Vanilla"], command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
-    Mod_play_button = Button(main_frame, text=localisation["Play-Modded"], command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
+    vanilla_play_button = Button(main_frame, text=localisation["Capital-Play"] + " " + localisation["Capital-Vanilla"], command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
+    Mod_play_button = Button(main_frame, text=localisation["Capital-Play"] + " " + localisation["Capital-Modded"], command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
     bepinex_play_button = Button(main_frame, text=localisation["Play-BepInEx"], command=handlers["Play BepInEx"], font=("Arial", 12))
     swap_between_nightly_and_stable_button = Button(main_frame, text=localisation["Swap-release-Channel"], command=handlers['swap_between_nightly_and_stable'], font=("Arial", 12)) # Swap between nightly and relese (stable)
     refresh_cache_button = Button(main_frame, text=localisation["Refresh-cache"], command=handlers['reset_cache'], font=("Arial", 12))
@@ -186,8 +186,8 @@ def create_main_page_ui(window, handlers):
 
     # Labels
     game_path_label = Label(main_frame, text=localisation["Capital-Game"] + " path: None", font=("Arial", 14))
-    version_label = Label(main_frame, text=f"Game version not specified, defaulting to: {"Game_version"}", font=("Arial", 13)) # Label showing what version of the game is being modded
-    installed_mod_label = Label(main_frame, text="Installed mod: I do not know what mod is installed", font=("Arial", 12))
+    version_label = Label(main_frame, text=localisation["Capital-Game"] + f" version not specified, defaulting to: {"Game_version"}", font=("Arial", 13)) # Label showing what version of the game is being modded
+    installed_mod_label = Label(main_frame, text=localisation["Capital-Installed"] + " mod: I do not know what mod is installed", font=("Arial", 12))
 
     # Listbox to display downloaded mods
     downloaded_mods_listbox = Listbox(main_frame, font=("Arial", 12), width=50, selectmode="single") # selectmode="multiple"

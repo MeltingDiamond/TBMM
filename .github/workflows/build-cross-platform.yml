@@ -23,9 +23,6 @@ jobs:
         run: |
           VERSION=nightly-$(date +'%Y%m%d%H%M%S')
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-      
-      - name: Show version.txt contents after updating
-        run: cat version.txt
 
   build-windows:
     needs: generate-nightly-version
