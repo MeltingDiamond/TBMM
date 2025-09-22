@@ -921,7 +921,11 @@ images_folder = f'{script_dir}/Images' # Path to folder with images
 
 # Setup UI links with UI.py
 # Create window
-window_widgets = create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, handlers={
+if nightly_version.startswith("__VERSION"):
+    displayed_version_number = version_number
+else:
+    displayed_version_number = nightly_version
+window_widgets = create_window(images_folder, displayed_version_number, Discord_invite_link, OS_TYPE, handlers={
     'list_downloaded_mods': list_downloaded_mods,
     'download_mods_page': download_mods_page,
     'more_tools_page': more_tools_page,
