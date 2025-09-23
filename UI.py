@@ -200,22 +200,24 @@ def create_main_page_ui(window, handlers):
     log_text.config(yscrollcommand=log_scrollbar.set)
 
     # Layout
-    game_path_label.grid(row=1, column=0, columnspan=2, padx=(0, 10))
-    game_path_button.grid(row=1, column=2, columnspan=1)
-    version_label.grid(row=0, column=0, columnspan=2, padx=(0, 10), sticky="w")
-    version_button.grid(row=0, column=2, columnspan=2, sticky="w")
-    downloaded_mods_listbox.grid(row=2, column=0, columnspan=3, sticky="ew")
-    scrollbar.grid(row=2, column=3, sticky="nsw")
-    install_mods_button.grid(row=3, column=2, sticky="e")
-    vanilla_play_button.grid(row=3, column=0, sticky="w")
-    Mod_play_button.grid(row=3, column=0, columnspan=2)
-    bepinex_play_button.grid(row=3, column=1, sticky="e")
-    swap_between_nightly_and_stable_button.grid(row=2, column=4, sticky="s")
-    refresh_cache_button.grid(row=2, column=4, sticky="n")
-    get_the_bibites_button.grid(row=2, column=4, pady=70, sticky="n")
-    installed_mod_label.grid(row=4, column=0, columnspan=3, sticky='n', pady=5)
-    log_text.grid(row=6, column=0, columnspan=3, padx=5, pady=(5, 0), sticky="nsew")
-    log_scrollbar.grid(row=6, column=3, sticky='nsw')
+    game_path_label.grid(row=1, column=0, columnspan=3, padx=(0, 10))
+    game_path_button.grid(row=1, column=3, columnspan=1)
+    version_label.grid(row=0, column=0, columnspan=3, padx=(0, 10), sticky="w")
+    version_button.grid(row=0, column=3, columnspan=2, sticky="w")
+    downloaded_mods_listbox.grid(row=2, column=0, columnspan=4, sticky="ew")
+    scrollbar.grid(row=2, column=4, sticky="nsw")
+
+    install_mods_button.grid(in_=main_frame, row=3, column=3, sticky="e")
+    vanilla_play_button.grid(in_=main_frame, row=3, column=0, sticky="w")
+    Mod_play_button.grid(in_=main_frame, row=3, padx=20, column=1)
+    bepinex_play_button.grid(in_=main_frame, row=3, column=2)
+
+    swap_between_nightly_and_stable_button.grid(row=2, column=5, sticky="s")
+    refresh_cache_button.grid(row=2, column=5, sticky="n")
+    get_the_bibites_button.grid(row=2, column=5, pady=70, sticky="n")
+    installed_mod_label.grid(row=4, column=0, columnspan=4, sticky='n', pady=5)
+    log_text.grid(row=6, column=0, columnspan=4, padx=5, pady=(5, 0), sticky="nsew")
+    log_scrollbar.grid(row=6, column=4, sticky='nsw')
 
     return {
         'frame': main_frame,
@@ -246,7 +248,7 @@ def create_credits_page_ui(window):
     credits_frame = Frame(window)
 
     # Label
-    credits_headline_text = "Thanks to all these awesome people for helping"
+    credits_headline_text = localisation["Credits-headline"]
     credits_headline_label = Label(credits_frame, text=credits_headline_text, font=("Arial", 18))
     credits_label_text = "MOD MAKERS:\nFiveBalesofHay\nMelting Diamond\n\nRESKIN MAKERS:\nmiau\nFiveBalesofHay\n\nTBMM ART:\n\nTBMM icon - miau"
     credits_label = Label(credits_frame, text=credits_label_text, font=("Arial", 14))
@@ -266,7 +268,7 @@ def create_more_tools_page_ui(window, handlers):
     Best_tools_lable = Label(more_tools_frame, font=("Arial", 10, "bold"), wraplength=1000, text=localisation["Best-tools-The-Bibites"])
     Einstein_lable = Label(more_tools_frame, font=("Arial", 18, "bold"), wraplength=1000, text="Einstein\n(discontinued 0.6.1+)")
     Einstein_info_lable = Label(more_tools_frame, font=("Arial", 12), wraplength=1000, text="Edit brains by interacting with a diagram of neurons and synapses. Zoom and pan around the diagram, paint neurons different colors, automatically convert brains between bibite versions, view neuron values calculated tick-by-tick and discover other bells and whistles.\nEven though its discontinued its still one of the best tools ever made")
-    Einstein_hyperlink = Label(more_tools_frame, text="Download Einstein", fg="blue", cursor="hand2", font=("Arial", 12))
+    Einstein_hyperlink = Label(more_tools_frame, text=localisation["Capital-Download"] + " " +"Einstein", fg="blue", cursor="hand2", font=("Arial", 12))
     Einstein_hyperlink.bind("<Button-1>", handlers['open_link'])
     Einstein_image = PhotoImage(file=f"{handlers['images_folder']}/Einstein_Review.png")
     Einstein_image_label = Label(more_tools_frame, image = Einstein_image)

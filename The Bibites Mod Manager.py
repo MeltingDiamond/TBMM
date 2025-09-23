@@ -355,7 +355,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
             os.symlink(not_installed_mod_path, os.path.join(Game_folder, "The Bibites_Data", "Managed", "BibitesAssembly.dll.TBM"), target_is_directory=False)
 
             installed_mods_list = mod_name
-            print(installed_mods_list)
+
             with open(installed_mods, 'w') as file: # Write the installed_mod_list to keep it after TBMM closes
                 file.write(installed_mods_list)
 
@@ -520,7 +520,7 @@ def install_mods(): # Install a mod so you can play modded
             save_settings()
 
 # Function to save cache to a file
-def save_cache_to_file(mod_names_cache, cache_time):
+def save_cache_to_file(cache_time):
     all_cache_data = {"mod_names_cache" : mod_names_cache,"cache_time" : cache_time, "mod_content_cache" : mod_content_cache}
     with open(cache_file, 'w') as file:
         json.dump(all_cache_data, file, indent=2)
