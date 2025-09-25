@@ -14,7 +14,7 @@ from Networking import update_check, download_new_tbmm_version, open_link, downl
 from Networking import get_website_name, get_file_contents
 
 # TODO
-# Add a latest_log.txt file used purly for logs from the last time TBMM was ran. 
+# Add a latest_log.txt file used purely for logs from the last time TBMM was ran. 
 # log.txt is a global log file, but maybe cap it at some kind of size.
 # Move more of the UI code from here to UI.py
 # Move more of the networking code from here to Networking.py
@@ -88,7 +88,7 @@ tooltip_state = {
 }
 tooltips = {} # Dictionary to hold tooltips
 
-# List to store mod names globaly
+# List to store mod names globally
 downloaded_mods_list = []
 mod_names = []
 installed_mods_list = []
@@ -102,7 +102,7 @@ cache_duration = 86400  # Cache duration in seconds (24 hours)
 
 # Settings dictionary
 settings = {}
-Game_folder = None # Default to none because it needs to be initialised on start
+Game_folder = None # Default to none because it needs to be initialise on start
 bepinex_folder = None # BepInEx isn't installed by default and needs to be checked if is installed
 
 # Gets the current time in correct time format to be placed in log.txt
@@ -252,7 +252,7 @@ def get_mod_game_version(mod_name):
 def get_bibites_to_download(mod_name):
     file_contents = get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_cache, log, mod_repo_urls)
     lines = file_contents.splitlines()
-    bibites_to_download = next((line for line in lines if line.startswith('bibites:')), None) # if there are bibites download them into the dibites folder
+    bibites_to_download = next((line for line in lines if line.startswith('bibites:')), None) # if there are bibites download them into the bibites folder
     if bibites_to_download:
         bibites_to_download = bibites_to_download.replace('bibites: ', '').strip()
         # Check if there are multiple URLs separated by commas
@@ -363,7 +363,7 @@ def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed
             log(log_message, False)
             status_label.config(text=log_message)
 
-        # If any other mod is installed replace the curent one
+        # If any other mod is installed replace the current one
         else:
             log_message = ""
             for mod in installed_mods_list:
@@ -430,7 +430,7 @@ def install_mod_bepinex(mod_name, not_installed_mod_folder):
 
 def download_bibites(bibites_to_download):
     for bibite in bibites_to_download:
-        filename = get_filename_from_response(bibite) # Get filename to determin if it is .bb8 or .bb8template
+        filename = get_filename_from_response(bibite) # Get filename to determine if it is .bb8 or .bb8template
         log(f"Downloading bibite {filename}", False)
         if OS_TYPE == "Windows":
             if filename.endswith(".bb8"):
@@ -508,8 +508,8 @@ def install_mods(): # Install a mod so you can play modded
 
         # The mod you are trying to install ia already installed
         else:
-            log(f"{mod_name} is aleady installed", False)
-            status_label.config(text=f"{mod_name} is aleady installed") # Display that mod is already installed
+            log(f"{mod_name} is already installed", False)
+            status_label.config(text=f"{mod_name} is already installed") # Display that mod is already installed
             installed_mods_list_pretty_for_display = [] # List stores the installed mods without .TBM to make it prettier
             for mod in installed_mods_list:
                 mod = mod.split('.')[0]
@@ -520,8 +520,12 @@ def install_mods(): # Install a mod so you can play modded
             save_settings()
 
 # Function to save cache to a file
-def save_cache_to_file(cache_time):
-    all_cache_data = {"mod_names_cache" : mod_names_cache,"cache_time" : cache_time, "mod_content_cache" : mod_content_cache}
+def save_cache_to_file(cached_time):
+    global cache_time
+    # Save cached time to global variable
+    cache_time = cached_time
+
+    all_cache_data = {"mod_names_cache" : mod_names_cache,"cache_time" : cached_time, "mod_content_cache" : mod_content_cache}
     with open(cache_file, 'w') as file:
         json.dump(all_cache_data, file, indent=2)
     log("Saved cache to file.", False)
@@ -592,7 +596,7 @@ def list_downloaded_mods():
 
         downloaded_mods_listbox.delete(0, "end")  # Clear existing list
 
-        #check_for_local_mods() # Check for downloaded mods that are not registerd
+        #check_for_local_mods() # Check for downloaded mods that are not registered
         
         # Display downloaded mods with tooltip
         if os.path.isfile(downloaded_mods) and os.stat(downloaded_mods).st_size != 0:
@@ -737,7 +741,7 @@ def play_game(Modded):
 
         ScriptingAssemblies = f'{Game_folder}/The Bibites_Data/ScriptingAssemblies.json'
         with open(ScriptingAssemblies, "r") as file:
-            ScriptingAssembliesText = json.load(file) # Index of 'BibitesAssembly.dll' is 68
+            ScriptingAssembliesText = json.load(file)                               # Index of 'BibitesAssembly.dll' is 68
 
         if Modded == ('No'):
             if OS_TYPE == "Windows":
@@ -745,7 +749,7 @@ def play_game(Modded):
             elif OS_TYPE == "Linux":
                 ScriptingAssembliesText['names'][67] = 'BibitesAssembly.dll.TBM'
 
-            with open(ScriptingAssemblies, "w") as file:                 # Write the info
+            with open(ScriptingAssemblies, "w") as file:                            # Write the info
                 json.dump(ScriptingAssembliesText, file)
 
             try:
@@ -782,8 +786,8 @@ def play_game(Modded):
                 log(f"You have installed a replace mod assuming you want to use that", False)
                 status_label.config(text=f"You have installed a replace mod assuming you want to use that")
             else:
-                log(f"You haven't installed a replace mod assuming you have intalled BepInEx mods. Please use the BepInEx play button.", False)
-                status_label.config(text=f"You haven't installed a replace mod assuming you have intalled BepInEx mods. Please use the BepInEx play button.")
+                log(f"You haven't installed a replace mod assuming you have installed BepInEx mods. Please use the BepInEx play button.", False)
+                status_label.config(text=f"You haven't installed a replace mod assuming you have installed BepInEx mods. Please use the BepInEx play button.")
                 return
 
             try:
@@ -825,7 +829,7 @@ def play_game(Modded):
         status_label.config(text=f"{Game_path} does not exist, you need to set a valid game path to be able to run the game")
 
 def play_bepinex():
-    # Only neccesary for OSes where any play button might modify it.
+    # Only necessary for OSes where any play button might modify it.
     ScriptingAssemblies = f'{Game_folder}/The Bibites_Data/ScriptingAssemblies.json'
     with open(ScriptingAssemblies, "r") as file:
         ScriptingAssembliesText = json.load(file) # Index of 'BibitesAssembly.dll' is 68
@@ -963,14 +967,14 @@ version_label = main_page_widgets['version_label']
 downloaded_mods_listbox = main_page_widgets['downloaded_mods_listbox']
 installed_mod_label = main_page_widgets['installed_mod_label']
 log_text = main_page_widgets['log_text']
-dowload_new_version_button = main_page_widgets['dowload_new_version_button']
+download_new_version_button = main_page_widgets['download_new_version_button']
 
 # Create the download mods page UI and store widgets
-downlod_mods_page_widgets = create_download_mods_page_ui(window, handlers={
+download_mods_page_widgets = create_download_mods_page_ui(window, handlers={
     'download_mods': download_mods
 })
 
-downloadable_mods_frame = downlod_mods_page_widgets['frame']
+downloadable_mods_frame = download_mods_page_widgets['frame']
 
 # Create the credits page UI and store widgets
 credits_page_widgets = create_credits_page_ui(window)
@@ -983,14 +987,14 @@ more_tools_page_widgets = create_more_tools_page_ui(window, handlers={
 })
 
 more_tools_frame = more_tools_page_widgets['frame']
-Einstein_info_lable = more_tools_page_widgets['Einstein_info_lable']
+Einstein_info_label = more_tools_page_widgets['Einstein_info_label']
 
 def update_screen_size():
     global window_width, window_height
     window_width = window.winfo_width()
     window_height = window.winfo_height()
 
-# Function moves the buttons on the sides when you scale the window always keping them on screen
+# Function moves the buttons on the sides when you scale the window always keeping them on screen
 def move_left_buttons(event):
     update_screen_size()
 
@@ -1016,8 +1020,8 @@ def move_left_buttons(event):
     hyperlink_height = Bibite_Research_Conglomerate_hyperlink.winfo_reqheight()
     Bibite_Research_Conglomerate_hyperlink.place(x=window_width - hyperlink_width - 20, y=window_height - hyperlink_height - 20)
 
-    # Update wraplengt of text to make it look better on smaller windows
-    Einstein_info_lable.configure(wraplength=min(1000, window_width - 375))
+    # Update wraplength of text to make it look better on smaller windows
+    Einstein_info_label.configure(wraplength=min(1000, window_width - 375))
 
 # Bind the function to move find_mods_button
 window.bind('<Configure>', move_left_buttons)
@@ -1163,7 +1167,7 @@ else:
     newer_version = update_check(version_number, log, is_nightly)
 
 if newer_version:
-    dowload_new_version_button.grid(row=2, column=4, pady=130, sticky="n")
+    download_new_version_button.grid(row=2, column=4, pady=130, sticky="n")
 
 list_downloaded_mods()
 

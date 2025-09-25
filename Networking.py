@@ -81,6 +81,8 @@ def fetch_filenames(log, cache_duration, mod_repo_urls, get_website_name, save_c
                 print(mod_names_cache)
                 if mod_names_cache:  # Success, stop trying further URLs
                     cache_time = time.time()
+                    print(cache_time)
+                    print(time.time() - cache_time > cache_duration)
                     save_cache_to_file(cache_time)
                     return mod_names_cache
 

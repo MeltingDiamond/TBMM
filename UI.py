@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 
 from loadLocalisation import loadLocalisation
 
-localisation = loadLocalisation()
+localization = loadLocalisation()
 
 # Define UI functions that can be used in other parts of TBMM so UI library imports can be isolated to this file
 def filedialog_askopenfile(initialdir, filetypes):
@@ -14,7 +14,7 @@ def filedialog_asksaveasfilename(defaultextension, filetypes, title, initialfile
     return filedialog.asksaveasfilename(defaultextension=defaultextension, filetypes=filetypes, title=title, initialfile=initialfile)
 
 def filedialog_askdirectory(title):
-    return filedialog.askdirectory(titel=titel)
+    return filedialog.askdirectory(title=title)
 
 # Size of different fonts
 status_label_font_size = 14
@@ -131,22 +131,22 @@ def create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, h
     window.minsize(1000, 550)
 
     # Title label
-    title_label = Label(window, text=localisation["The-Bibites-Mod-Manager"], font=("Arial", 24, "bold"))
+    title_label = Label(window, text=localization["The-Bibites-Mod-Manager"], font=("Arial", 24, "bold"))
     title_label.pack(pady=(20, 10))
 
     # Button to display downloaded mods (main page)
-    display_downloaded_mods_button = Button(window, text=localisation["Capital-Main"], command=handlers['list_downloaded_mods'], font=("Arial", 12))
+    display_downloaded_mods_button = Button(window, text=localization["Capital-Main"], command=handlers['list_downloaded_mods'], font=("Arial", 12))
 
     # Button where you find mods to download and install
-    find_mods_button = Button(window, text=localisation["Get-Mods"], command=handlers['download_mods_page'], font=("Arial", 12))
+    find_mods_button = Button(window, text=localization["Get-Mods"], command=handlers['download_mods_page'], font=("Arial", 12))
 
     # More tool page where you can find good tools
-    more_tools_button = Button(window, text=localisation["Community-Tools"], command=handlers['more_tools_page'], font=("Arial", 12))
+    more_tools_button = Button(window, text=localization["Community-Tools"], command=handlers['more_tools_page'], font=("Arial", 12))
 
     # Button That takes you to the credits page
-    credits_button = Button(window, text=localisation["Show-Credits"], command=handlers['credits_page'], font=("Arial", 12))
+    credits_button = Button(window, text=localization["Show-Credits"], command=handlers['credits_page'], font=("Arial", 12))
 
-    Bibite_Research_Conglomerate_hyperlink = Label(window, text=localisation["Join-BRC"], fg="blue", cursor="hand2", font=("Arial", 11))
+    Bibite_Research_Conglomerate_hyperlink = Label(window, text=localization["Join-BRC"], fg="blue", cursor="hand2", font=("Arial", 11))
     Bibite_Research_Conglomerate_hyperlink.bind("<Button-1>", handlers['open_link'])
 
     # Status Label used to show status to the user
@@ -172,22 +172,22 @@ def create_main_page_ui(window, handlers):
     main_frame.grid_rowconfigure(6, weight=1)
     main_frame.grid_columnconfigure(2, weight=1)
 
-    # Buttonslocalisation
-    game_path_button = Button(main_frame, text=localisation["Get-path-to-game-exe"], command=handlers['get_game_path'], font=("Arial", 12))
-    version_button = Button(main_frame, text=localisation["Capital-Game"] + " " + localisation["version"], command=handlers["get_game_version"], font=("Arial", 12))
-    install_mods_button = Button(main_frame, text=localisation["Install-mods"], command=handlers["install_mods"], font=("Arial", 12)) # Button to install mods
-    vanilla_play_button = Button(main_frame, text=localisation["Capital-Play"] + " " + localisation["Capital-Vanilla"], command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
-    Mod_play_button = Button(main_frame, text=localisation["Capital-Play"] + " " + localisation["Capital-Modded"], command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
-    bepinex_play_button = Button(main_frame, text=localisation["Capital-Play"] + " " + localisation["Capital-BepInEx"], command=handlers["Play BepInEx"], font=("Arial", 12))
-    swap_between_nightly_and_stable_button = Button(main_frame, text=localisation["Swap-release-Channel"], command=handlers['swap_between_nightly_and_stable'], font=("Arial", 12)) # Swap between nightly and relese (stable)
-    refresh_cache_button = Button(main_frame, text=localisation["Refresh-cache"], command=handlers['reset_cache'], font=("Arial", 12))
-    get_the_bibites_button = Button(main_frame, text=localisation["Download-The-Bibites"], command=handlers['get_the_bibites'], font=("Arial", 12))
-    dowload_new_version_button = Button(main_frame, text=localisation["Download-new-TBMM-update"], command=handlers['download_new_tbmm_version'], font=("Arial", 12), bg="#0060e5", fg="#003C00")
+    # Buttons
+    game_path_button = Button(main_frame, text=localization["Get-path-to-game-exe"], command=handlers['get_game_path'], font=("Arial", 12))
+    version_button = Button(main_frame, text=localization["Capital-Game"] + " " + localization["version"], command=handlers["get_game_version"], font=("Arial", 12))
+    install_mods_button = Button(main_frame, text=localization["Install-mods"], command=handlers["install_mods"], font=("Arial", 12)) # Button to install mods
+    vanilla_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-Vanilla"], command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
+    Mod_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-Modded"], command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
+    bepinex_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-BepInEx"], command=handlers["Play BepInEx"], font=("Arial", 12))
+    swap_between_nightly_and_stable_button = Button(main_frame, text=localization["Swap-release-Channel"], command=handlers['swap_between_nightly_and_stable'], font=("Arial", 12)) # Swap between nightly and relese (stable)
+    refresh_cache_button = Button(main_frame, text=localization["Refresh-cache"], command=handlers['reset_cache'], font=("Arial", 12))
+    get_the_bibites_button = Button(main_frame, text=localization["Download-The-Bibites"], command=handlers['get_the_bibites'], font=("Arial", 12))
+    download_new_version_button = Button(main_frame, text=localization["Download-new-TBMM-update"], command=handlers['download_new_tbmm_version'], font=("Arial", 12), bg="#0060e5", fg="#003C00")
 
     # Labels
-    game_path_label = Label(main_frame, text=localisation["Capital-Game"] + " path: None", font=("Arial", 14))
-    version_label = Label(main_frame, text=localisation["Capital-Game"] + f" version not specified, defaulting to: {"Game_version"}", font=("Arial", 13)) # Label showing what version of the game is being modded
-    installed_mod_label = Label(main_frame, text=localisation["Capital-Installed"] + " mod: I do not know what mod is installed", font=("Arial", 12))
+    game_path_label = Label(main_frame, text=localization["Capital-Game"] + " path: None", font=("Arial", 14))
+    version_label = Label(main_frame, text=localization["Capital-Game"] + f" version not specified, defaulting to: {"Game_version"}", font=("Arial", 13)) # Label showing what version of the game is being modded
+    installed_mod_label = Label(main_frame, text=localization["Capital-Installed"] + " mod: I do not know what mod is installed", font=("Arial", 12))
 
     # Listbox to display downloaded mods
     downloaded_mods_listbox = Listbox(main_frame, font=("Arial", 12), width=50, selectmode="single") # selectmode="multiple"
@@ -226,7 +226,7 @@ def create_main_page_ui(window, handlers):
         'downloaded_mods_listbox': downloaded_mods_listbox,
         'installed_mod_label': installed_mod_label,
         'log_text': log_text,
-        'dowload_new_version_button': dowload_new_version_button
+        'download_new_version_button': download_new_version_button
     }
 
 def create_download_mods_page_ui(window, handlers):
@@ -234,7 +234,7 @@ def create_download_mods_page_ui(window, handlers):
     downloadable_mods_frame = Frame(window)
 
     # Buttons
-    download_mods_button = Button(downloadable_mods_frame, text=localisation["Capital-Download"] + " " + localisation["mods"], command=handlers['download_mods'], font=("Arial", 16))
+    download_mods_button = Button(downloadable_mods_frame, text=localization["Capital-Download"] + " " + localization["mods"], command=handlers['download_mods'], font=("Arial", 16))
 
     # Layout
     download_mods_button.pack(pady=(10, 20), side="bottom")
@@ -248,7 +248,7 @@ def create_credits_page_ui(window):
     credits_frame = Frame(window)
 
     # Label
-    credits_headline_text = localisation["Credits-headline"]
+    credits_headline_text = localization["Credits-headline"]
     credits_headline_label = Label(credits_frame, text=credits_headline_text, font=("Arial", 18))
     credits_label_text = "MOD MAKERS:\nFiveBalesofHay\nMelting Diamond\n\nRESKIN MAKERS:\nmiau\nFiveBalesofHay\n\nTBMM ART:\n\nTBMM icon - miau"
     credits_label = Label(credits_frame, text=credits_label_text, font=("Arial", 14))
@@ -265,10 +265,10 @@ def create_more_tools_page_ui(window, handlers):
     more_tools_frame = Frame(window)
 
     # Label
-    Best_tools_lable = Label(more_tools_frame, font=("Arial", 10, "bold"), wraplength=1000, text=localisation["Best-tools-The-Bibites"])
+    Best_tools_lable = Label(more_tools_frame, font=("Arial", 10, "bold"), wraplength=1000, text=localization["Best-tools-The-Bibites"])
     Einstein_lable = Label(more_tools_frame, font=("Arial", 18, "bold"), wraplength=1000, text="Einstein\n(discontinued 0.6.1+)")
-    Einstein_info_lable = Label(more_tools_frame, font=("Arial", 12), wraplength=1000, text="Edit brains by interacting with a diagram of neurons and synapses. Zoom and pan around the diagram, paint neurons different colors, automatically convert brains between bibite versions, view neuron values calculated tick-by-tick and discover other bells and whistles.\nEven though its discontinued its still one of the best tools ever made")
-    Einstein_hyperlink = Label(more_tools_frame, text=localisation["Capital-Download"] + " " +"Einstein", fg="blue", cursor="hand2", font=("Arial", 12))
+    Einstein_info_label = Label(more_tools_frame, font=("Arial", 12), wraplength=1000, text="Edit brains by interacting with a diagram of neurons and synapses. Zoom and pan around the diagram, paint neurons different colors, automatically convert brains between bibite versions, view neuron values calculated tick-by-tick and discover other bells and whistles.\nEven though its discontinued its still one of the best tools ever made")
+    Einstein_hyperlink = Label(more_tools_frame, text=localization["Capital-Download"] + " " +"Einstein", fg="blue", cursor="hand2", font=("Arial", 12))
     Einstein_hyperlink.bind("<Button-1>", handlers['open_link'])
     Einstein_image = PhotoImage(file=f"{handlers['images_folder']}/Einstein_Review.png")
     Einstein_image_label = Label(more_tools_frame, image = Einstein_image)
@@ -276,13 +276,13 @@ def create_more_tools_page_ui(window, handlers):
     # Layout
     Best_tools_lable.grid(row=0, column=0, sticky="n")
     Einstein_lable.grid(row=1, column=0)
-    Einstein_info_lable.grid(row=2, column=0)
+    Einstein_info_label.grid(row=2, column=0)
     Einstein_hyperlink.grid(row=3, column=0)
     Einstein_image_label.grid(row=4, column=0, pady=5)
 
     return {
         'frame': more_tools_frame,
-        'Einstein_info_lable': Einstein_info_lable
+        'Einstein_info_label': Einstein_info_label
     }
 
 def create_game_version_page_ui(window, handlers):
@@ -290,7 +290,7 @@ def create_game_version_page_ui(window, handlers):
     width_height = f"{int(handlers['screen_width'] / 4)}x{int(handlers['screen_height'] / 3)}"
 
     game_version_window = Toplevel(window)
-    game_version_window.title(localisation["Choose-Game-Version"])
+    game_version_window.title(localization["Choose-Game-Version"])
     game_version_window.geometry(width_height)
     game_version_window.resizable(False, False)
 
