@@ -230,16 +230,6 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Cache Android SDK
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.android
-            $HOME/android-sdk
-          key: android-sdk-${{ runner.os }}-${{ hashFiles('build_requirements_android.txt') }}
-          restore-keys: |
-            android-sdk-${{ runner.os }}-
-
       - name: Cache pip
         uses: actions/cache@v3
         with:
@@ -247,6 +237,30 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('build_requirements_android.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+
+      - name: Cache Buildozer global directory
+        uses: actions/cache@v4
+        with:
+          path: ~/.buildozer
+          key: ${{ runner.os }}-buildozer-global
+          restore-keys: |
+            ${{ runner.os }}-buildozer-global
+
+      - name: Cache Buildozer directory in app
+        uses: actions/cache@v4
+        with:
+          path: .buildozer
+          key: ${{ runner.os }}-buildozer-app
+          restore-keys: |
+            ${{ runner.os }}-buildozer-app
+
+      - name: Cache Android SDK
+        uses: actions/cache@v4
+        with:
+          path: ~/.buildozer/android/platform/android-sdk
+          key: ${{ runner.os }}-android-sdk
+          restore-keys: |
+            ${{ runner.os }}-android-sdk
 
       - name: Install dependencies
         run: |
@@ -260,20 +274,15 @@ jobs:
         run: >
           sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
 
-      #- name: Set up Android SDK
-       # uses: android-actions/setup-android@v2
-        #with:
-         # api-level: ${{ matrix.api-level }}
-          #build-tools: ${{ matrix.build-tools }}
-          #accept-licenses: true
-
-      - name: Build APK for Android using buildozer-action
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
+      - name: Setup Java 17 required by Gradle
+        uses: actions/setup-java@v4
         with:
-          command: buildozer android debug
-          workdir: test_app
-          buildozer_version: stable
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build APK for Android
+        run: |
+          yes | buildozer -v android debug
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
