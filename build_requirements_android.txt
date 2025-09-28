@@ -1,6 +1,7 @@
 buildozer
 kivy
-distutils
+setuptools<=68.2.2 
+cython
 
 # Same for all builds
 requests
