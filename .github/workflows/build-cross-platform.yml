@@ -271,10 +271,9 @@ jobs:
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
         with:
+          command: buildozer android debug
           workdir: test_app
           buildozer_version: stable
-          api-level: ${{ matrix.api-level }}
-          build-tools: ${{ matrix.build-tools }}
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4

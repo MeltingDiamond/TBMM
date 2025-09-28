@@ -15,7 +15,8 @@ def is_android():
     )
 
 if is_android():
-    from UI_Android import *
+    from UI_Android import TBMMKivyApp
+    kivy.require('2.3.1')
 else:
     from UI import *
 
@@ -946,7 +947,7 @@ window_handlers={
     'credits_page': credits_page,
     'open_link':lambda e: open_link(Discord_invite_link)}
 
-if is_android:
+if is_android():
     app = TBMMKivyApp(handlers=window_handlers, version_number=version_number)
 else:
     window_widgets = create_window(images_folder, displayed_version_number, Discord_invite_link, OS_TYPE, handlers=window_handlers)
