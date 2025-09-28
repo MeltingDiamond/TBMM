@@ -1,4 +1,4 @@
-import requests, platform, os, sys, base64, shutil, time, json, subprocess, zipfile, io
+import requests, platform, os, sys, base64, shutil, time, json, subprocess, zipfile, io, platform
 
 # Remove all imports from tkinter and have all UI import stuff in UI.py
 # For example instead of importing "from tkinter import filedialog" do from UI import filedialog
@@ -8,8 +8,17 @@ from tkinter import Label, Button, Frame, Checkbutton, IntVar, Toplevel, message
 from pathlib import Path
 from threading import Thread
 
-from UI import filedialog_askopenfile, filedialog_asksaveasfilename, create_window, create_main_page_ui, create_download_mods_page_ui, create_credits_page_ui
-from UI import create_more_tools_page_ui, create_game_version_page_ui, on_hover, hide_all_tooltips, on_checkbutton_hover, on_checkbutton_leave, CustomTooltip
+def is_android():
+    return (
+        platform.system() == 'Linux' and
+        'ANDROID_ARGUMENT' in os.environ
+    )
+
+if is_android():
+    from UI_Android import *
+else:
+    from UI import *
+
 from Networking import update_check, download_new_tbmm_version, open_link, download_modse, fetch_filenames, start_download, get_mod_url, get_filename_from_response
 from Networking import get_website_name, get_file_contents
 
@@ -508,7 +517,7 @@ def install_mods(): # Install a mod so you can play modded
 
         # The mod you are trying to install ia already installed
         else:
-            log(f"{mod_name} is already installed", False)
+            log(f"{mod_name} is already installed", save_to_file=False)
             status_label.config(text=f"{mod_name} is already installed") # Display that mod is already installed
             installed_mods_list_pretty_for_display = [] # List stores the installed mods without .TBM to make it prettier
             for mod in installed_mods_list:
@@ -528,7 +537,7 @@ def save_cache_to_file(cached_time):
     all_cache_data = {"mod_names_cache" : mod_names_cache,"cache_time" : cached_time, "mod_content_cache" : mod_content_cache}
     with open(cache_file, 'w') as file:
         json.dump(all_cache_data, file, indent=2)
-    log("Saved cache to file.", False)
+    log("Saved cache to file.", save_to_file=False)
     status_label.config(text="Saved cache to file.")
 
 # Function to reset and cleanup cache
@@ -552,10 +561,10 @@ def reset_cache():
             if content:  # If mod content can be fetched, keep it
                 cleaned_mod_content_cache[mod_name] = mod_data
             else:
-                log(f"Invalid mod content, removing: {mod_name}", True)
+                log(f"Invalid mod content, removing: {mod_name}", save_to_file=True)
                 status_label.config(text=f"Invalid mod content, removing: {mod_name}")
         else:
-            log(f"Mod not in mod_names_cache, removing: {mod_name}", True)
+            log(f"Mod not in mod_names_cache, removing: {mod_name}", save_to_file=True)
             status_label.config(text=f"Mod not in mod_names_cache, removing: {mod_name}")
 
     # Update mod_content_cache with only valid mods that are also in mod_names_cache
@@ -564,7 +573,7 @@ def reset_cache():
 
     # Save the cleaned cache to file
     save_cache_to_file(mod_content_cache, cache_time)
-    log("Cache reset, and invalid mods removed.", False)
+    log("Cache reset, and invalid mods removed.", save_to_file=False)
     status_label.config(text="Cache reset, and invalid mods removed.")
 
 def save_settings(): # Save to settings file
@@ -929,13 +938,14 @@ if nightly_version.startswith("__VERSION"):
     displayed_version_number = version_number
 else:
     displayed_version_number = nightly_version
-window_widgets = create_window(images_folder, displayed_version_number, Discord_invite_link, OS_TYPE, handlers={
+
+window_handlers={
     'list_downloaded_mods': list_downloaded_mods,
     'download_mods_page': download_mods_page,
     'more_tools_page': more_tools_page,
     'credits_page': credits_page,
-    'open_link':lambda e: open_link(Discord_invite_link)
-})
+    'open_link':lambda e: open_link(Discord_invite_link)}
+window_widgets = create_window(images_folder, displayed_version_number, Discord_invite_link, OS_TYPE, handlers=window_handlers)
 
 window = window_widgets['window']
 screen_width = window_widgets['screen_width']
@@ -1172,4 +1182,8 @@ if newer_version:
 list_downloaded_mods()
 
 # Runs the app
-window.mainloop()
+if is_android():
+    app = TBMMKivyApp(handlers=window_handlers, version_number=version_number)
+    app.run()
+else:
+    window.mainloop()

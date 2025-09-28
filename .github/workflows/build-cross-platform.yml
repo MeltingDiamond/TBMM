@@ -135,7 +135,6 @@ jobs:
           sudo apt-get update && sudo apt-get install -y python3-tk ccache
           python -m pip install --upgrade pip
           pip install -r build_requirements.txt
-          pip install nuitka
       
       - name: Inject nightly version into script
         run: >
@@ -209,6 +208,53 @@ jobs:
         with:
           name: TBMM-MacOS
           path: "The Bibites Mod Manager.app"
+  
+
+  build-android:
+    needs: generate-nightly-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Buildozer dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip python3-setuptools python3-dev build-essential git
+          sudo apt install -y libssl-dev libffi-dev libsqlite3-dev libjpeg-dev zlib1g-dev
+          python -m pip install --upgrade pip
+          pip install -r build_requirements.txt
+
+      - name: Install Android SDK and NDK
+        run: |
+          # Install dependencies for Android
+          sudo apt-get install -y openjdk-8-jdk
+          sudo apt install -y android-sdk
+          # Install Android NDK (adjust version if needed)
+          sudo apt install -y android-ndk
+
+      - name: Inject nightly version into Kivy app script
+        run: |
+          sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
+        
+      - name: Build APK for Android
+        run: |
+          # Initialize buildozer if needed
+          buildozer init
+          
+          # Build the APK
+          buildozer android debug
+
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TBMM-Android
+          path: bin/*.apk
 
   finalize-nightly-version:
     needs: [generate-nightly-version, build-windows, build-linux, build-macos]

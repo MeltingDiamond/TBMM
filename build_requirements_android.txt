@@ -1,0 +1,5 @@
+buildozer
+requests
+kivy
+pillow
+pyyaml

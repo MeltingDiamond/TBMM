@@ -179,7 +179,7 @@ def create_main_page_ui(window, handlers):
     vanilla_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-Vanilla"], command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
     Mod_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-Modded"], command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
     bepinex_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-BepInEx"], command=handlers["Play BepInEx"], font=("Arial", 12))
-    swap_between_nightly_and_stable_button = Button(main_frame, text=localization["Swap-release-Channel"], command=handlers['swap_between_nightly_and_stable'], font=("Arial", 12)) # Swap between nightly and relese (stable)
+    swap_between_nightly_and_stable_button = Button(main_frame, text=localization["Swap-release-Channel"], command=handlers['swap_between_nightly_and_stable'], font=("Arial", 12)) # Swap between nightly and release (stable)
     refresh_cache_button = Button(main_frame, text=localization["Refresh-cache"], command=handlers['reset_cache'], font=("Arial", 12))
     get_the_bibites_button = Button(main_frame, text=localization["Download-The-Bibites"], command=handlers['get_the_bibites'], font=("Arial", 12))
     download_new_version_button = Button(main_frame, text=localization["Download-new-TBMM-update"], command=handlers['download_new_tbmm_version'], font=("Arial", 12), bg="#0060e5", fg="#003C00")
