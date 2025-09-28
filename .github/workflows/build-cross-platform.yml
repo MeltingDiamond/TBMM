@@ -221,6 +221,24 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Cache Android SDK
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.android
+            $HOME/android-sdk
+          key: android-sdk-${{ runner.os }}-${{ hashFiles('build_requirements_android.txt') }}
+          restore-keys: |
+            android-sdk-${{ runner.os }}-
+
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('build_requirements_android.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Install dependencies
         run: |
           sudo apt update
@@ -239,19 +257,19 @@ jobs:
           unzip tools.zip -d latest
           rm tools.zip
 
-          # Add sdkmanager to PATH
-          export ANDROID_HOME=$HOME/android-sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
-          export PATH=$ANDROID_HOME/platform-tools:$PATH
+          # Persist environment for later steps
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
 
           # Accept licenses and install required SDKs
-          yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Inject nightly version into Kivy app script
         run: |
           sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
-        
+
       - name: Build APK for Android
         run: |
           buildozer init
