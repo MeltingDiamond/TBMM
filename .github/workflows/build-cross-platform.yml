@@ -228,7 +228,7 @@ jobs:
           sudo apt install -y python3-pip python3-setuptools python3-dev build-essential git
           sudo apt install -y libssl-dev libffi-dev libsqlite3-dev libjpeg-dev zlib1g-dev
           python -m pip install --upgrade pip
-          pip install -r build_requirements.txt
+          pip install -r build_requirements_android.txt
 
       - name: Inject nightly version into Kivy app script
         run: |
