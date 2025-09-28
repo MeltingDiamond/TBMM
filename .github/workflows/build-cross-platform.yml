@@ -217,7 +217,7 @@ jobs:
       matrix:
         include:
           - api-level: '29'
-            build-tools: '29.0.3'
+            build-tools: '36.1.0'
           - api-level: 'latest'
             build-tools: 'latest'
 
