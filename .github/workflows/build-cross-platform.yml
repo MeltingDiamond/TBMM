@@ -230,14 +230,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r build_requirements.txt
 
-      - name: Install Android SDK and NDK
-        run: |
-          # Install dependencies for Android
-          sudo apt-get install -y openjdk-8-jdk
-          sudo apt install -y android-sdk
-          # Install Android NDK (adjust version if needed)
-          sudo apt install -y android-ndk
-
       - name: Inject nightly version into Kivy app script
         run: |
           sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
