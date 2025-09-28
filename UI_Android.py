@@ -38,7 +38,7 @@ class TBMMKivyApp(App):
         return layout
 
 
-def create_windowd():#images_folder, version_number, Discord_invite_link, OS_TYPE, handlers):
+def create_windowd():
     # Create Tkinter window
     class HelloKivy(App):
         def build(self):
