@@ -252,7 +252,7 @@ jobs:
           sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
 
       - name: Build APK for Android
-        run: >
+        run: |
           buildozer init
           buildozer android debug
 
