@@ -280,7 +280,7 @@ jobs:
       - name: Build APK for Android
         run: |
           buildozer init
-          yes | buildozer -v android debug
+          yes | buildozer --debug android debug
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
