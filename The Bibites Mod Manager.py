@@ -27,8 +27,8 @@ from Networking import get_website_name, get_file_contents
 # log.txt is a global log file, but maybe cap it at some kind of size.
 # Move more of the UI code from here to UI.py
 # Move more of the networking code from here to Networking.py
-# Finnish adding support to linux
 # Finnish adding support for Mac
+# Android build
 
 # If you want to add support for any other os feel free to do so,
 # but MeltingDiamond will only support Windows, Linux and Mac (OSes that the bibites officially supports).
@@ -945,7 +945,11 @@ window_handlers={
     'more_tools_page': more_tools_page,
     'credits_page': credits_page,
     'open_link':lambda e: open_link(Discord_invite_link)}
-window_widgets = create_window(images_folder, displayed_version_number, Discord_invite_link, OS_TYPE, handlers=window_handlers)
+
+if is_android:
+    app = TBMMKivyApp(handlers=window_handlers, version_number=version_number)
+else:
+    window_widgets = create_window(images_folder, displayed_version_number, Discord_invite_link, OS_TYPE, handlers=window_handlers)
 
 window = window_widgets['window']
 screen_width = window_widgets['screen_width']
@@ -1183,7 +1187,6 @@ list_downloaded_mods()
 
 # Runs the app
 if is_android():
-    app = TBMMKivyApp(handlers=window_handlers, version_number=version_number)
     app.run()
 else:
     window.mainloop()

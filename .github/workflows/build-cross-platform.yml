@@ -269,10 +269,10 @@ jobs:
 
       - name: Build APK for Android using buildozer-action
         uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
         with:
-          target: android
-          debug: true
-          buildozer-options: "android"
+          workdir: test_app
+          buildozer_version: stable
           api-level: ${{ matrix.api-level }}
           build-tools: ${{ matrix.build-tools }}
 
