@@ -212,9 +212,22 @@ jobs:
   build-android:
     needs: generate-nightly-version
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        api-level: ['29', 'latest']
+        build-tools: ['29.0.3', 'latest']
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          build-tools: ${{ matrix.build-tools }}
+          accept-licenses: true
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -247,8 +260,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r build_requirements_android.txt
 
-          yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
-
       - name: Inject nightly version into Kivy app script
         run: >
           sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
@@ -261,7 +272,7 @@ jobs:
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TBMM-Android
+          name: TBMM-Android-${{ matrix.api-level == '29' && 'Android 10' || 'Latest' }}
           path: bin/*.apk
 
   finalize-nightly-version:
