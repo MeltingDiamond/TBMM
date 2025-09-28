@@ -267,11 +267,11 @@ jobs:
           $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Inject nightly version into Kivy app script
-        run: |
+        run: >
           sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
 
       - name: Build APK for Android
-        run: |
+        run: >
           buildozer init
           buildozer android debug
 
