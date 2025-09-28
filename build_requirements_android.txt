@@ -1,5 +1,8 @@
 buildozer
-requests
 kivy
+distutils
+
+# Same for all builds
+requests
 pillow
 pyyaml

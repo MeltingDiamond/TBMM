@@ -1,5 +1,7 @@
 nuitka
-requests
 tk
+
+# Same for all builds
+requests
 pillow
 pyyaml
