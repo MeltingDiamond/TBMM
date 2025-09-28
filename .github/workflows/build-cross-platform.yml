@@ -208,7 +208,6 @@ jobs:
         with:
           name: TBMM-MacOS
           path: "The Bibites Mod Manager.app"
-  
 
   build-android:
     needs: generate-nightly-version
@@ -225,11 +224,15 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y python3-pip python3-setuptools python3-dev build-essential git
-          sudo apt install -y libssl-dev libffi-dev libsqlite3-dev libjpeg-dev zlib1g-dev
+          sudo apt install -y python3-pip python3-setuptools python3-dev build-essential git libssl-dev libffi-dev libsqlite3-dev libjpeg-dev zlib1g-dev openjdk-8-jdk unzip
+          
           python -m pip install --upgrade pip
           pip install -r build_requirements_android.txt
 
+          # Make sure pip's local bin is on PATH
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+          # Install Android SDK commandline tools
           mkdir -p $HOME/android-sdk/cmdline-tools
           cd $HOME/android-sdk/cmdline-tools
           curl -fo tools.zip https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip
@@ -241,7 +244,9 @@ jobs:
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
           export PATH=$ANDROID_HOME/platform-tools:$PATH
 
+          # Accept licenses and install required SDKs
           yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
       - name: Inject nightly version into Kivy app script
         run: |
@@ -249,10 +254,7 @@ jobs:
         
       - name: Build APK for Android
         run: |
-          # Initialize buildozer if needed
           buildozer init
-          
-          # Build the APK
           buildozer android debug
 
       - name: Upload APK as artifact
