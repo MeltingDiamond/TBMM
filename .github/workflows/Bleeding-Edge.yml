@@ -3,7 +3,7 @@ name: Build Cross-Platform
 on:
   push:
     branches:
-      - main
+      - Bleeding-Edge
 permissions:
   contents: write
 jobs:
