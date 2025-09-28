@@ -215,19 +215,15 @@ jobs:
 
     strategy:
       matrix:
-        api-level: ['29', 'latest']
-        build-tools: ['29.0.3', 'latest']
+        include:
+          - api-level: '29'
+            build-tools: '29.0.3'
+          - api-level: 'latest'
+            build-tools: 'latest'
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          build-tools: ${{ matrix.build-tools }}
-          accept-licenses: true
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -264,9 +260,16 @@ jobs:
         run: >
           sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
 
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          build-tools: ${{ matrix.build-tools }}
+          accept-licenses: true
+
       - name: Build APK for Android
         run: |
-          buildozer init
+          buildozer init || echo "buildozer.spec already exists"
           buildozer android debug
 
       - name: Upload APK as artifact
