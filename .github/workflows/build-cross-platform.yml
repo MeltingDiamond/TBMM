@@ -282,6 +282,7 @@ jobs:
 
       - name: Build APK for Android
         run: |
+          buildozer init
           yes | buildozer -v android debug
 
       - name: Upload APK as artifact
