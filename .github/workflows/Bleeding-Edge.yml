@@ -206,7 +206,7 @@ jobs:
           name: TBMM-MacOS
           path: "The Bibites Mod Manager.app"
   
-  build-android:
+    build-android:
     needs: generate-nightly-version
     runs-on: ubuntu-latest
 
@@ -262,13 +262,17 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y python3-pip python3-setuptools python3-dev autoconf automake build-essential git libtool libssl-dev libffi-dev libsqlite3-dev libjpeg-dev zlib1g-dev openjdk-8-jdk unzip pkg-config
-          
+          sudo apt install -y \
+            python3-pip python3-setuptools python3-dev \
+            autoconf automake build-essential git \
+            libtool libssl-dev libffi-dev libsqlite3-dev \
+            libjpeg-dev zlib1g-dev openjdk-8-jdk unzip pkg-config
+
           python -m pip install --upgrade pip
           pip install -r build_requirements_android.txt
 
       - name: Inject nightly version into Kivy app script
-        run: >
+        run: |
           sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
 
       - name: Setup Java 17 required by Gradle
@@ -285,5 +289,5 @@ jobs:
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TBMM-Android-${{ matrix.api-level == '29' && 'Android 10' || 'Latest' }}
+          name: TBMM-Android-${{ matrix.api-level == '29' && 'Android10' || 'Latest' }}
           path: bin/*.apk
