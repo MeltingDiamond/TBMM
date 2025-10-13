@@ -6,6 +6,7 @@ downloaded_mods.txt
 installed_mods.txt
 log.txt
 settings.json
+This.txt
 
 # Below is a python gitignore template
 # Byte-compiled / optimized / DLL files
