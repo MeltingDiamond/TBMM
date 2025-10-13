@@ -1,4 +1,7 @@
 # The Bibites Mod Manager
+
+Minimal build branch. Trying to slim down the amount of lines and make everything better to work with by completely remove all legacy code, almost starting over.
+
 The Bibites Mod Manager is the unofficial mod manager for The Bibite programmed in python (3.12) using tkinter. TBMM allows users to install mods with a simple gui instead off having to replace any dll manually.
 You can download and install mods with a few button clicks.
 And can play both vanilla and modded with one install of The Bibites.
