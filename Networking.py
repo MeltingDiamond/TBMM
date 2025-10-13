@@ -32,9 +32,26 @@ def update_check(version, log, nightly=False):
     """
     try:
         if not nightly:
-            log("Release version check not implemented yet.", save_to_file=False)
+            response = requests.get("https://api.github.com/repos/MeltingDiamond/TBMM/releases/latest")
+            response_json = response.json()
+            latest_stable_version = response_json["tag_name"]
+            
+            latest_stable_version = latest_stable_version.split("v")[1]
+
+            local_version = [int(p) for p in version.split('.')]
+            latest_online_version = [int(p) for p in latest_stable_version.split('.')]
+
+            # Normalize lengths by padding the shorter one with zeros
+            max_len = max(len(local_version), len(latest_online_version))
+            local_version += [0] * (max_len - len(local_version))
+            latest_online_version += [0] * (max_len - len(latest_online_version))
+
+            if local_version < latest_online_version:
+                # There exists a newer release version
+                log(f"A newer release version is available: {latest_stable_version}", save_to_file=False)
+                return True
+
             return False
-            response = requests.get(release_download_link, allow_redirects=True)
 
         log("Checking nightly version...", save_to_file=False)
         response = requests.get("https://raw.githubusercontent.com/MeltingDiamond/TBMM/main/version.txt")
