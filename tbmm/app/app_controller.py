@@ -1,14 +1,14 @@
-from tbmm.app.config import AppConfig
+#from tbmm.app.config import AppConfig
 from tbmm.app.ui_manager import UIManager
 from tbmm.persistence.config_store import ConfigStore
-from tbmm.services.mod_service import ModService
+#from tbmm.services.mod_service import ModService
 
 class AppController:
     def __init__(self):
         # load or initialize config
         self.config = ConfigStore.load_or_default()
         # initialize services
-        self.mod_service = ModService(self.config)
+        #self.mod_service = ModService(self.config)
         # UI manager
         self.ui_manager = UIManager(self, self.config)
 
