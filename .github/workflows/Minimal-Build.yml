@@ -1,0 +1,207 @@
+# This workflow builds on push to main using nuitka for Windows and Linux
+name: Build Cross-Platform
+on:
+  push:
+    branches:
+      - Minimal-Build
+permissions:
+  contents: write
+jobs:
+  generate-nightly-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate nightly version
+        id: set-version
+        run: |
+          VERSION=nightly-$(date +'%Y%m%d%H%M%S')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  build-windows:
+    needs: generate-nightly-version
+    runs-on: windows-latest
+    env:
+      CCACHE_DIR: ${{ github.workspace }}\ccache_storage
+      CCACHE_CONFIGPATH: ${{ github.workspace }}\ccache.conf
+      NUITKA_CACHE_DIR: ${{ github.workspace }}/.nuitka-cache
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Show pip cache dir
+        run: python -m pip cache dir
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~\AppData\Local\pip\Cache
+          key: pip-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+      
+      - name: Cache ccache storage
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}\ccache_storage
+          key: ccache-win-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            ccache-win-
+      
+      - name: Cache Nuitka compile cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NUITKA_CACHE_DIR }}
+          key: nuitka-win-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            nuitka-win-
+      
+      - name: Install official Nuitka ccache (Windows)
+        run: |
+          curl -L -o ccache.zip https://github.com/ccache/ccache/releases/download/v4.7.4/ccache-4.7.4-windows.zip
+          powershell Expand-Archive ccache.zip -DestinationPath ccache-win
+          echo "${{ github.workspace }}\ccache-win" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r build_requirements.txt
+          pip install nuitka
+      
+      - name: Inject nightly version into script
+        shell: powershell
+        run: >
+          (Get-Content "The Bibites Mod Manager.py") -replace '__VERSION__', '${{
+          needs.generate-nightly-version.outputs.version }}' | Set-Content "The
+          Bibites Mod Manager.py"
+      
+      - name: Build TBMM for Windows
+        run: |
+          nuitka --mingw64 --onefile --windows-console-mode=attach --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --include-data-dir="translations=translations" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
+      
+      - name: Upload Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: TBMM-Windows
+          path: The Bibites Mod Manager.exe
+
+  build-linux:
+    needs: generate-nightly-version
+    runs-on: ubuntu-latest
+    env:
+      NUITKA_CACHE_DIR: ${{ github.workspace }}/.nuitka-cache
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Show pip cache dir
+        run: python -m pip cache dir
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NUITKA_CACHE_DIR }}
+          key: pip-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+      
+      - name: Cache Nuitka
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NUITKA_CACHE_DIR }}
+          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            nuitka-${{ runner.os }}-
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y python3-tk ccache
+          python -m pip install --upgrade pip
+          pip install -r build_requirements.txt
+      
+      - name: Inject nightly version into script
+        run: >
+          sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version
+          }}/" "The Bibites Mod Manager.py"
+      
+      - name: Build TBMM for Linux
+        run: >
+          nuitka --onefile --include-data-dir="Images=Images" --include-data-dir="translations=translations"
+          --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
+          Manager.py"
+      
+      - name: Upload Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: TBMM-Linux
+          path: The\ Bibites\ Mod\ Manager.bin
+
+  build-macos:
+    needs: generate-nightly-version
+    runs-on: macos-latest
+    env:
+      NUITKA_CACHE_DIR: ${{ github.workspace }}/.nuitka-cache
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Show pip cache dir
+        run: python -m pip cache dir
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+      
+      - name: Cache Nuitka
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.NUITKA_CACHE_DIR }}
+          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          restore-keys: |
+            nuitka-${{ runner.os }}-
+      
+      - name: Install dependencies
+        run: |
+          brew update
+          python -m pip install --upgrade pip
+          pip install -r build_requirements.txt
+          pip install nuitka
+      
+      - name: Inject nightly version into script
+        run: |
+          sed -i '' "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
+      
+      - name: Build TBMM for MacOS
+        run: >
+          nuitka --mode=app --include-data-dir="Images=Images" --include-data-dir="translations=translations" 
+          --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
+          Manager.py"
+      
+      - name: Upload Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: TBMM-MacOS
+          path: "The Bibites Mod Manager.app"
