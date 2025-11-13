@@ -3,9 +3,9 @@ import requests, webbrowser, os, time, re, shutil, zipfile, io, base64
 from threading import Thread
 from urllib.parse import urlparse, unquote
 
-windows_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Windows.zip"
-linux_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Linux.zip"
-mac_nightly_download_link  =  "https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-macOS.zip"
+windows_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workflows/build-nightly/main/TBMM-Windows.zip"
+linux_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workflows/build-nightly/main/TBMM-Linux.zip"
+mac_nightly_download_link  =  "https://nightly.link/MeltingDiamond/TBMM/workflows/build-nightly/main/TBMM-MacOS.zip"
 release_download_link = "https://github.com/MeltingDiamond/TBMM/releases/latest"
 
 def open_link(url):
@@ -195,7 +195,7 @@ def get_file_contents(mod_name, cache_duration, save_cache_to_file, mod_content_
             if "github.com" in website_name:
                 mod_cache = get_file_contents_from_github(mod_name, mod_content_cache, cache_duration)
             elif "dropbox.com" in website_name:
-                mod_cache = get_file_contents_from_dropbox(mod_name, url)
+                mod_cache = get_file_contents_from_dropbox(mod_name, url, mod_content_cache)
 
             if mod_cache:
                 cache_time = time.time()
