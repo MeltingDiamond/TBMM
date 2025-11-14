@@ -128,7 +128,7 @@ def get_game_path():
     if Game_folder:
         Temp_Game_path = filedialog_askopenfile(initialdir=Game_folder, filetypes=FILETYPES) # Store game path without overwriting existing game path
     else:
-        Temp_Game_path = filedialog_askopenfile(filetypes=FILETYPES) # Store game path without overwriting existing game path
+        Temp_Game_path = filedialog_askopenfile(initialdir="",filetypes=FILETYPES) # Store game path without overwriting existing game path
     if Temp_Game_path:
         Game_path = Temp_Game_path.name
         Game_folder = os.path.dirname(Game_path)

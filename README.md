@@ -10,9 +10,9 @@ The release version can be downloaded here:<br>
 https://github.com/MeltingDiamond/TBMM/releases/latest
 
 For nightly version (most up to date version) you can click the links below:<br>
-Windows: https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Windows.zip<br>
-Linux:   https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-Linux.zip<br>
-Mac:     https://nightly.link/MeltingDiamond/TBMM/workflows/build-cross-platform/main/TBMM-macOS.zip
+Windows: https://nightly.link/MeltingDiamond/TBMM/workflows/build-nightly/main/TBMM-Windows.zip<br>
+Linux:   https://nightly.link/MeltingDiamond/TBMM/workflows/build-nightly/main/TBMM-Linux.zip<br>
+Mac:     https://nightly.link/MeltingDiamond/TBMM/workflows/build-nightly/main/TBMM-MacOS.zip
 
 ### Find any bugs please report them [here](https://github.com/MeltingDiamond/TBMM/issues) to help make TBMM better.
 
