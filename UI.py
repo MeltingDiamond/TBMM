@@ -115,7 +115,7 @@ def create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, h
     image = Image.open(f"{images_folder}/TBMM icon.ico")
     app_image = ImageTk.PhotoImage(image)
     if OS_TYPE == "Windows":
-        window.iconbitmap(app_image)
+        window.iconbitmap(image)
     elif OS_TYPE == "Linux" or OS_TYPE == "Mac":
         window.iconphoto(True, app_image)
 
