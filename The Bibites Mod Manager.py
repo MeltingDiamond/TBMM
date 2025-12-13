@@ -8,17 +8,7 @@ from tkinter import Label, Button, Frame, Checkbutton, IntVar, Toplevel, message
 from pathlib import Path
 from threading import Thread
 
-def is_android():
-    return (
-        platform.system() == 'Linux' and
-        'ANDROID_ARGUMENT' in os.environ
-    )
-
-if is_android():
-    from UI_Android import TBMMKivyApp
-    kivy.require('2.3.1')
-else:
-    from UI import *
+from UI import *
 
 from Networking import update_check, download_new_tbmm_version, open_link, download_modse, fetch_filenames, start_download, get_mod_url, get_filename_from_response
 from Networking import get_website_name, get_file_contents
@@ -573,7 +563,7 @@ def reset_cache():
     cache_time = time.time()  # Reset cache time to current time
 
     # Save the cleaned cache to file
-    save_cache_to_file(mod_content_cache, cache_time)
+    save_cache_to_file(cache_time)
     log("Cache reset, and invalid mods removed.", save_to_file=False)
     status_label.config(text="Cache reset, and invalid mods removed.")
 
@@ -838,6 +828,16 @@ def play_game(Modded):
         log(f"{Game_path} does not exist, you need to set a valid game path to be able to run the game", False)
         status_label.config(text=f"{Game_path} does not exist, you need to set a valid game path to be able to run the game")
 
+def startGame():
+    theBibites = subprocess.Popen([f"{Game_folder}/run_bepinex.sh", Game_path, "-force-vulkan"], stdout=subprocess.PIPE) # Run The Bibites without file dll replace mods.
+    log("Playing with BepInEx mods", False)
+    status_label.config(text="Playing with BepInEx mods")
+    poll = None
+    while poll is None:
+        poll = theBibites.poll()
+
+        log(theBibites.stdout.readline(), False)
+
 def play_bepinex():
     # Only necessary for OSes where any play button might modify it.
     ScriptingAssemblies = f'{Game_folder}/The Bibites_Data/ScriptingAssemblies.json'
@@ -871,9 +871,8 @@ def play_bepinex():
             json.dump(ScriptingAssembliesText, file)
 
         try:
-            subprocess.Popen([f"{Game_folder}/run_bepinex.sh", Game_path, "-force-vulkan"]) # Run The Bibites without file dll replace mods.
-            log("Playing with BepInEx mods", False)
-            status_label.config(text="Playing with BepInEx mods")
+            printOutputToConsole_thread = Thread(target=startGame)
+            printOutputToConsole_thread.start()
 
         except subprocess.CalledProcessError as e:
             messagebox.showerror("Error running the game", f"Unexpected error: {e}")        # Display message box with error
@@ -947,10 +946,7 @@ window_handlers={
     'credits_page': credits_page,
     'open_link':lambda e: open_link(Discord_invite_link)}
 
-if is_android():
-    app = TBMMKivyApp(handlers=window_handlers, version_number=version_number)
-else:
-    window_widgets = create_window(images_folder, displayed_version_number, Discord_invite_link, OS_TYPE, handlers=window_handlers)
+window_widgets = create_window(images_folder, displayed_version_number, Discord_invite_link, OS_TYPE, handlers=window_handlers)
 
 window = window_widgets['window']
 screen_width = window_widgets['screen_width']
@@ -1187,7 +1183,4 @@ if newer_version:
 list_downloaded_mods()
 
 # Runs the app
-if is_android():
-    app.run()
-else:
-    window.mainloop()
+window.mainloop()
