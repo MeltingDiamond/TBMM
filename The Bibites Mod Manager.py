@@ -927,7 +927,6 @@ def swap_between_nightly_and_stable():
     
     save_settings()
 
-
 # Get the script dir
 script_dir = Path(__file__).parent.absolute()
 images_folder = f'{script_dir}/Images' # Path to folder with images
@@ -1040,7 +1039,7 @@ window.bind('<Configure>', move_left_buttons)
 # Set path for saving and loading
 
 if "__compiled__" in globals():
-    # This resolves symlinks and returns the actual path to the binary
+    # This resolves symlinks and returns the path to the binary
     executable_path = Path(os.path.realpath(sys.argv[0])).parent
 
     downloading = executable_path/'Downloading'
