@@ -21,6 +21,7 @@ jobs:
         id: find-latest-tag
         uses: oprypin/find-latest-tag@v1.0.0
         with:
+          repository: MeltingDiamond/TBMM
           tag-pattern: '*rc*'
 
       - name: Check and increment version
