@@ -40,7 +40,7 @@ jobs:
           fi
 
           new_version="${extracted_version}rc${rc_number}"
-          echo "New RC version: $new_version" >> "$GITHUB_OUTPUT"
+          echo "version=${new_version}" >> "$GITHUB_OUTPUT"
 
   build-windows:
     needs: generate-release-candidate-version
