@@ -2,6 +2,8 @@
 name: Build Release Candidate
 
 on: workflow_dispatch
+permissions:
+  contents: write
 jobs:
   generate-release-candidate-version:
     runs-on: ubuntu-latest
@@ -100,8 +102,8 @@ jobs:
       
       - name: Inject release candidate version into script
         shell: powershell
-        run: >
-          (Get-Content "The Bibites Mod Manager.py") -replace 'version_number\s*=\s*"\K[^"]+', '${{ needs.generate-release-candidate-version.outputs.version }}' | Set-Content "The Bibites Mod Manager.py"
+        run: |
+          (Get-Content "The Bibites Mod Manager.py") -replace '(version_number\s*=\s*")[^"]*(")', "`$1${{ needs.generate-release-candidate-version.outputs.version }}`$2" | Set-Content "The Bibites Mod Manager.py"
       
       - name: Build TBMM for Windows
         run: |
