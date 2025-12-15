@@ -45,25 +45,25 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~\AppData\Local\pip\Cache
-          key: pip-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
+          key: pip-nightly-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
-            pip-${{ runner.os }}-
+            pip-nightly-${{ runner.os }}-
       
       - name: Cache ccache storage
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}\ccache_storage
-          key: ccache-win-${{ hashFiles('build_requirements.txt') }}
+          key: ccache-nightly-win-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
-            ccache-win-
+            ccache-nightly-win-
       
       - name: Cache Nuitka
         uses: actions/cache@v4
         with:
           path: ${{ env.NUITKA_CACHE_DIR }}
-          key: nuitka-win-${{ hashFiles('build_requirements.txt') }}
+          key: nuitka-nightly.win-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
-            nuitka-win-
+            nuitka-nightly-win-
       
       - name: Install official Nuitka ccache (Windows)
         run: |
@@ -116,25 +116,25 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('build_requirements.txt') }}
+          key: nightly-${{ runner.os }}-pip-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
-            pip-${{ runner.os }}-
+            pip-nightly-${{ runner.os }}-
       
       - name: Cache Nuitka
         uses: actions/cache@v4
         with:
           path: ${{ env.NUITKA_CACHE_DIR }}
-          key: nuitka-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
+          key: nuitka-nightly--${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
-            nuitka-${{ runner.os }}-
+            nuitka-nightly-${{ runner.os }}-
 
       - name: Cache ccache
         uses: actions/cache@v4
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ccache-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
+          key: ccache-nightly-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
-            ccache-${{ runner.os }}-
+            ccache-nightly-${{ runner.os }}-
       
       - name: Install dependencies
         run: |
@@ -180,17 +180,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/pip
-          key: pip-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
+          key: pip-nightly-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
-            pip-${{ runner.os }}-
+            pip-nightly-${{ runner.os }}-
       
       - name: Cache Nuitka
         uses: actions/cache@v4
         with:
           path: ${{ env.NUITKA_CACHE_DIR }}
-          key: nuitka-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
+          key: nuitka-nightly-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
-            nuitka-${{ runner.os }}-
+            nuitka-nightly-${{ runner.os }}-
       
       - name: Install dependencies
         run: |

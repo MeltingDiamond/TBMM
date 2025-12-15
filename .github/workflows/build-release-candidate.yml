@@ -108,16 +108,10 @@ jobs:
       - name: Build TBMM for Windows
         run: |
           nuitka --mingw64 --onefile --windows-console-mode=attach --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --include-data-dir="translations=translations" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
-      
-      - name: Release Release Candidate
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "${{ needs.generate-release-candidate-version.outputs.version }}"
-          prerelease: true
-          title: "${{ needs.generate-release-candidate-version.outputs.version }}"
-          files: |
-            The Bibites Mod Manager.exe
+
+      - name: Create Release Zip
+        run: |
+          zip -r The_Bibites_Mod_Manager_windows.zip "The Bibites Mod Manager.exe"
 
   build-linux:
     needs: generate-release-candidate-version
@@ -177,15 +171,9 @@ jobs:
           --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
           Manager.py"
       
-      - name: Release Release Candidate
-        uses: marvinpinto/action-automatic-releases@latest
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "${{ needs.generate-release-candidate-version.outputs.version }}"
-          prerelease: true
-          title: "${{ needs.generate-release-candidate-version.outputs.version }}"
-          files: |
-            The\ Bibites\ Mod\ Manager.bin
+      - name: Create Release Zip
+        run: |
+          zip -r The_Bibites_Mod_Manager_linux.zip "The Bibites Mod Manager.bin"
 
   build-macos:
     needs: generate-release-candidate-version
@@ -236,7 +224,15 @@ jobs:
           nuitka --mode=app --include-data-dir="Images=Images" --include-data-dir="translations=translations" 
           --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
           Manager.py"
+      
+      - name: Create Release Zip
+        run: |
+          zip -r The_Bibites_Mod_Manager_macos.zip "The Bibites Mod Manager.app"
 
+  release:
+    runs-on: ubuntu-latest build-windows build-linux
+    needs: build-macos
+    steps:
       - name: Release Release Candidate
         uses: marvinpinto/action-automatic-releases@latest
         with:
@@ -245,4 +241,6 @@ jobs:
           prerelease: true
           title: "${{ needs.generate-release-candidate-version.outputs.version }}"
           files: |
-            The Bibites Mod Manager.app
+            "The_Bibites_Mod_Manager_windows.zip" 
+            "The_Bibites_Mod_Manager_linux.zip" 
+            "The_Bibites_Mod_Manager_macos.zip"
