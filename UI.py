@@ -114,9 +114,9 @@ def create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, h
     # Convert the image into a format tkinter understands (Different for Windows and Linux/Mac)
     image = Image.open(f"{images_folder}/TBMM icon.ico")
     app_image = ImageTk.PhotoImage(image)
-    if OS_TYPE == "Windows":
-        window.iconbitmap(image)
-    elif OS_TYPE == "Linux" or OS_TYPE == "Mac":
+    #if OS_TYPE == "Windows":
+     #   window.iconbitmap(image)
+    if OS_TYPE == "Linux" or OS_TYPE == "Mac":
         window.iconphoto(True, app_image)
 
     # Get screen width and height

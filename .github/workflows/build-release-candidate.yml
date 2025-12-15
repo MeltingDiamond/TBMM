@@ -115,8 +115,9 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "${{ needs.generate-release-candidate-version.outputs.version }}"
           prerelease: true
-          title: "${{ needs.generate-release-candidate-version.outputs.version}}"
-          files: The Bibites Mod Manager.exe
+          title: "${{ needs.generate-release-candidate-version.outputs.version }}"
+          files: |
+            The Bibites Mod Manager.exe
 
   build-linux:
     needs: generate-release-candidate-version
@@ -182,8 +183,9 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "${{ needs.generate-release-candidate-version.outputs.version }}"
           prerelease: true
-          title: "${{ needs.generate-release-candidate-version.outputs.version}}"
-          files: The\ Bibites\ Mod\ Manager.bin
+          title: "${{ needs.generate-release-candidate-version.outputs.version }}"
+          files: |
+            The\ Bibites\ Mod\ Manager.bin
 
   build-macos:
     needs: generate-release-candidate-version
@@ -241,5 +243,6 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "${{ needs.generate-release-candidate-version.outputs.version }}"
           prerelease: true
-          title: "${{ needs.generate-release-candidate-version.outputs.version}}"
-          files: The Bibites Mod Manager.app
+          title: "${{ needs.generate-release-candidate-version.outputs.version }}"
+          files: |
+            The Bibites Mod Manager.app
