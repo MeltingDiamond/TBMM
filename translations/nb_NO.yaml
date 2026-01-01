@@ -21,7 +21,8 @@ Get-path-to-game-exe: Get path to game exe
 Install-mods: Installer mods
 Play-Vanilla: Spill Vanilla
 Play-BepInEx: Spill BepInEx
-Swap-release-Channel: Bytt release Channel
+Swap-release-Channel-nightly: Bytt til release kanal
+Swap-release-Channel-release: Bytt til nightly kanal
 Refresh-cache: Refresh cache
 Download-The-Bibites: Last ned The Bibites
 Download-new-TBMM-update: Last ned ny TBMM oppdatering

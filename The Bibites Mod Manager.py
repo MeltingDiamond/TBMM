@@ -938,8 +938,10 @@ def swap_between_nightly_and_stable():
     is_nightly = not is_nightly
     if is_nightly:
         status_label.config(text=f'You are now on the nightly branch')
+        swap_between_nightly_and_stable_button.configure(text=localization["Swap-release-Channel-nightly"])
     else:
         status_label.config(text=f'You are now on the stable branch')
+        swap_between_nightly_and_stable_button.configure(text=localization["Swap-release-Channel-release"])
     
     save_settings()
 
@@ -994,6 +996,7 @@ downloaded_mods_listbox = main_page_widgets['downloaded_mods_listbox']
 installed_mod_label = main_page_widgets['installed_mod_label']
 log_text = main_page_widgets['log_text']
 download_new_version_button = main_page_widgets['download_new_version_button']
+swap_between_nightly_and_stable_button = main_page_widgets["swap_between_nightly_and_stable_button"]
 
 # Create the download mods page UI and store widgets
 download_mods_page_widgets = create_download_mods_page_ui(window, handlers={
@@ -1193,7 +1196,7 @@ else:
     newer_version = update_check(version_number, log, is_nightly)
 
 if newer_version:
-    download_new_version_button.grid(row=2, column=5, pady=130, sticky="n")
+    download_new_version_button.grid(row=2, column=4, pady=130, sticky="n")
 
 list_downloaded_mods()
 
