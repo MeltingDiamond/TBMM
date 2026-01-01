@@ -28,6 +28,8 @@ def download_new_tbmm_version(os, script_dir, log, status_label, safe_unlink, lo
 
 def download_tbmm_update(download_link, script_dir, log, status_label, safe_unlink, log_file, get_time):
     download_file(download_link, script_dir, log, status_label, safe_unlink, log_file, get_time)
+    zipfile.extractall(os.path.join(script_dir, get_filename_from_response(download_link)))
+    safe_unlink(os.path.join(script_dir, get_filename_from_response(download_link)))
     messagebox_showinfo("Restart TBMM to update", "Restart TBMM to update to the new version")
 
 def update_check(version, log, nightly=False):
