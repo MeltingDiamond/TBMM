@@ -2,6 +2,7 @@
 import requests, webbrowser, os, time, re, shutil, zipfile, io, base64
 from threading import Thread
 from urllib.parse import urlparse, unquote
+from UI import messagebox_showinfo
 
 windows_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workflows/build-nightly/main/TBMM-Windows.zip"
 linux_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workflows/build-nightly/main/TBMM-Linux.zip"
@@ -11,16 +12,23 @@ release_download_link = "https://github.com/MeltingDiamond/TBMM/releases/latest"
 def open_link(url):
     webbrowser.open_new(url)
 
-def download_new_tbmm_version(os, nightly = False):
+def download_new_tbmm_version(os, script_dir, log, status_label, safe_unlink, log_file, get_time, nightly = False):
     if nightly:
         if os == "Windows":
-                open_link(windows_nightly_download_link)
+            download_tbmm_update(windows_nightly_download_link, log, status_label, safe_unlink, log_file, get_time, script_dir)
+            #open_link(windows_nightly_download_link)
         elif os == "Linux":
-            open_link(linux_nightly_download_link)
+            download_tbmm_update(linux_nightly_download_link, log, status_label, safe_unlink, log_file, get_time, script_dir)
+            #open_link(linux_nightly_download_link)
         elif os == "Mac":
-            open_link(mac_nightly_download_link)
+            download_tbmm_update(mac_nightly_download_link, log, status_label, safe_unlink, log_file, get_time, script_dir)
+            #open_link(mac_nightly_download_link)
     else:
         open_link(release_download_link)
+
+def download_tbmm_update(download_link, script_dir, log, status_label, safe_unlink, log_file, get_time):
+    download_file(download_link, script_dir, log, status_label, safe_unlink, log_file, get_time)
+    messagebox_showinfo("Restart TBMM to update", "Restart TBMM to update to the new version")
 
 def update_check(version, log, nightly=False):
     """

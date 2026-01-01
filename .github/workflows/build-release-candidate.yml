@@ -103,7 +103,7 @@ jobs:
       - name: Inject release candidate version into script
         shell: powershell
         run: |
-          (Get-Content "The Bibites Mod Manager.py") -replace '(version_number\s*=\s*")[^"]*(")', "`$1${{ needs.generate-release-candidate-version.outputs.version }}`$2" | Set-Content "The Bibites Mod Manager.py"
+          (Get-Content -Path "The Bibites Mod Manager.py" -Raw) -replace '(version_number\s*=\s*")[^"]*(")', '${{ needs.generate-release-candidate-version.outputs.version }}' | Set-Content -Path "The Bibites Mod Manager.py"
       
       - name: Build TBMM for Windows
         run: |

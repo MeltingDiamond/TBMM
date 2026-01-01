@@ -194,7 +194,7 @@ def download_the_bibites_of_x_version(version):
                 for chunk in response.iter_content(chunk_size=8192): 
                     f.write(chunk)
             
-            messagebox.showinfo("Success", f"Version {version} downloaded successfully!\nMake sure to update the game path after extracting {bibites_game_name}")
+            messagebox_showinfo("Success", f"Version {version} downloaded successfully!\nMake sure to update the game path after extracting {bibites_game_name}")
         except Exception as e:
             messagebox.showerror("Download Error", f"An error occurred: {str(e)}")
 
@@ -984,7 +984,7 @@ main_page_widgets = create_main_page_ui(window, handlers={
     'swap_between_nightly_and_stable': swap_between_nightly_and_stable,
     'reset_cache': reset_cache,
     'get_the_bibites': get_the_bibites,
-    'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, is_nightly)
+    'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, script_dir, log, status_label, safe_unlink, log_file, get_time, is_nightly)
 })
 
 main_frame = main_page_widgets['frame']

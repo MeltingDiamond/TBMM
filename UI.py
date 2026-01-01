@@ -1,5 +1,5 @@
 # Anything that gets displayed. For example tkinter 
-from tkinter import Tk, Frame, Label, Button, Listbox, Scrollbar, Text, Toplevel, PhotoImage, StringVar, OptionMenu, filedialog
+from tkinter import Tk, Frame, Label, Button, Listbox, Scrollbar, Text, Toplevel, PhotoImage, StringVar, OptionMenu, filedialog, messagebox
 from PIL import Image, ImageTk
 
 from loadLocalisation import loadLocalisation
@@ -15,6 +15,9 @@ def filedialog_asksaveasfilename(defaultextension, filetypes, title, initialfile
 
 def filedialog_askdirectory(title):
     return filedialog.askdirectory(title=title)
+
+def messagebox_showinfo(title, message):
+    return messagebox.showinfo(title=title, message=message)
 
 # Size of different fonts
 status_label_font_size = 14
