@@ -111,7 +111,7 @@ jobs:
 
       - name: Create Release Zip
         run: |
-          zip -r The_Bibites_Mod_Manager_windows.zip "The Bibites Mod Manager.exe"
+          tar.exe acvf -r The_Bibites_Mod_Manager_windows.zip "The Bibites Mod Manager.exe"
 
   build-linux:
     needs: generate-release-candidate-version
@@ -230,8 +230,8 @@ jobs:
           zip -r The_Bibites_Mod_Manager_macos.zip "The Bibites Mod Manager.app"
 
   release:
-    runs-on: ubuntu-latest build-windows build-linux
-    needs: build-macos
+    runs-on: ubuntu-latest
+    needs: [build-windows, build-linux, build-macos]
     steps:
       - name: Release Release Candidate
         uses: marvinpinto/action-automatic-releases@latest

@@ -83,7 +83,7 @@ def fetch_filenames(log, cache_duration, mod_repo_urls, get_website_name, save_c
 
     # Check if cache is valid
     if mod_names_cache is None or time.time() - cache_time > cache_duration or mod_names_cache == []:
-        # Check if user has intenett access
+        # Check if user has internet access
         if has_internet_connection():
             # Try each URL in the list until one succeeds
             for url in mod_repo_urls:
@@ -103,12 +103,12 @@ def fetch_filenames(log, cache_duration, mod_repo_urls, get_website_name, save_c
                     save_cache_to_file(cache_time)
                     return mod_names_cache
 
-            # failed to fetch mod names from internett return empty list to avoid breaking code.
+            # failed to fetch mod names from internet return empty list to avoid breaking code.
             print(" Did not download any mod names, there was an error, returns []")
             return []
-        else: # No internett
-            log("You have no internett", True)
-            status_label.config(text="You have no internett")
+        else: # No internet
+            log("You have no internet", True)
+            status_label.config(text="You have no internet")
 
             return mod_names_cache # Mod names cache should never be in a breaking state.
     
@@ -305,7 +305,7 @@ def download_file(url, location, downloading, log, status_label, safe_unlink, lo
         mod_name = filename
 
     downloading_folder = f'{downloading}/{location_folder}'
-    downloading_path = f'{downloading_folder}/{filename}' # Where the file will be downloaded to temporarily before beeing moved to the correct location
+    downloading_path = f'{downloading_folder}/{filename}' # Where the file will be downloaded to temporarily before being moved to the correct location
     website = get_website_name(url)
 
     error_downloading_file = False # False unless there are at least 1 error downloading files
@@ -344,8 +344,8 @@ def download_file(url, location, downloading, log, status_label, safe_unlink, lo
             if not os.path.exists(location):
                     os.makedirs(location)# folder does not exist make it
             if not os.path.isfile(filepath):
-                shutil.move(downloading_path, filepath) # Mod doesnt exist move the mod
-                safe_unlink(downloading_folder) # Remove mod folder in downloading folder since it isnt needed
+                shutil.move(downloading_path, filepath) # Mod doesn't exist move the mod
+                safe_unlink(downloading_folder) # Remove mod folder in downloading folder since it isn't needed
 
             elif os.path.isfile(filepath):
                 with open(downloading_path, 'rb') as new_file:
@@ -362,7 +362,7 @@ def download_file(url, location, downloading, log, status_label, safe_unlink, lo
 
             if os.path.exists(location):
                 if os.listdir(location) == 0 and mod_exists == False:
-                    os.remove(location) # Folder exixts, is empty and the mod doesn't exist, remove it
+                    os.remove(location) # Folder exists, is empty and the mod doesn't exist, remove it
 
             # Save error to a log file
             with open(log_file, 'a') as file:

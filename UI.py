@@ -106,7 +106,7 @@ def on_checkbutton_leave(tooltips, tooltip_state):
             tooltip.hide_tooltip()
         tooltip_state['hover_widget'] = None
 
-def create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, handlers):
+def create_window(images_folder, version_number, OS_TYPE, handlers):
     # Create Tkinter window
     window = Tk()
     window.title(f"TBMM {version_number}")
@@ -128,7 +128,7 @@ def create_window(images_folder, version_number, Discord_invite_link, OS_TYPE, h
     window_height = int(screen_height * 0.8)
     window.geometry(f"{window_width}x{window_height}+{int((screen_width - window_width) / 2)}+{int((screen_height - window_height) / 2)}")
 
-    window.minsize(1000, 550)
+    window.minsize(1250, 1200)
 
     # Title label
     title_label = Label(window, text=localization["The-Bibites-Mod-Manager"], font=("Arial", 24, "bold"))
@@ -178,7 +178,7 @@ def create_main_page_ui(window, handlers):
     install_mods_button = Button(main_frame, text=localization["Install-mods"], command=handlers["install_mods"], font=("Arial", 12)) # Button to install mods
     vanilla_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-Vanilla"], command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
     Mod_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-Modded"], command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
-    bepinex_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-BepInEx"], command=handlers["Play BepInEx"], font=("Arial", 12))
+    bepinex_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-BepInEx"], command=handlers["Play BepInEx"], font=("Arial", 12)) # Button to play with BepInEx
     swap_between_nightly_and_stable_button = Button(main_frame, text=localization["Swap-release-Channel"], command=handlers['swap_between_nightly_and_stable'], font=("Arial", 12)) # Swap between nightly and release (stable)
     refresh_cache_button = Button(main_frame, text=localization["Refresh-cache"], command=handlers['reset_cache'], font=("Arial", 12))
     get_the_bibites_button = Button(main_frame, text=localization["Download-The-Bibites"], command=handlers['get_the_bibites'], font=("Arial", 12))
@@ -201,23 +201,23 @@ def create_main_page_ui(window, handlers):
 
     # Layout
     game_path_label.grid(row=1, column=0, columnspan=3, padx=(0, 10))
-    game_path_button.grid(row=1, column=3, columnspan=1)
+    game_path_button.grid(row=1, column=3, columnspan=3, sticky="w")
     version_label.grid(row=0, column=0, columnspan=3, padx=(0, 10), sticky="w")
     version_button.grid(row=0, column=3, columnspan=2, sticky="w")
     downloaded_mods_listbox.grid(row=2, column=0, columnspan=4, sticky="ew")
     scrollbar.grid(row=2, column=4, sticky="nsw")
 
-    install_mods_button.grid(in_=main_frame, row=3, column=3, sticky="e")
-    vanilla_play_button.grid(in_=main_frame, row=3, column=0, sticky="w")
-    Mod_play_button.grid(in_=main_frame, row=3, padx=20, column=1)
+    vanilla_play_button.grid(in_=main_frame, row=3, column=0)
+    Mod_play_button.grid(in_=main_frame, row=3, column=1)
     bepinex_play_button.grid(in_=main_frame, row=3, column=2)
+    install_mods_button.grid(in_=main_frame, row=3, column=3)
 
-    swap_between_nightly_and_stable_button.grid(row=2, column=5, sticky="s")
-    refresh_cache_button.grid(row=2, column=5, sticky="n")
-    get_the_bibites_button.grid(row=2, column=5, pady=70, sticky="n")
+    swap_between_nightly_and_stable_button.grid(row=2, column=4, sticky="s")
+    refresh_cache_button.grid(row=2, column=4, sticky="nw")
+    get_the_bibites_button.grid(row=2, column=4, pady=70, sticky="n")
     installed_mod_label.grid(row=4, column=0, columnspan=4, sticky='n', pady=5)
-    log_text.grid(row=6, column=0, columnspan=4, padx=5, pady=(5, 0), sticky="nsew")
-    log_scrollbar.grid(row=6, column=4, sticky='nsw')
+    log_text.grid(row=6, column=0, columnspan=4, sticky="ew")
+    log_scrollbar.grid(row=6, column=4, columnspan=6, sticky='nsw')
 
     return {
         'frame': main_frame,

@@ -1,5 +1,5 @@
-# This workflow builds on push to main using nuitka for Windows and Linux
-name: Build Cross-Platform
+# This workflow builds on push to main using nuitka for Windows, Linux and MacOS
+name: Build Bleeding-Edge
 on:
   push:
     branches:
@@ -45,7 +45,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~\AppData\Local\pip\Cache
-          key: pip-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          key: pip-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
             pip-${{ runner.os }}-
       
@@ -53,15 +53,15 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}\ccache_storage
-          key: ccache-win-${{ hashFiles('**/*.py') }}
+          key: ccache-win-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
             ccache-win-
       
-      - name: Cache Nuitka compile cache
+      - name: Cache Nuitka
         uses: actions/cache@v4
         with:
           path: ${{ env.NUITKA_CACHE_DIR }}
-          key: nuitka-win-${{ hashFiles('**/*.py') }}
+          key: nuitka-win-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
             nuitka-win-
       
@@ -99,6 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NUITKA_CACHE_DIR: ${{ github.workspace }}/.nuitka-cache
+      CCACHE_DIR: ${{ github.workspace }}/ccache_storage
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -114,8 +115,8 @@ jobs:
       - name: Cache pip
         uses: actions/cache@v4
         with:
-          path: ${{ env.NUITKA_CACHE_DIR }}
-          key: pip-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
             pip-${{ runner.os }}-
       
@@ -123,9 +124,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.NUITKA_CACHE_DIR }}
-          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          key: nuitka-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
             nuitka-${{ runner.os }}-
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ccache-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
+          restore-keys: |
+            ccache-${{ runner.os }}-
       
       - name: Install dependencies
         run: |
@@ -171,7 +180,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/pip
-          key: pip-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          key: pip-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
             pip-${{ runner.os }}-
       
@@ -179,7 +188,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.NUITKA_CACHE_DIR }}
-          key: nuitka-${{ runner.os }}-${{ hashFiles('**/*.py') }}
+          key: nuitka-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
           restore-keys: |
             nuitka-${{ runner.os }}-
       
@@ -205,24 +214,88 @@ jobs:
         with:
           name: TBMM-MacOS
           path: "The Bibites Mod Manager.app"
-
-  finalize-nightly-version:
-    needs: [generate-nightly-version, build-windows, build-linux, build-macos]
+  
+  build-android:
+    needs: generate-nightly-version
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        include:
+          - api-level: '29'
+            build-tools: '29.0.3'
+          - api-level: 'latest'
+            build-tools: 'latest'
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set nightly version
-        run: echo "${{ needs.generate-nightly-version.outputs.version }}" > version.txt
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-      - name: Commit and push nightly version
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('build_requirements_android.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Cache Buildozer global directory
+        uses: actions/cache@v4
+        with:
+          path: ~/.buildozer
+          key: ${{ runner.os }}-buildozer-global
+          restore-keys: |
+            ${{ runner.os }}-buildozer-global
+
+      - name: Cache Buildozer directory in app
+        uses: actions/cache@v4
+        with:
+          path: .buildozer
+          key: ${{ runner.os }}-buildozer-app
+          restore-keys: |
+            ${{ runner.os }}-buildozer-app
+
+      - name: Cache Android SDK
+        uses: actions/cache@v4
+        with:
+          path: ~/.buildozer/android/platform/android-sdk
+          key: ${{ runner.os }}-android-sdk
+          restore-keys: |
+            ${{ runner.os }}-android-sdk
+
+      - name: Install dependencies
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
-          git add version.txt "The Bibites Mod Manager.py"
-          git commit -m "Nightly build: update version to ${{ needs.generate-nightly-version.outputs.version }}" || echo "No changes to commit"
-          git push origin HEAD:${{ github.ref_name }}
+          sudo apt update
+          sudo apt install -y \
+            python3-pip python3-setuptools python3-dev \
+            autoconf automake build-essential git \
+            libtool libssl-dev libffi-dev libsqlite3-dev \
+            libjpeg-dev zlib1g-dev openjdk-8-jdk unzip pkg-config
+
+          python -m pip install --upgrade pip
+          pip install -r build_requirements_android.txt
+
+      - name: Inject nightly version into Kivy app script
+        run: |
+          sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
+
+      - name: Setup Java 17 required by Gradle
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build APK for Android
+        run: |
+          yes | buildozer --debug android debug
+
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TBMM-Android-${{ matrix.api-level == '29' && 'Android10' || 'Latest' }}
+          path: bin/*.apk

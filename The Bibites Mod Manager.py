@@ -19,7 +19,7 @@ from Networking import get_website_name, get_file_contents
 # Move more of the UI code from here to UI.py
 # Move more of the networking code from here to Networking.py
 # Finnish adding support for Mac
-# Android build
+# Android build? Nooooooooooooo
 
 # If you want to add support for any other os feel free to do so,
 # but MeltingDiamond will only support Windows, Linux and Mac (OSes that the bibites officially supports).
@@ -762,6 +762,11 @@ def play_game(Modded):
                     subprocess.Popen([Game_path, "-force-vulkan"]) # Run The Bibites without mods.
                     log("Playing without mods", False)
                     status_label.config(text="Playing without mods")
+                
+                else: # Playing on anything else
+                    subprocess.Popen([Game_path]) # Run The Bibites without mods.
+                    log("Playing without mods", False)
+                    status_label.config(text="Playing without mods")
 
             # Catch and display error to the user
             except subprocess.CalledProcessError as e:
@@ -803,7 +808,18 @@ def play_game(Modded):
                     status_label.config(text=f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}")
                 
                 elif OS_TYPE == "Linux": # Playing on Linux
-                    subprocess.Popen([Game_path, "-force-vulkan"]) # Run The Bibites without checking for mods.
+                    subprocess.Popen([Game_path, "-force-vulkan"], cwd=Game_folder) # Run The Bibites without checking for mods.
+                    with open(installed_mods, 'r') as file:
+                        installed_mods_list = file.read().splitlines()
+                        installed_mods_list_pretty_for_display = [] # List stores the installed mods without .TBM to make it prettier
+                        for mod in installed_mods_list:
+                            mod = mod.split('.')[0]
+                            installed_mods_list_pretty_for_display.append(mod)
+                    log(f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}", False)
+                    status_label.config(text=f"Playing with mods:\n{''.join(installed_mods_list_pretty_for_display)}")
+
+                else:
+                    subprocess.Popen([Game_path]) # Run The Bibites without checking for mods.
                     with open(installed_mods, 'r') as file:
                         installed_mods_list = file.read().splitlines()
                         installed_mods_list_pretty_for_display = [] # List stores the installed mods without .TBM to make it prettier
@@ -945,7 +961,7 @@ window_handlers={
     'credits_page': credits_page,
     'open_link':lambda e: open_link(Discord_invite_link)}
 
-window_widgets = create_window(images_folder, displayed_version_number, Discord_invite_link, OS_TYPE, handlers=window_handlers)
+window_widgets = create_window(images_folder, displayed_version_number, OS_TYPE, handlers=window_handlers)
 
 window = window_widgets['window']
 screen_width = window_widgets['screen_width']
