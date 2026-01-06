@@ -10,7 +10,7 @@ from threading import Thread
 
 from UI import *
 
-from Networking import update_check, download_new_tbmm_version, open_link, download_modse, fetch_filenames, start_download, get_mod_url, get_filename_from_response
+from Networking import update_check, download_new_tbmm_version, download_new_tbmm_version_old, open_link, download_modse, fetch_filenames, start_download, get_mod_url, get_filename_from_response
 from Networking import get_website_name, get_file_contents
 
 # TODO
@@ -346,7 +346,7 @@ def download_mods():
 # Only works with replace mods currently. So if a BepInEx mod is installed as well this wont work correctly
 def install_mod_by_replace_dll(mod_name, not_installed_mod_folder, not_installed_mod_path, installed_mods_list): # Used when replace install instruction is needed
     try:
-        # If mod isnt installed and no other mod is installed
+        # If mod isn't installed and no other mod is installed
         if f'{not_installed_mod_path}' not in os.listdir(not_installed_mod_folder) and len(installed_mods_list) == 0 and not os.path.exists(f'{Game_folder}/The Bibites_Data/Managed/BibitesAssembly.dll.TBM'):
             log_message = f"Installing {mod_name}"
             log(log_message, False)
@@ -986,6 +986,7 @@ main_page_widgets = create_main_page_ui(window, handlers={
     'swap_between_nightly_and_stable': swap_between_nightly_and_stable,
     'reset_cache': reset_cache,
     'get_the_bibites': get_the_bibites,
+    'download_new_tbmm_version_old': lambda: download_new_tbmm_version_old(OS_TYPE, is_nightly),
     'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, script_dir, log, status_label, safe_unlink, log_file, get_time, is_nightly)
 })
 
@@ -995,7 +996,8 @@ version_label = main_page_widgets['version_label']
 downloaded_mods_listbox = main_page_widgets['downloaded_mods_listbox']
 installed_mod_label = main_page_widgets['installed_mod_label']
 log_text = main_page_widgets['log_text']
-download_new_version_button = main_page_widgets['download_new_version_button']
+download_new_version_button_old = main_page_widgets['download_new_version_button_old']
+download_new_version_button = main_page_widgets['download_new_version_button_new']
 swap_between_nightly_and_stable_button = main_page_widgets["swap_between_nightly_and_stable_button"]
 
 # Create the download mods page UI and store widgets
@@ -1195,8 +1197,10 @@ if is_nightly:
 else:
     newer_version = update_check(version_number, log, is_nightly)
 
+newer_version = True
 if newer_version:
-    download_new_version_button.grid(row=2, column=4, pady=130, sticky="n")
+    download_new_version_button_old.grid(row=2, column=4, pady=120, sticky="n")
+    download_new_version_button.grid(row=2, column=4, pady=160, sticky="n")
 
 list_downloaded_mods()
 

@@ -16,13 +16,21 @@ def download_new_tbmm_version(os, script_dir, log, status_label, safe_unlink, lo
     if nightly:
         if os == "Windows":
             download_tbmm_update(windows_nightly_download_link, log, status_label, safe_unlink, log_file, get_time, script_dir)
-            #open_link(windows_nightly_download_link)
         elif os == "Linux":
             download_tbmm_update(linux_nightly_download_link, log, status_label, safe_unlink, log_file, get_time, script_dir)
-            #open_link(linux_nightly_download_link)
         elif os == "Mac":
             download_tbmm_update(mac_nightly_download_link, log, status_label, safe_unlink, log_file, get_time, script_dir)
-            #open_link(mac_nightly_download_link)
+    else:
+        open_link(release_download_link)
+
+def download_new_tbmm_version_old(os, nightly = False):
+    if nightly:
+        if os == "Windows":
+            open_link(windows_nightly_download_link)
+        elif os == "Linux":
+            open_link(linux_nightly_download_link)
+        elif os == "Mac":
+            open_link(mac_nightly_download_link)
     else:
         open_link(release_download_link)
 
