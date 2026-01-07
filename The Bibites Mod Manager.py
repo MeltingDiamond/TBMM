@@ -4,7 +4,7 @@ import requests, platform, os, sys, base64, shutil, time, json, subprocess, zipf
 # For example instead of importing "from tkinter import filedialog" do from UI import filedialog
 # UI would be the UI backend used here.
 # Network would be the network backend used here.
-from tkinter import Label, Button, Frame, Checkbutton, IntVar, Toplevel, messagebox, StringVar, OptionMenu
+from tkinter import Checkbutton, IntVar, messagebox
 from pathlib import Path
 from threading import Thread
 
@@ -81,6 +81,9 @@ Discord_invite_link = "https://discord.gg/ZNPCZPDhCS"
 # Used to display what page the user is on
 page = ''
 
+# Window size global variable
+window_size = None
+
 # Tooltip
 tooltip_state = {
     'hover_index': None,
@@ -99,17 +102,61 @@ mod_content_cache = {}
 mod_names_cache = []
 cache_time = 0.0
 cache_duration = 86400  # Cache duration in seconds (24 hours)
+last_updated_time = 0.0
+update_duration = 3600 # Only update TBMM once per hour
 
 # Settings dictionary
 settings = {}
 Game_folder = None # Default to none because it needs to be initialise on start
 bepinex_folder = None # BepInEx isn't installed by default and needs to be checked if is installed
 
-# Gets the current time in correct time format to be placed in log.txt
-def get_time():
-    '''Gets the current time and date in a human readable format'''
-    current_time = time.strftime('%x %X')
-    return current_time
+# Get the script dir
+script_dir = Path(__file__).parent.absolute()
+
+# Set path for saving and loading
+if "__compiled__" in globals():
+    # This resolves symlinks and returns the path to the binary
+    executable_path = Path(os.path.realpath(sys.argv[0])).parent
+
+    downloading = executable_path/'Downloading'
+    not_installed_mods = executable_path/'not_installed_mods'
+    installed_mods = executable_path/'installed_mods.txt'
+    downloaded_mods = executable_path/'downloaded_mods.txt'
+    cache_file = executable_path/'cache.json'
+    settings_file = executable_path/'settings.json'
+    log_file = executable_path/'log.txt'
+    tbmm_exe_path = executable_path
+else:
+    # Running in script mode
+    downloading = f'{script_dir}/Downloading'
+    not_installed_mods = f'{script_dir}/not_installed_mods'
+    installed_mods = f'{script_dir}/installed_mods.txt'
+    downloaded_mods = f'{script_dir}/downloaded_mods.txt'
+    cache_file = f'{script_dir}/cache.json'
+    settings_file = f'{script_dir}/settings.json'
+    log_file = f'{script_dir}/log.txt'
+    tbmm_exe_path = script_dir
+
+if not os.path.isfile(settings_file):
+    open(settings_file, 'a').close()
+if os.path.isfile(settings_file):
+    # Load settings needed early 
+    try:
+        with open(settings_file, 'r') as file:
+
+            # Try to get all settings data from json file to a dictionary and the variables that uses settings
+            error = False # Set to true if error loading any setting
+            errormessage = '' # Append what setting is not loaded correctly
+            settings = json.load(file)
+
+            if 'window_size' in settings:
+                window_size = settings["window_size"]
+            else:
+                error = True
+                errormessage = errormessage + 'window_size'
+    
+    except Exception as e:
+        print('Can not read settings file')
 
 # Function to get the game path
 def get_game_path():
@@ -152,6 +199,23 @@ def get_game_version():
     game_version_window = ui['window']
     selected_version = ui['selected_version']
     ui['confirm_button'].config(command=save_version)
+
+# Gets the current time in correct time format to be placed in log.txt
+def get_time():
+    '''Gets the current time and date in a human readable format'''
+    current_time = time.strftime('%x %X')
+    return current_time
+
+def log(message, save_to_file):
+    timestamp = get_time()
+    log_text.config(state='normal')
+    log_text.insert('end', f"{timestamp} {message}" + '\n')
+    log_text.see('end')  # Auto-scroll
+    log_text.config(state='disabled')
+    if save_to_file:
+        # Save error to a log file
+        with open(log_file, 'a') as file:
+            file.write(f"\n{timestamp} {message}")
 
 # Download a specific version of the bibites which TBMM has mods for
 def download_the_bibites_of_x_version(version):
@@ -200,39 +264,6 @@ def download_the_bibites_of_x_version(version):
 
     download_bibites_of_x_version_thread = Thread(target=download, args=(version_to_download, file_path))
     download_bibites_of_x_version_thread.start()
-
-def get_the_bibites():
-    '''UI to download the bibites'''
-    # Calculate the width and height for the window
-    width_height = f"{int(screen_width / 3.5)}x{int(screen_height / 2.5)}"
-
-    # Create a new window for selecting the game version
-    download_the_bibites_window = Toplevel(window)
-    download_the_bibites_window.title("Download The Bibites")
-    download_the_bibites_window.geometry(width_height)
-    window.minsize(800, 432)
-    download_the_bibites_window.resizable(False, False)
-
-    # Create a frame to hold the game version options
-    download_the_bibites_frame = Frame(download_the_bibites_window)
-    download_the_bibites_frame.pack(pady=20)
-
-    # Label for instructions
-    label = Label(download_the_bibites_frame, text=f"Choose the version of The Bibites {OS_TYPE} to download:", font=("Arial", 11, "bold"))
-    label.pack(pady=10)
-
-    # Create a StringVar to store the selected version
-    selected_version = StringVar(value=list_of_versions[len(list_of_versions) - 1])  # Default to the first version in the list
-
-    # Create an OptionMenu (dropdown) for the game versions
-    version_dropdown = OptionMenu(download_the_bibites_frame, selected_version, *list_of_versions)
-    version_dropdown.pack(pady=10)
-
-    label = Label(download_the_bibites_frame, text="If you can't find a version,\nit is because there are no mods for it", font=("Arial", 11))
-    label.pack(pady=10)
-
-    download_button = Button(download_the_bibites_window, text="Confirm", command=lambda: download_the_bibites_of_x_version(selected_version.get()))
-    download_button.pack(pady=10)
 
 # Function to get the version of the bibites the mod is made for
 def get_mod_game_version(mod_name):
@@ -443,7 +474,11 @@ def download_bibites(bibites_to_download):
             elif filename.endswith(".bb8template"):
                 location = f'{USERPROFILE}/.config/unity3d/The Bibites/The Bibites/Bibites/Templates'
         else:
-            return
+            # Assume it will be similar to Linux (unix like)
+            if filename.endswith(".bb8"):
+                location = f'{USERPROFILE}/.config/unity3d/The Bibites/The Bibites/Bibites'
+            elif filename.endswith(".bb8template"):
+                location = f'{USERPROFILE}/.config/unity3d/The Bibites/The Bibites/Bibites/Templates'
 
         start_download(bibite, location, log, status_label, downloading, safe_unlink, log_file, get_time) # Downloads the bibite to the specified location
 
@@ -525,7 +560,7 @@ def save_cache_to_file(cached_time):
     # Save cached time to global variable
     cache_time = cached_time
 
-    all_cache_data = {"mod_names_cache" : mod_names_cache,"cache_time" : cached_time, "mod_content_cache" : mod_content_cache}
+    all_cache_data = {"last_updated_time" : last_updated_time, "mod_names_cache" : mod_names_cache, "cache_time" : cached_time, "mod_content_cache" : mod_content_cache}
     with open(cache_file, 'w') as file:
         json.dump(all_cache_data, file, indent=2)
     log("Saved cache to file.", save_to_file=False)
@@ -569,140 +604,93 @@ def reset_cache():
 
 def save_settings(): # Save to settings file
     global settings
-    with open(settings_file, 'w') as file:
-        json.dump(settings, file, indent=2)
+    if settings_file:
+        with open(settings_file, 'w') as file:
+            json.dump(settings, file, indent=2)
 
-# Function to swap to main page and display downloaded mods
-def list_downloaded_mods():
+def swap_to_main_page_logic():
+    downloaded_mods_listbox.delete(0, "end")  # Clear existing list
+
+    #check_for_local_mods() # Check for downloaded mods that are not registered
+    
+    # Display downloaded mods with tooltip
+    if os.path.isfile(downloaded_mods) and os.stat(downloaded_mods).st_size != 0:
+        downloaded_mods_list = ""
+        with open(downloaded_mods, "r") as file:
+            try:
+                downloaded_mods_list = [line.strip() for line in file.readlines()]
+                downloaded_mods_list = [mod.split('/')[-1] for mod in downloaded_mods_list]
+            except:
+                pass
+        if downloaded_mods_list:
+            # A dictionary to hold tooltip instances for each index
+            tooltips = {}
+
+            for index, mod in enumerate(downloaded_mods_list):
+                mod_info = get_mod_description(mod)
+                downloaded_mods_listbox.insert("end", mod)
+
+                # Create tooltip object for this index
+                tooltips[index] = CustomTooltip(downloaded_mods_listbox, mod_info)
+
+            # Bind mouse motion to detect item under cursor
+            downloaded_mods_listbox.bind("<Motion>", lambda event, lb=downloaded_mods_listbox, t=tooltips: on_hover(event, lb, t, tooltip_state))
+            downloaded_mods_listbox.bind("<Leave>", lambda event, t=tooltips: hide_all_tooltips(t))
+
+def swap_to_find_mods_page_logic():
+    global mod_names
+    # Get the names of the available mods
+    mod_names = fetch_filenames(log, cache_duration, mod_repo_urls, get_website_name, save_cache_to_file, status_label, mod_names, mod_names_cache, cache_time)  # Use cached data
+    # Add the mod names to a checkbutton list
+    populate_checkbuttons(mod_names)
+
+# Function to swap page
+def swap_page(page_name):
     global page
-    if page == "Find_Mods":
+
+    if page_name == "Main_Page":
         downloadable_mods_frame.pack_forget()
-
-        main_frame.pack()
-
-    if page == "More_Tools":
         more_tools_frame.pack_forget()
-
-        main_frame.pack()
-
-    if page == "Credits":
         credits_frame.pack_forget()
-        
+
         main_frame.pack()
 
-        page = "More_Tools"
+        if page != "Main Page":
+            swap_to_main_page_logic()
+            page = "Main Page"
+        return
+    
+    if page_name == "Find_Mods":
+        main_frame.pack_forget()
+        more_tools_frame.pack_forget()
+        credits_frame.pack_forget()
 
-    if page != "Main Page":
-
-        downloaded_mods_listbox.delete(0, "end")  # Clear existing list
-
-        #check_for_local_mods() # Check for downloaded mods that are not registered
-        
-        # Display downloaded mods with tooltip
-        if os.path.isfile(downloaded_mods) and os.stat(downloaded_mods).st_size != 0:
-            downloaded_mods_list = ""
-            with open(downloaded_mods, "r") as file:
-                try:
-                    downloaded_mods_list = [line.strip() for line in file.readlines()]
-                    downloaded_mods_list = [mod.split('/')[-1] for mod in downloaded_mods_list]
-                except:
-                    pass
-            if downloaded_mods_list:
-                # A dictionary to hold tooltip instances for each index
-                tooltips = {}
-
-                for index, mod in enumerate(downloaded_mods_list):
-                    mod_info = get_mod_description(mod)
-                    downloaded_mods_listbox.insert("end", mod)
-
-                    # Create tooltip object for this index
-                    tooltips[index] = CustomTooltip(downloaded_mods_listbox, mod_info)
-
-                # Bind mouse motion to detect item under cursor
-                downloaded_mods_listbox.bind("<Motion>", lambda event, lb=downloaded_mods_listbox, t=tooltips: on_hover(event, lb, t, tooltip_state))
-                downloaded_mods_listbox.bind("<Leave>", lambda event, t=tooltips: hide_all_tooltips(t))
-        page = "Main Page"
-
-# Function to swap to the page to where you can find and download mods
-def download_mods_page():
-    global page, mod_names
-
-    def pack_main_page():
-        # Swap on downloadable mods frame
         downloadable_mods_frame.pack()
 
-    if page == 'Main Page':
-        main_frame.pack_forget()
-        pack_main_page()
-        
+        if page != "Find_Mods":
+            swap_to_find_mods_page_logic()
+            page = "Find_Mods"
+        return
     
-    if page == "More_Tools":
-        more_tools_frame.pack_forget()
-        pack_main_page()
-    
-    if page == "Credits":
-        credits_frame.pack_forget()
-        pack_main_page()
-
-        page = "More_Tools"
-
-    if page != "Find_Mods":
-        # Get the names of the available mods
-        mod_names = fetch_filenames(log, cache_duration, mod_repo_urls, get_website_name, save_cache_to_file, status_label, mod_names, mod_names_cache, cache_time)  # Use cached data
-        # Add the mod names to a checkbutton list
-        populate_checkbuttons(mod_names)
-
-        page = "Find_Mods"
-
-# Show more tools page
-def more_tools_page():
-    global page
-
-    if page == "Main Page":
+    if page_name == "More_Tools":
         main_frame.pack_forget()
-        
-        more_tools_frame.pack()
-        
-        page = "More_Tools"
-
-    if page == "Find_Mods":
         downloadable_mods_frame.pack_forget()
-        
-        more_tools_frame.pack()
-
-        page = "More_Tools"
-    
-    if page == "Credits":
         credits_frame.pack_forget()
-        
+
         more_tools_frame.pack()
 
-        page = "More_Tools"
+        if page != "More_Tools":
+            page = "More_Tools"
 
-# Show credits page
-def credits_page():
-    global page
-
-    if page == 'Main Page':
+    if page_name == "Credits":
         main_frame.pack_forget()
-        
-        credits_frame.pack()
-        
-        page = "Credits"
-
-    if page == "Find_Mods":
         downloadable_mods_frame.pack_forget()
-        
-        credits_frame.pack()
-
-        page = "Credits"
-    
-    if page == "More_Tools":
         more_tools_frame.pack_forget()
 
         credits_frame.pack()
-        
-        page = "Credits"
+
+        if page != "Credits":
+            page = "Credits"
 
 def populate_checkbuttons(mod_names):
     global mod_vars, tooltips, tooltip_state
@@ -845,14 +833,17 @@ def play_game(Modded):
         status_label.config(text=f"{Game_path} does not exist, you need to set a valid game path to be able to run the game")
 
 def startGame():
-    theBibites = subprocess.Popen([f"{Game_folder}/run_bepinex.sh", Game_path, "-force-vulkan"], stdout=subprocess.PIPE) # Run The Bibites without file dll replace mods.
-    log("Playing with BepInEx mods", False)
-    status_label.config(text="Playing with BepInEx mods")
-    poll = None
-    while poll is None:
-        poll = theBibites.poll()
+    if os.path.exists(f"{Game_folder}/run_bepinex.sh"):
+        theBibites = subprocess.Popen([f"{Game_folder}/run_bepinex.sh", Game_path, "-force-vulkan"], stdout=subprocess.PIPE) # Run The Bibites without file dll replace mods.
+        log("Playing with BepInEx mods", False)
+        status_label.config(text="Playing with BepInEx mods")
+        poll = None
+        while poll is None:
+            poll = theBibites.poll()
 
-        log(theBibites.stdout.readline(), False)
+            log(theBibites.stdout.readline(), False)
+    else:
+        log("You do not have BepInEx installed for this instance", save_to_file=False)
 
 def play_bepinex():
     # Only necessary for OSes where any play button might modify it.
@@ -922,17 +913,6 @@ def play_bepinex():
             log(f"Unexpected error: {e}", True)
             status_label.config(text=f"Unexpected error: {e}") # Display error on status label
 
-def log(message, save_to_file):
-    timestamp = get_time()
-    log_text.config(state='normal')
-    log_text.insert('end', f"{timestamp} {message}" + '\n')
-    log_text.see('end')  # Auto-scroll
-    log_text.config(state='disabled')
-    if save_to_file:
-        # Save error to a log file
-        with open(log_file, 'a') as file:
-            file.write(f"\n{timestamp} {message}")
-
 def swap_between_nightly_and_stable():
     global is_nightly
     is_nightly = not is_nightly
@@ -945,8 +925,6 @@ def swap_between_nightly_and_stable():
     
     save_settings()
 
-# Get the script dir
-script_dir = Path(__file__).parent.absolute()
 images_folder = f'{script_dir}/Images' # Path to folder with images
 
 # Setup UI links with UI.py
@@ -957,13 +935,13 @@ else:
     displayed_version_number = nightly_version
 
 window_handlers={
-    'list_downloaded_mods': list_downloaded_mods,
-    'download_mods_page': download_mods_page,
-    'more_tools_page': more_tools_page,
-    'credits_page': credits_page,
+    'list_downloaded_mods': lambda: swap_page("Main_Page"),
+    'download_mods_page': lambda: swap_page("Find_Mods"),
+    'more_tools_page': lambda: swap_page("More_Tools"),
+    'credits_page': lambda: swap_page("Credits"),
     'open_link':lambda e: open_link(Discord_invite_link)}
 
-window_widgets = create_window(images_folder, displayed_version_number, OS_TYPE, handlers=window_handlers)
+window_widgets = create_window(images_folder, displayed_version_number, OS_TYPE, handlers=window_handlers, window_size=window_size)
 
 window = window_widgets['window']
 screen_width = window_widgets['screen_width']
@@ -985,9 +963,9 @@ main_page_widgets = create_main_page_ui(window, handlers={
     'Play BepInEx': play_bepinex,
     'swap_between_nightly_and_stable': swap_between_nightly_and_stable,
     'reset_cache': reset_cache,
-    'get_the_bibites': get_the_bibites,
+    'get_the_bibites': lambda: get_the_bibites(window, screen_width, screen_height, OS_TYPE, list_of_versions, download_the_bibites_of_x_version),
     'download_new_tbmm_version_old': lambda: download_new_tbmm_version_old(OS_TYPE, is_nightly),
-    'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, script_dir, log, status_label, safe_unlink, log_file, get_time, is_nightly)
+    'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, tbmm_exe_path, downloading, log, status_label, safe_unlink, log_file, get_time, is_nightly)
 })
 
 main_frame = main_page_widgets['frame']
@@ -1021,9 +999,12 @@ more_tools_frame = more_tools_page_widgets['frame']
 Einstein_info_label = more_tools_page_widgets['Einstein_info_label']
 
 def update_screen_size():
-    global window_width, window_height
+    global window_width, window_height, settings
     window_width = window.winfo_width()
     window_height = window.winfo_height()
+
+    settings["window_size"] = (window_width, window_height)
+    save_settings()
 
 # Function moves the buttons on the sides when you scale the window always keeping them on screen
 def move_left_buttons(event):
@@ -1057,29 +1038,6 @@ def move_left_buttons(event):
 # Bind the function to move find_mods_button
 window.bind('<Configure>', move_left_buttons)
 
-# Set path for saving and loading
-
-if "__compiled__" in globals():
-    # This resolves symlinks and returns the path to the binary
-    executable_path = Path(os.path.realpath(sys.argv[0])).parent
-
-    downloading = executable_path/'Downloading'
-    not_installed_mods = executable_path/'not_installed_mods'
-    installed_mods = executable_path/'installed_mods.txt'
-    downloaded_mods = executable_path/'downloaded_mods.txt'
-    cache_file = executable_path/'cache.json'
-    settings_file = executable_path/'settings.json'
-    log_file = executable_path/'log.txt'
-else:
-    # Running in script mode
-    downloading = f'{script_dir}/Downloading'
-    not_installed_mods = f'{script_dir}/not_installed_mods'
-    installed_mods = f'{script_dir}/installed_mods.txt'
-    downloaded_mods = f'{script_dir}/downloaded_mods.txt'
-    cache_file = f'{script_dir}/cache.json'
-    settings_file = f'{script_dir}/settings.json'
-    log_file = f'{script_dir}/log.txt'
-
 # Make folders and files
 if not os.path.isdir(downloading):
     os.makedirs(downloading)
@@ -1089,11 +1047,10 @@ if not os.path.isfile(downloaded_mods):
     open(downloaded_mods, 'a').close()
 if not os.path.isfile(installed_mods):
     open(installed_mods, 'a').close()
-if not os.path.isfile(settings_file):
-    open(settings_file, 'a').close()
 if not os.path.isfile(log_file):
     open(log_file, 'a').close()
-else:
+if os.path.isfile(settings_file):
+    # Load the rest of the settings
     try:
         with open(settings_file, 'r') as file:
 
@@ -1131,18 +1088,18 @@ else:
             else:
                 error = True
                 errormessage = errormessage + 'Game_version '
-            
-            if is_nightly:
-                settings['is_nightly'] = True
-            else:
-                settings['is_nightly'] = False
+
 
             if 'is_nightly' in settings:
                 is_nightly = settings['is_nightly']
             else:
+                if is_nightly:
+                    settings['is_nightly'] = True
+                else:
+                    settings['is_nightly'] = False
+
                 error = True
                 errormessage = errormessage + 'is_nightly'
-
             
             if 'installed_mods_list' in settings:
                 try:
@@ -1190,19 +1147,24 @@ if os.path.isfile(cache_file) and os.stat(cache_file).st_size != 0: # I have no 
 
         if "mod_content_cache" in all_cache_data: # check if mod_content_cache exists in cache
             mod_content_cache = all_cache_data["mod_content_cache"] # Load content of mod files into a cache variable
+        
+        if "last_updated_time" in all_cache_data: # Check when the last update was
+            last_updated_time = all_cache_data["last_updated_time"]
 
 # Check for newer version
-if is_nightly:
-    newer_version = update_check(nightly_version, log, is_nightly)
-else:
-    newer_version = update_check(version_number, log, is_nightly)
+if (time.time() - last_updated_time > update_duration):
+    last_updated_time = time.time()
+    save_cache_to_file(cache_time)
+    if is_nightly:
+        newer_version = update_check(nightly_version, log, is_nightly)
+    else:
+        newer_version = update_check(version_number, log, is_nightly)
 
-newer_version = True
-if newer_version:
-    download_new_version_button_old.grid(row=2, column=4, pady=120, sticky="n")
-    download_new_version_button.grid(row=2, column=4, pady=160, sticky="n")
+    if newer_version:
+        download_new_version_button_old.grid(row=2, column=4, pady=120, sticky="n")
+        download_new_version_button.grid(row=2, column=4, pady=160, sticky="n")
 
-list_downloaded_mods()
+swap_page("Main_Page")
 
 # Runs the app
 window.mainloop()

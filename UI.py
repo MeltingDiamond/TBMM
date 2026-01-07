@@ -1,4 +1,5 @@
 # Anything that gets displayed. For example tkinter 
+import os
 from tkinter import Tk, Frame, Label, Button, Listbox, Scrollbar, Text, Toplevel, PhotoImage, StringVar, OptionMenu, filedialog, messagebox
 from PIL import Image, ImageTk
 
@@ -109,7 +110,7 @@ def on_checkbutton_leave(tooltips, tooltip_state):
             tooltip.hide_tooltip()
         tooltip_state['hover_widget'] = None
 
-def create_window(images_folder, version_number, OS_TYPE, handlers):
+def create_window(images_folder, version_number, OS_TYPE, handlers, window_size = None):
     # Create Tkinter window
     window = Tk()
     window.title(f"TBMM {version_number}")
@@ -127,11 +128,16 @@ def create_window(images_folder, version_number, OS_TYPE, handlers):
     screen_height = window.winfo_screenheight()
 
     # Set window size and position to fullscreen windowed
-    window_width = int(screen_width * 0.8)
-    window_height = int(screen_height * 0.8)
-    window.geometry(f"{window_width}x{window_height}+{int((screen_width - window_width) / 2)}+{int((screen_height - window_height) / 2)}")
+    if window_size:
+        window_width = window_size[0]
+        window_height = window_size[1]
+        window.geometry(f"{window_width}x{window_height}")
+    else:
+        window_width = int(screen_width * 0.8)
+        window_height = int(screen_height * 0.8)
+        window.geometry(f"{window_width}x{window_height}+{int((screen_width - window_width) / 2)}+{int((screen_height - window_height) / 2)}")
 
-    window.minsize(1250, 1200)
+    window.minsize(1200, 900)
 
     # Title label
     title_label = Label(window, text=localization["The-Bibites-Mod-Manager"], font=("Arial", 24, "bold"))
@@ -268,6 +274,7 @@ def create_credits_page_ui(window):
     }
 
 def create_more_tools_page_ui(window, handlers):
+    global Einstein_image
     more_tools_frame = Frame(window)
 
     # Label
@@ -276,15 +283,15 @@ def create_more_tools_page_ui(window, handlers):
     Einstein_info_label = Label(more_tools_frame, font=("Arial", 12), wraplength=1000, text="Edit brains by interacting with a diagram of neurons and synapses. Zoom and pan around the diagram, paint neurons different colors, automatically convert brains between bibite versions, view neuron values calculated tick-by-tick and discover other bells and whistles.\nEven though its discontinued its still one of the best tools ever made")
     Einstein_hyperlink = Label(more_tools_frame, text=localization["Capital-Download"] + " " +"Einstein", fg="blue", cursor="hand2", font=("Arial", 12))
     Einstein_hyperlink.bind("<Button-1>", handlers['open_link'])
-    Einstein_image = PhotoImage(file=f"{handlers['images_folder']}/Einstein_Review.png")
+    Einstein_image = PhotoImage(file=os.path.join(handlers['images_folder'], "Einstein_Review.png"))
     Einstein_image_label = Label(more_tools_frame, image = Einstein_image)
 
     # Layout
     Best_tools_lable.grid(row=0, column=0, sticky="n")
     Einstein_lable.grid(row=1, column=0)
     Einstein_info_label.grid(row=2, column=0)
-    Einstein_hyperlink.grid(row=3, column=0)
-    Einstein_image_label.grid(row=4, column=0, pady=5)
+    Einstein_image_label.grid(row=3, column=0, pady=5)
+    Einstein_hyperlink.grid(row=4, column=0)
 
     return {
         'frame': more_tools_frame,
@@ -323,3 +330,36 @@ def create_game_version_page_ui(window, handlers):
         'selected_version': selected_version,
         'confirm_button': confirm_button
     }
+
+def get_the_bibites(window, screen_width, screen_height, OS_TYPE, list_of_versions, download_the_bibites_of_x_version):
+    '''UI to download the bibites'''
+    # Calculate the width and height for the window
+    width_height = f"{int(screen_width / 3.5)}x{int(screen_height / 2.5)}"
+
+    # Create a new window for selecting the game version
+    download_the_bibites_window = Toplevel(window)
+    download_the_bibites_window.title("Download The Bibites")
+    download_the_bibites_window.geometry(width_height)
+    download_the_bibites_window.minsize(800, 432)
+    download_the_bibites_window.resizable(False, False)
+
+    # Create a frame to hold the game version options
+    download_the_bibites_frame = Frame(download_the_bibites_window)
+    download_the_bibites_frame.pack(pady=20)
+
+    # Label for instructions
+    label = Label(download_the_bibites_frame, text=f"Choose the version of The Bibites {OS_TYPE} to download:", font=("Arial", 11, "bold"))
+    label.pack(pady=10)
+
+    # Create a StringVar to store the selected version
+    selected_version = StringVar(value=list_of_versions[len(list_of_versions) - 1])  # Default to the first version in the list
+
+    # Create an OptionMenu (dropdown) for the game versions
+    version_dropdown = OptionMenu(download_the_bibites_frame, selected_version, *list_of_versions)
+    version_dropdown.pack(pady=10)
+
+    label = Label(download_the_bibites_frame, text="If you can't find a version,\nit is because there are no mods for it", font=("Arial", 11))
+    label.pack(pady=10)
+
+    download_button = Button(download_the_bibites_window, text="Confirm", command=lambda: download_the_bibites_of_x_version(selected_version.get()))
+    download_button.pack(pady=10)

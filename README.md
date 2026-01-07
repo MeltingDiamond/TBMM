@@ -44,7 +44,7 @@ Start to make TBMM modular. Example would be moving all networking into one file
 - [ ] Make a wiki for how to use TBMM https://github.com/MeltingDiamond/TBMM/wiki WIP
 - [ ] Show a prompt to download and setup correct version of The Bibites when choosing a mod. This will set it up in such a way that it is integrated into TBMMs files and can be reused for other mods made for the same version.
 - [ ] Add check to mods that displays if they have compatibility issue with other mods.
-- [ ] Make use of Kivy for a android version (swaps Tkinter), because why not.
+- ~~[ ] Make use of Kivy for an android version (swaps Tkinter), because why not.~~
 - [ ] Dark mode???????
 ### The roadmap (-> indicates current released)
 0.05 is the first alpha, which was filled with bugs.
@@ -55,7 +55,7 @@ Start to make TBMM modular. Example would be moving all networking into one file
 
 0.06.2 Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here. No major new functionality will be added.
 
-0.06.3 TBMM will is mostly modularized.
+0.06.3 TBMM will be mostly modularized.
 
 When version 0.07 is released TBMM will support BepInEx mods and download BepInEx automatically to chosen location (Maybe install it automatically on the selected game path, will not be able to choose location if this is the case)
 
