@@ -1,4 +1,4 @@
-# This workflow builds on push to main using nuitka for Windows, Linux and MacOS
+# This workflow builds on push to Bleeding-Edge using nuitka for Windows, Linux and MacOS
 name: Build Bleeding-Edge
 on:
   push:
@@ -7,22 +7,7 @@ on:
 permissions:
   contents: write
 jobs:
-  generate-nightly-version:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.set-version.outputs.version }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Generate nightly version
-        id: set-version
-        run: |
-          VERSION=nightly-$(date +'%Y%m%d%H%M%S')
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
   build-windows:
-    needs: generate-nightly-version
     runs-on: windows-latest
     env:
       CCACHE_DIR: ${{ github.workspace }}\ccache_storage
@@ -95,7 +80,6 @@ jobs:
           path: The Bibites Mod Manager.exe
 
   build-linux:
-    needs: generate-nightly-version
     runs-on: ubuntu-latest
     env:
       NUITKA_CACHE_DIR: ${{ github.workspace }}/.nuitka-cache
@@ -160,7 +144,6 @@ jobs:
           path: The\ Bibites\ Mod\ Manager.bin
 
   build-macos:
-    needs: generate-nightly-version
     runs-on: macos-latest
     env:
       NUITKA_CACHE_DIR: ${{ github.workspace }}/.nuitka-cache
@@ -214,88 +197,3 @@ jobs:
         with:
           name: TBMM-MacOS
           path: "The Bibites Mod Manager.app"
-  
-  build-android:
-    needs: generate-nightly-version
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        include:
-          - api-level: '29'
-            build-tools: '29.0.3'
-          - api-level: 'latest'
-            build-tools: 'latest'
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('build_requirements_android.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Cache Buildozer global directory
-        uses: actions/cache@v4
-        with:
-          path: ~/.buildozer
-          key: ${{ runner.os }}-buildozer-global
-          restore-keys: |
-            ${{ runner.os }}-buildozer-global
-
-      - name: Cache Buildozer directory in app
-        uses: actions/cache@v4
-        with:
-          path: .buildozer
-          key: ${{ runner.os }}-buildozer-app
-          restore-keys: |
-            ${{ runner.os }}-buildozer-app
-
-      - name: Cache Android SDK
-        uses: actions/cache@v4
-        with:
-          path: ~/.buildozer/android/platform/android-sdk
-          key: ${{ runner.os }}-android-sdk
-          restore-keys: |
-            ${{ runner.os }}-android-sdk
-
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y \
-            python3-pip python3-setuptools python3-dev \
-            autoconf automake build-essential git \
-            libtool libssl-dev libffi-dev libsqlite3-dev \
-            libjpeg-dev zlib1g-dev openjdk-8-jdk unzip pkg-config
-
-          python -m pip install --upgrade pip
-          pip install -r build_requirements_android.txt
-
-      - name: Inject nightly version into Kivy app script
-        run: |
-          sed -i "s/__VERSION__/${{ needs.generate-nightly-version.outputs.version }}/" "The Bibites Mod Manager.py"
-
-      - name: Setup Java 17 required by Gradle
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Build APK for Android
-        run: |
-          yes | buildozer --debug android debug
-
-      - name: Upload APK as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: TBMM-Android-${{ matrix.api-level == '29' && 'Android10' || 'Latest' }}
-          path: bin/*.apk
