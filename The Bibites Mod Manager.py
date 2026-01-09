@@ -102,6 +102,8 @@ mod_content_cache = {}
 mod_names_cache = []
 cache_time = 0.0
 cache_duration = 86400  # Cache duration in seconds (24 hours)
+last_updated_time = 0.0
+update_duration = 3600 # Only update TBMM once per hour
 
 # Settings dictionary
 settings = {}
@@ -123,6 +125,7 @@ if "__compiled__" in globals():
     cache_file = executable_path/'cache.json'
     settings_file = executable_path/'settings.json'
     log_file = executable_path/'log.txt'
+    tbmm_exe_path = executable_path
 else:
     # Running in script mode
     downloading = f'{script_dir}/Downloading'
@@ -132,6 +135,7 @@ else:
     cache_file = f'{script_dir}/cache.json'
     settings_file = f'{script_dir}/settings.json'
     log_file = f'{script_dir}/log.txt'
+    tbmm_exe_path = script_dir
 
 if not os.path.isfile(settings_file):
     open(settings_file, 'a').close()
@@ -470,7 +474,11 @@ def download_bibites(bibites_to_download):
             elif filename.endswith(".bb8template"):
                 location = f'{USERPROFILE}/.config/unity3d/The Bibites/The Bibites/Bibites/Templates'
         else:
-            return
+            # Assume it will be similar to Linux (unix like)
+            if filename.endswith(".bb8"):
+                location = f'{USERPROFILE}/.config/unity3d/The Bibites/The Bibites/Bibites'
+            elif filename.endswith(".bb8template"):
+                location = f'{USERPROFILE}/.config/unity3d/The Bibites/The Bibites/Bibites/Templates'
 
         start_download(bibite, location, log, status_label, downloading, safe_unlink, log_file, get_time) # Downloads the bibite to the specified location
 
@@ -552,7 +560,7 @@ def save_cache_to_file(cached_time):
     # Save cached time to global variable
     cache_time = cached_time
 
-    all_cache_data = {"mod_names_cache" : mod_names_cache, "cache_time" : cached_time, "mod_content_cache" : mod_content_cache}
+    all_cache_data = {"last_updated_time" : last_updated_time, "mod_names_cache" : mod_names_cache, "cache_time" : cached_time, "mod_content_cache" : mod_content_cache}
     with open(cache_file, 'w') as file:
         json.dump(all_cache_data, file, indent=2)
     log("Saved cache to file.", save_to_file=False)
@@ -825,14 +833,17 @@ def play_game(Modded):
         status_label.config(text=f"{Game_path} does not exist, you need to set a valid game path to be able to run the game")
 
 def startGame():
-    theBibites = subprocess.Popen([f"{Game_folder}/run_bepinex.sh", Game_path, "-force-vulkan"], stdout=subprocess.PIPE) # Run The Bibites without file dll replace mods.
-    log("Playing with BepInEx mods", False)
-    status_label.config(text="Playing with BepInEx mods")
-    poll = None
-    while poll is None:
-        poll = theBibites.poll()
+    if os.path.exists(f"{Game_folder}/run_bepinex.sh"):
+        theBibites = subprocess.Popen([f"{Game_folder}/run_bepinex.sh", Game_path, "-force-vulkan"], stdout=subprocess.PIPE) # Run The Bibites without file dll replace mods.
+        log("Playing with BepInEx mods", False)
+        status_label.config(text="Playing with BepInEx mods")
+        poll = None
+        while poll is None:
+            poll = theBibites.poll()
 
-        log(theBibites.stdout.readline(), False)
+            log(theBibites.stdout.readline(), False)
+    else:
+        log("You do not have BepInEx installed for this instance", save_to_file=False)
 
 def play_bepinex():
     # Only necessary for OSes where any play button might modify it.
@@ -954,7 +965,7 @@ main_page_widgets = create_main_page_ui(window, handlers={
     'reset_cache': reset_cache,
     'get_the_bibites': lambda: get_the_bibites(window, screen_width, screen_height, OS_TYPE, list_of_versions, download_the_bibites_of_x_version),
     'download_new_tbmm_version_old': lambda: download_new_tbmm_version_old(OS_TYPE, is_nightly),
-    'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, script_dir, log, status_label, safe_unlink, log_file, get_time, is_nightly)
+    'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, tbmm_exe_path, downloading, log, status_label, safe_unlink, log_file, get_time, is_nightly)
 })
 
 main_frame = main_page_widgets['frame']
@@ -1136,16 +1147,22 @@ if os.path.isfile(cache_file) and os.stat(cache_file).st_size != 0: # I have no 
 
         if "mod_content_cache" in all_cache_data: # check if mod_content_cache exists in cache
             mod_content_cache = all_cache_data["mod_content_cache"] # Load content of mod files into a cache variable
+        
+        if "last_updated_time" in all_cache_data: # Check when the last update was
+            last_updated_time = all_cache_data["last_updated_time"]
 
 # Check for newer version
-if is_nightly:
-    newer_version = update_check(nightly_version, log, is_nightly)
-else:
-    newer_version = update_check(version_number, log, is_nightly)
+if (time.time() - last_updated_time > update_duration):
+    last_updated_time = time.time()
+    save_cache_to_file(cache_time)
+    if is_nightly:
+        newer_version = update_check(nightly_version, log, is_nightly)
+    else:
+        newer_version = update_check(version_number, log, is_nightly)
 
-if newer_version:
-    download_new_version_button_old.grid(row=2, column=4, pady=120, sticky="n")
-    download_new_version_button.grid(row=2, column=4, pady=160, sticky="n")
+    if newer_version:
+        download_new_version_button_old.grid(row=2, column=4, pady=120, sticky="n")
+        download_new_version_button.grid(row=2, column=4, pady=160, sticky="n")
 
 swap_page("Main_Page")
 

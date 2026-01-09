@@ -1,5 +1,6 @@
 # Anything that accesses the internet, for example if "import requests" is needed
-import requests, webbrowser, os, time, re, shutil, zipfile, io, base64
+import requests, webbrowser, os, time, re, shutil, io, base64
+from zipfile import ZipFile
 from threading import Thread
 from urllib.parse import urlparse, unquote
 from UI import messagebox_showinfo
@@ -12,14 +13,14 @@ release_download_link = "https://github.com/MeltingDiamond/TBMM/releases/latest"
 def open_link(url):
     webbrowser.open_new(url)
 
-def download_new_tbmm_version(os, script_dir, log, status_label, safe_unlink, log_file, get_time, nightly = False):
+def download_new_tbmm_version(os, tbmm_folder, downloading, log, status_label, safe_unlink, log_file, get_time, nightly = False):
     if nightly:
         if os == "Windows":
-            download_tbmm_update(windows_nightly_download_link, log, status_label, safe_unlink, log_file, get_time, script_dir)
+            download_tbmm_update(download_link=windows_nightly_download_link, tbmm_folder=tbmm_folder, downloading=downloading, log=log, status_label=status_label, safe_unlink=safe_unlink, log_file=log_file, get_time=get_time)
         elif os == "Linux":
-            download_tbmm_update(linux_nightly_download_link, log, status_label, safe_unlink, log_file, get_time, script_dir)
+            download_tbmm_update(download_link=linux_nightly_download_link, tbmm_folder=tbmm_folder, downloading=downloading, log=log, status_label=status_label, safe_unlink=safe_unlink, log_file=log_file, get_time=get_time)
         elif os == "Mac":
-            download_tbmm_update(mac_nightly_download_link, log, status_label, safe_unlink, log_file, get_time, script_dir)
+            download_tbmm_update(download_link=mac_nightly_download_link, tbmm_folder=tbmm_folder, downloading=downloading, log=log, status_label=status_label, safe_unlink=safe_unlink, log_file=log_file, get_time=get_time)
     else:
         open_link(release_download_link)
 
@@ -34,11 +35,16 @@ def download_new_tbmm_version_old(os, nightly = False):
     else:
         open_link(release_download_link)
 
-def download_tbmm_update(download_link, script_dir, log, status_label, safe_unlink, log_file, get_time):
-    download_file(download_link, script_dir, log, status_label, safe_unlink, log_file, get_time)
-    zipfile.extractall(os.path.join(script_dir, get_filename_from_response(download_link)))
-    safe_unlink(os.path.join(script_dir, get_filename_from_response(download_link)))
-    messagebox_showinfo("Restart TBMM to update", "Restart TBMM to update to the new version")
+def download_tbmm_update(download_link, tbmm_folder, downloading, log, status_label, safe_unlink, log_file, get_time):
+    try:
+        download_file(url=download_link, location=str(tbmm_folder), downloading=downloading, log=log, status_label=status_label, safe_unlink=safe_unlink, log_file=log_file, get_time=get_time)
+        with ZipFile(os.path.join(tbmm_folder, get_filename_from_response(download_link)), "r") as update_zip:
+            update_zip.extractall(tbmm_folder)
+        safe_unlink(os.path.join(tbmm_folder, get_filename_from_response(download_link)))
+        status_label.config(text="Restart TBMM to update to the new version")
+        messagebox_showinfo("Restart TBMM to update", "Restart TBMM to update to the new version")
+    except Exception as e:
+        log(f"Failed to update to new version using new update code\nExited with error: {e}", save_to_file=True)
 
 def update_check(version, log, nightly=False):
     """
@@ -258,7 +264,7 @@ def get_file_contents_from_dropbox(mod_name, url, mod_content_cache):
             return None
         
         # Open the ZIP file in memory
-        zip_file = zipfile.ZipFile(io.BytesIO(response.content))
+        zip_file = ZipFile(io.BytesIO(response.content))
 
         # Look for the requested .TBM file
         for file in zip_file.namelist():
@@ -311,8 +317,12 @@ def download_file(url, location, downloading, log, status_label, safe_unlink, lo
     '''
     Downloads the file at url and places it in location.
     :param url: Web url to file to download
-    :param location: Location the file is downloaded to'''
-    
+    :param location: Location the file is downloaded to
+    :param downloading: Path to where the file gets temporarily downloaded to before it is moved to the location.
+    :param log: Function used to write logs
+    :param status_label: UI label where the current status gets written
+    :param safe_unlink: A function that safely deletes a file in almost any circumstance'''
+
     filename = get_filename_from_response(url) # The name of the file being downloaded
     location_folder = get_filename_from_response(location) # The folder where the file will end up
     filepath = f"{location}/{filename}" # Where the file will end up after this function finishes
