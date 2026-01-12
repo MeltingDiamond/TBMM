@@ -111,7 +111,7 @@ jobs:
 
       - name: Create Release Zip
         run: |
-          tar.exe acvf -r The_Bibites_Mod_Manager_windows.zip "The Bibites Mod Manager.exe"
+          tar.exe acvf -r The_Bibites_Mod_Manager_windows.zip "D:\a\TBMM\TBMM\The Bibites Mod Manager.exe"
 
   build-linux:
     needs: generate-release-candidate-version

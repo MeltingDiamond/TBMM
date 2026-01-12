@@ -1,4 +1,6 @@
-import yaml, locale, os
+import yaml
+import locale
+import os
 from pathlib import Path
 
 scriptDir = Path(__file__).parent.absolute()
@@ -15,7 +17,7 @@ def loadLocalisation(filename = None):
     if filename == None:
         filename = f"{get_system_language()}.yaml"
     
-    #filename = "no_NB.yaml" # Uncomment to force a specific language
+    #filename = "nb_NO.yaml" # Uncomment to force a specific language
     
     filepath = f"{scriptDir}/translations/{filename}"
 

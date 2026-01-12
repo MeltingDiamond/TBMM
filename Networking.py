@@ -46,6 +46,35 @@ def download_tbmm_update(download_link, tbmm_folder, downloading, log, status_la
     except Exception as e:
         log(f"Failed to update to new version using new update code\nExited with error: {e}", save_to_file=True)
 
+def download_BepInEx(user_os):
+    """
+    Download BepInEx somewhere
+    :param user_os: The os the user is running used for choosing the correct version"""
+    response = requests.get("https://api.github.com/repos/BepInEx/BepInEx/releases/latest")
+    response_json = response.json()
+    response = requests.get(response_json["assets_url"])
+    windows_64x_download_url = ""
+    windows_32x_download_url = ""
+    linux_download_url = ""
+    macos_download_url = ""
+    for i in response.json():
+        if "win_x64" in i["name"]:
+            windows_64x_download_url = i["browser_download_url"]
+            continue
+        if "win_x86" in i["name"]:
+            windows_32x_download_url = i["browser_download_url"]
+            continue
+        if "linux_x64" in i["name"]:
+            linux_download_url = i["browser_download_url"]
+            continue
+        if "macos_x64" in i["name"]:
+            macos_download_url = i["browser_download_url"]
+            continue
+    print(windows_64x_download_url)
+    print(windows_32x_download_url)
+    print(linux_download_url)
+    print(macos_download_url)
+
 def update_check(version, log, nightly=False):
     """
     Checks if the local version is older than the latest nightly. 

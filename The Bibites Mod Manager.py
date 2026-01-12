@@ -1,4 +1,4 @@
-import requests, platform, os, sys, base64, shutil, time, json, subprocess, zipfile, io, platform
+import requests, platform, os, sys, shutil, time, json, subprocess, platform
 
 # Remove all imports from tkinter and have all UI import stuff in UI.py
 # For example instead of importing "from tkinter import filedialog" do from UI import filedialog
@@ -11,7 +11,7 @@ from threading import Thread
 from UI import *
 
 from Networking import update_check, download_new_tbmm_version, download_new_tbmm_version_old, open_link, download_modse, fetch_filenames, start_download, get_mod_url, get_filename_from_response
-from Networking import get_website_name, get_file_contents
+from Networking import get_website_name, get_file_contents, download_BepInEx
 
 # TODO
 # Add a latest_log.txt file used purely for logs from the last time TBMM was ran. 
@@ -70,10 +70,10 @@ mod_repo_urls = [add_first, "https://www.dropbox.com/scl/fo/fpcl07m7573flcbho85w
 Game_version = 'All'
 
 # List that holds versions of The Bibites that TBMM has mods for
-list_of_versions = ["0.5.0", "0.5.1", "0.6.0.1"]
-list_of_versions_link_windows = {"0.5.0" : "https://www.dropbox.com/scl/fi/c1kypn1j4f67h1ezyyehb/the-bibites-0.5.0-windows-64x.zip?rlkey=zojdpcokxelsnjn7pmdgpbi50&st=0p7ria1e&dl=1","0.5.1" : "https://www.dropbox.com/scl/fi/zapwgdrfsxokopijrpp5d/The-Bibites-0.5.1-Windows-64x.zip?rlkey=2hu5kba5uddo2rwtleegr2sv8&st=i373zbys&dl=1", "0.6.0.1" : "https://www.dropbox.com/scl/fi/boh31txr00v77i95hbbai/The-Bibites-0.6.0.1-Windows-64x.zip?rlkey=hkqwkpjy7e5r32t1lau316d9e&st=k5ef2fja&dl=1"} # Direct links to the download windows version
-list_of_versions_link_mac = {"0.5.0" : "None","0.5.1" : "https://www.dropbox.com/scl/fi/s490adgdpdb729mdwp7hm/The-Bibites-0.5.1-Mac-Universal.zip?rlkey=03qab761ta5yi7w3d4iqrxln0&st=eoze7gc8&dl=1", "0.6.0.1" : "https://www.dropbox.com/scl/fi/igxy7fq16yl7ieqjh994v/The-Bibites-0.6.0.1-Mac-Universal.zip?rlkey=wfquramlnyf77af2znrbljwbh&st=urrvwiue&dl=1"} # Direct links to the download mac version
-list_of_versions_link_linux = {"0.5.0" : "None","0.5.1" : "https://www.dropbox.com/scl/fi/pukgn05ie6gs08qi1havf/The-Bibites-0.5.1-Linux.zip?rlkey=ghgqnrg2yygsi6xo1bl8nlsmw&st=fgzaru3d&dl=1", "0.6.0.1" : "https://www.dropbox.com/scl/fi/vflvk4x6bf2thohddftqj/The-Bibites-0.6.0.1-Linux.zip?rlkey=ubn7srnx2nspfwb5wy95r1a5j&st=1bjvg715&dl=1"} # Direct links to the download linux version
+list_of_versions = ["0.5.0", "0.5.1", "0.6.0.1", "0.6.2.1"]
+list_of_versions_link_windows = {"0.5.0" : "https://www.dropbox.com/scl/fi/c1kypn1j4f67h1ezyyehb/the-bibites-0.5.0-windows-64x.zip?rlkey=zojdpcokxelsnjn7pmdgpbi50&st=0p7ria1e&dl=1","0.5.1" : "https://www.dropbox.com/scl/fi/zapwgdrfsxokopijrpp5d/The-Bibites-0.5.1-Windows-64x.zip?rlkey=2hu5kba5uddo2rwtleegr2sv8&st=i373zbys&dl=1", "0.6.0.1" : "https://www.dropbox.com/scl/fi/boh31txr00v77i95hbbai/The-Bibites-0.6.0.1-Windows-64x.zip?rlkey=hkqwkpjy7e5r32t1lau316d9e&st=k5ef2fja&dl=1", "0.6.2.1" : "https://www.dropbox.com/scl/fi/3d6ryf8wcmxmjvm1mg4d2/The-Bibites-0.6.2.1-Windows-64x.zip?rlkey=6i19c57f92eyc9abq1mywjec9&st=7bwg1z4w&dl=1"} # Direct links to the download windows version
+list_of_versions_link_mac = {"0.5.0" : "None","0.5.1" : "https://www.dropbox.com/scl/fi/s490adgdpdb729mdwp7hm/The-Bibites-0.5.1-Mac-Universal.zip?rlkey=03qab761ta5yi7w3d4iqrxln0&st=eoze7gc8&dl=1", "0.6.0.1" : "https://www.dropbox.com/scl/fi/igxy7fq16yl7ieqjh994v/The-Bibites-0.6.0.1-Mac-Universal.zip?rlkey=wfquramlnyf77af2znrbljwbh&st=urrvwiue&dl=1", "0.6.2.1" : "https://www.dropbox.com/scl/fi/bk8wimm5ufpdnqfidzq89/The-Bibites-0.6.2.1-Mac-Universal.zip?rlkey=7usuij1lwzihnm3pk6i9dxwwp&st=yyskpl0b&dl=1"} # Direct links to the download mac version
+list_of_versions_link_linux = {"0.5.0" : "None","0.5.1" : "https://www.dropbox.com/scl/fi/pukgn05ie6gs08qi1havf/The-Bibites-0.5.1-Linux.zip?rlkey=ghgqnrg2yygsi6xo1bl8nlsmw&st=fgzaru3d&dl=1", "0.6.0.1" : "https://www.dropbox.com/scl/fi/vflvk4x6bf2thohddftqj/The-Bibites-0.6.0.1-Linux.zip?rlkey=ubn7srnx2nspfwb5wy95r1a5j&st=1bjvg715&dl=1", "0.6.2.1" : "https://www.dropbox.com/scl/fi/cjcffp44jccga6pnutia2/The-Bibites-0.6.2.1-Linux.zip?rlkey=lcfifcurbdz6xr18xx5ljy5b5&st=hcyxonxb&dl=1"} # Direct links to the download linux version
 
 # Discord invite link
 Discord_invite_link = "https://discord.gg/ZNPCZPDhCS"
@@ -120,8 +120,8 @@ if "__compiled__" in globals():
 
     downloading = executable_path/'Downloading'
     not_installed_mods = executable_path/'not_installed_mods'
-    installed_mods = executable_path/'installed_mods.txt'
-    downloaded_mods = executable_path/'downloaded_mods.txt'
+    installed_mods = os.path.join(executable_path, 'installed_mods.txt')
+    downloaded_mods = os.path.join(executable_path, 'downloaded_mods.txt')
     cache_file = executable_path/'cache.json'
     settings_file = executable_path/'settings.json'
     log_file = executable_path/'log.txt'
@@ -232,6 +232,10 @@ def download_the_bibites_of_x_version(version):
     if not version_to_download:
         messagebox.showerror("Error", "Selected version does not exist.")
         return
+    
+    if version_to_download == "None":
+        messagebox.showerror("Error", f"Selected version does not exist for {OS_TYPE}.")
+        return
 
     bibites_game_name = get_filename_from_response(version_to_download)
 
@@ -329,7 +333,7 @@ def get_mod_description(mod_name):
         if instruction == "BepInEx+":
             install_line = "Mod type: BepInEx, but needs more files"
 
-            description = f"{description}\n{install_line}"
+        description = f"{description}\n{install_line}"
 
         description_line = next((line for line in lines if line.startswith('description: ')), None)
         if description_line:
@@ -941,7 +945,7 @@ window_handlers={
     'credits_page': lambda: swap_page("Credits"),
     'open_link':lambda e: open_link(Discord_invite_link)}
 
-window_widgets = create_window(images_folder, displayed_version_number, OS_TYPE, handlers=window_handlers, window_size=window_size)
+window_widgets = create_window(images_folder, displayed_version_number, handlers=window_handlers, window_size=window_size)
 
 window = window_widgets['window']
 screen_width = window_widgets['screen_width']
@@ -965,7 +969,8 @@ main_page_widgets = create_main_page_ui(window, handlers={
     'reset_cache': reset_cache,
     'get_the_bibites': lambda: get_the_bibites(window, screen_width, screen_height, OS_TYPE, list_of_versions, download_the_bibites_of_x_version),
     'download_new_tbmm_version_old': lambda: download_new_tbmm_version_old(OS_TYPE, is_nightly),
-    'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, tbmm_exe_path, downloading, log, status_label, safe_unlink, log_file, get_time, is_nightly)
+    'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, tbmm_exe_path, downloading, log, status_label, safe_unlink, log_file, get_time, is_nightly),
+    'download_BepInEx' : lambda: download_BepInEx(OS_TYPE)
 })
 
 main_frame = main_page_widgets['frame']
