@@ -55,7 +55,7 @@ Start to make TBMM modular. Example would be moving all networking into one file
 
 0.06.2 Start to make TBMM modular. Example would be moving all networking into one file then importing the correct function into main py file when needed. No new functionality will be added here. No major new functionality will be added.
 
-0.06.3 TBMM will be mostly modularized.
+0.06.3 TBMM will be mostly modularized. (probably a rewrite separating frontend and backend)
 
 When version 0.07 is released TBMM will support BepInEx mods and download BepInEx automatically to chosen location (Maybe install it automatically on the selected game path, will not be able to choose location if this is the case)
 

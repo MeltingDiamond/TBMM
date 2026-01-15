@@ -42,7 +42,7 @@ class CustomTooltip:
             self.label = Label(
                 self.tooltip_window, text=self.text, justify='left',
                 background='gainsboro', relief='solid',
-                borderwidth=1, wraplength=300
+                borderwidth=1, wraplength=350
             )
             self.label.pack(ipadx=1)
 
@@ -110,7 +110,7 @@ def on_checkbutton_leave(tooltips, tooltip_state):
             tooltip.hide_tooltip()
         tooltip_state['hover_widget'] = None
 
-def create_window(images_folder, version_number, OS_TYPE, handlers, window_size = None):
+def create_window(images_folder, version_number, handlers, window_size = None):
     # Create Tkinter window
     window = Tk()
     window.title(f"TBMM {version_number}")
@@ -118,16 +118,13 @@ def create_window(images_folder, version_number, OS_TYPE, handlers, window_size 
     # Convert the image into a format tkinter understands (Different for Windows and Linux/Mac)
     image = Image.open(f"{images_folder}/TBMM icon.ico")
     app_image = ImageTk.PhotoImage(image)
-    #if OS_TYPE == "Windows":
-     #   window.iconbitmap(image)
-    if OS_TYPE == "Linux" or OS_TYPE == "Mac":
-        window.iconphoto(True, app_image)
+    window.iconphoto(True, app_image)
 
     # Get screen width and height
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
 
-    # Set window size and position to fullscreen windowed
+    # Set window size and position
     if window_size:
         window_width = window_size[0]
         window_height = window_size[1]
@@ -184,15 +181,16 @@ def create_main_page_ui(window, handlers):
     # Buttons
     game_path_button = Button(main_frame, text=localization["Get-path-to-game-exe"], command=handlers['get_game_path'], font=("Arial", 12))
     version_button = Button(main_frame, text=localization["Capital-Game"] + " " + localization["version"], command=handlers["get_game_version"], font=("Arial", 12))
-    install_mods_button = Button(main_frame, text=localization["Install-mods"], command=handlers["install_mods"], font=("Arial", 12)) # Button to install mods
+    install_mods_button = Button(main_frame, text=localization["Capital-Install"] + " "+ localization["mods"], command=handlers["install_mods"], font=("Arial", 12)) # Button to install mods
     vanilla_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-Vanilla"], command=handlers["play_vanilla"], font=("Arial", 12)) # Button to play the game without mods
     Mod_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-Modded"], command=handlers["Play Modded"], font=("Arial", 12)) # Button to play the game with mods
     bepinex_play_button = Button(main_frame, text=localization["Capital-Play"] + " " + localization["Capital-BepInEx"], command=handlers["Play BepInEx"], font=("Arial", 12)) # Button to play with BepInEx
     swap_between_nightly_and_stable_button = Button(main_frame, text=localization["Swap-release-Channel-nightly"], command=handlers['swap_between_nightly_and_stable'], font=("Arial", 12)) # Swap between nightly and release (stable)
     refresh_cache_button = Button(main_frame, text=localization["Refresh-cache"], command=handlers['reset_cache'], font=("Arial", 12))
     get_the_bibites_button = Button(main_frame, text=localization["Download-The-Bibites"], command=handlers['get_the_bibites'], font=("Arial", 12))
-    download_new_version_button_old = Button(main_frame, text='Download new TBMM update old', command=handlers['download_new_tbmm_version_old'], font=("Arial", 12), bg="#0060e5", fg="#003C00")
+    download_new_version_button_old = Button(main_frame, text=localization["Download-new-TBMM-update"] + ' old', command=handlers['download_new_tbmm_version_old'], font=("Arial", 12), bg="#0060e5", fg="#003C00")
     download_new_version_button_new = Button(main_frame, text=localization["Download-new-TBMM-update"], command=handlers['download_new_tbmm_version'], font=("Arial", 12), bg="#0060e5", fg="#003C00")
+    download_BepInEx_button = Button(main_frame, text=localization["Capital-Download"] + " " + localization["Capital-BepInEx"], command=handlers["download_BepInEx"], font=("Arial", 12))
 
     # Labels
     game_path_label = Label(main_frame, text=localization["Capital-Game"] + " path: None", font=("Arial", 14))
@@ -222,9 +220,10 @@ def create_main_page_ui(window, handlers):
     bepinex_play_button.grid(in_=main_frame, row=3, column=2)
     install_mods_button.grid(in_=main_frame, row=3, column=3)
 
-    swap_between_nightly_and_stable_button.grid(row=2, column=4, sticky="s")
-    refresh_cache_button.grid(row=2, column=4, sticky="nw")
-    get_the_bibites_button.grid(row=2, column=4, pady=70, sticky="nw")
+    swap_between_nightly_and_stable_button.grid(row=2, column=4, sticky="sw", padx=(15,0))
+    refresh_cache_button.grid(row=2, column=4, sticky="nw", padx=(15,0))
+    get_the_bibites_button.grid(row=2, column=4, pady=60, sticky="nw", padx=(15,0))
+    download_BepInEx_button.grid(row=2, column=4, pady=120, sticky="nw", padx=(15,0))
     installed_mod_label.grid(row=4, column=0, columnspan=4, sticky='n', pady=5)
     log_text.grid(row=6, column=0, columnspan=4, sticky="ew")
     log_scrollbar.grid(row=6, column=4, columnspan=6, sticky='nsw')
@@ -318,7 +317,7 @@ def create_game_version_page_ui(window, handlers):
     version_dropdown = OptionMenu(game_version_frame, selected_version, *list_of_mod_versions)
     version_dropdown.pack(pady=10)
 
-    Label(game_version_frame, text="If you can't find a version,\nit is because there are no mods for it,\n choose all to show all mods", font=("Arial", 10)).pack(pady=10)
+    Label(game_version_frame, text=localization["Cant-find-game-version-1"] + "\n" + localization["Cant-find-game-version-2"] + "\n" + localization["Cant-find-game-version-3"], font=("Arial", 14)).pack(pady=10)
 
     confirm_button = Button(game_version_frame, text="Confirm")  # No command here
     confirm_button.pack(pady=10)
@@ -358,7 +357,7 @@ def get_the_bibites(window, screen_width, screen_height, OS_TYPE, list_of_versio
     version_dropdown = OptionMenu(download_the_bibites_frame, selected_version, *list_of_versions)
     version_dropdown.pack(pady=10)
 
-    label = Label(download_the_bibites_frame, text="If you can't find a version,\nit is because there are no mods for it", font=("Arial", 11))
+    label = Label(download_the_bibites_frame, text=localization["Cant-find-bibites-version-1"] + "\n" + localization["Cant-find-bibites-version-2"], font=("Arial", 14))
     label.pack(pady=10)
 
     download_button = Button(download_the_bibites_window, text="Confirm", command=lambda: download_the_bibites_of_x_version(selected_version.get()))

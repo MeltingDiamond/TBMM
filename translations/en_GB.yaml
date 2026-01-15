@@ -8,6 +8,7 @@ Capital-BepInEx: BepInEx
 Capital-Version: Version
 version: version
 Capital-Installed: Installed
+Capital-Install: Install
 Capital-Download: Download
 mods: mods
 
@@ -18,9 +19,6 @@ Show-Credits: Show Credits
 Join-BRC: Join Bibite Research Conglomerate Discord Server
 The-Bibites-Mod-Manager: The Bibites Mod Manager rewritten
 Get-path-to-game-exe: Get path to game exe
-Install-mods: Install mods
-Play-Vanilla: Play Vanilla
-Play-BepInEx: Play BepInEx
 Swap-release-Channel-nightly: Swap to release channel
 Swap-release-Channel-release: Swap to nightly channel
 Refresh-cache: Refresh cache
@@ -29,3 +27,8 @@ Download-new-TBMM-update: Download new TBMM update
 Choose-Game-Version: Choose Game Version
 Best-tools-The-Bibites: Best tools made for The Bibites
 Credits-headline: Thanks to all these awesome people for helping
+Cant-find-game-version-1: If you can't find a version,
+Cant-find-game-version-2: it is because there are no mods for it,
+Cant-find-game-version-3: choose all to show all mods
+Cant-find-bibites-version-1: If you can't find a version,
+Cant-find-bibites-version-2: it is because there are no mods for it
