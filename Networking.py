@@ -37,8 +37,12 @@ def download_new_tbmm_version_old(os, nightly = False):
 
 def download_tbmm_update(download_link, tbmm_folder, downloading, log, status_label, safe_unlink, log_file, get_time):
     try:
-        download_file(url=download_link, location=str(tbmm_folder), downloading=downloading, log=log, status_label=status_label, safe_unlink=safe_unlink, log_file=log_file, get_time=get_time)
+        start_download(url=download_link, location=str(tbmm_folder), log=log, status_label=status_label, downloading=downloading, safe_unlink=safe_unlink, log_file=log_file, get_time=get_time)
         with ZipFile(os.path.join(tbmm_folder, get_filename_from_response(download_link)), "r") as update_zip:
+            for file_info in update_zip.infolist():
+                extract_path = os.path.join(tbmm_folder, file_info)
+                if os.path.exists(extract_path):
+                    safe_unlink(extract_path)
             update_zip.extractall(tbmm_folder)
         safe_unlink(os.path.join(tbmm_folder, get_filename_from_response(download_link)))
         status_label.config(text="Restart TBMM to update to the new version")
