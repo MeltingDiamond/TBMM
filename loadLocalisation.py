@@ -11,7 +11,7 @@ def get_system_language():
 
 def loadLocalisation(filename = None):
 
-    with open(f"{scriptDir}/translations/en_GB.yaml", "r") as file:
+    with open(f"{scriptDir}/translations/en_GB.yaml", "r", encoding="utf8") as file:
         fallback_translation = yaml.safe_load(file)
 
     if filename == None:
@@ -24,7 +24,7 @@ def loadLocalisation(filename = None):
     if os.path.isfile(filepath) == False:
         filepath = f"{scriptDir}/translations/en_GB.yaml"
 
-    with open(f"{scriptDir}/translations/{filename}", mode = "r") as translationFile:
+    with open(f"{scriptDir}/translations/{filename}", mode = "r", encoding="utf8") as translationFile:
         translations = yaml.safe_load(translationFile)
 
         for key in fallback_translation:
