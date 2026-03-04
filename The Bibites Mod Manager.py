@@ -970,7 +970,7 @@ main_page_widgets = create_main_page_ui(window, handlers={
     'get_the_bibites': lambda: get_the_bibites(window, screen_width, screen_height, OS_TYPE, list_of_versions, download_the_bibites_of_x_version),
     'download_new_tbmm_version_old': lambda: download_new_tbmm_version_old(OS_TYPE, is_nightly),
     'download_new_tbmm_version': lambda: download_new_tbmm_version(OS_TYPE, tbmm_exe_path, downloading, log, status_label, safe_unlink, log_file, get_time, is_nightly),
-    'download_BepInEx' : lambda: download_BepInEx(OS_TYPE)
+    #'download_BepInEx' : lambda: download_BepInEx(OS_TYPE)
 })
 
 main_frame = main_page_widgets['frame']
