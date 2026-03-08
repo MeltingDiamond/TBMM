@@ -5,30 +5,31 @@ from pathlib import Path
 
 scriptDir = Path(__file__).parent.absolute()
 
+
 def get_system_language():
-    lang, _ = locale.getdefaultlocale()
-    return lang
+	lang, _ = locale.getdefaultlocale()
+	return lang
 
-def loadLocalisation(filename = None):
 
-    with open(f"{scriptDir}/translations/en_GB.yaml", "r", encoding="utf8") as file:
-        fallback_translation = yaml.safe_load(file)
+def loadLocalisation(filename=None):
+	with open(f"{scriptDir}/translations/en_GB.yaml", "r", encoding="utf8") as file:
+		fallback_translation = yaml.safe_load(file)
 
-    if filename == None:
-        filename = f"{get_system_language()}.yaml"
-    
-    #filename = "nb_NO.yaml" # Uncomment to force a specific language
-    
-    filepath = f"{scriptDir}/translations/{filename}"
+	if filename is None:
+		filename = f"{get_system_language()}.yaml"
 
-    if os.path.isfile(filepath) == False:
-        filepath = f"{scriptDir}/translations/en_GB.yaml"
+	#filename = "nb_NO.yaml" # Uncomment to force a specific language
 
-    with open(f"{scriptDir}/translations/{filename}", mode = "r", encoding="utf8") as translationFile:
-        translations = yaml.safe_load(translationFile)
+	filepath = f"{scriptDir}/translations/{filename}"
 
-        for key in fallback_translation:
-            if key not in translations:
-                translations[key] = fallback_translation[key]
+	if not os.path.isfile(filepath):
+		filepath = f"{scriptDir}/translations/en_GB.yaml"
 
-        return translations
+	with open(filepath, mode="r", encoding="utf8") as translationFile:
+		translations = yaml.safe_load(translationFile)
+
+		for key in fallback_translation:
+			if key not in translations:
+				translations[key] = fallback_translation[key]
+
+		return translations
