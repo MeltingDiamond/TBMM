@@ -11,7 +11,7 @@ jobs:
       version: ${{ steps.set-version.outputs.version }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get version
         id: get-version
@@ -54,10 +54,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -65,7 +65,7 @@ jobs:
         run: python -m pip cache dir
 
       - name: Cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~\AppData\Local\pip\Cache
           key: pip-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
@@ -73,7 +73,7 @@ jobs:
             pip-${{ runner.os }}-
       
       - name: Cache ccache storage
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ github.workspace }}\ccache_storage
           key: ccache-win-${{ hashFiles('build_requirements.txt') }}
@@ -81,7 +81,7 @@ jobs:
             ccache-win-
       
       - name: Cache Nuitka
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.NUITKA_CACHE_DIR }}
           key: nuitka-win-${{ hashFiles('build_requirements.txt') }}
@@ -109,10 +109,6 @@ jobs:
         run: |
           nuitka --mingw64 --onefile --windows-console-mode=attach --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --include-data-dir="translations=translations" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
 
-      - name: Create Release Zip
-        run: |
-          tar.exe acvf -r The_Bibites_Mod_Manager_windows.zip "The Bibites Mod Manager.exe"
-
   build-linux:
     needs: generate-release-candidate-version
     runs-on: ubuntu-latest
@@ -121,10 +117,10 @@ jobs:
       CCACHE_DIR: ${{ github.workspace }}/ccache_storage
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -132,7 +128,7 @@ jobs:
         run: python -m pip cache dir
 
       - name: Cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('build_requirements.txt') }}
@@ -140,7 +136,7 @@ jobs:
             pip-${{ runner.os }}-
       
       - name: Cache Nuitka
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.NUITKA_CACHE_DIR }}
           key: nuitka-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
@@ -148,7 +144,7 @@ jobs:
             nuitka-${{ runner.os }}-
 
       - name: Cache ccache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.CCACHE_DIR }}
           key: ccache-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
@@ -182,10 +178,10 @@ jobs:
       NUITKA_CACHE_DIR: ${{ github.workspace }}/.nuitka-cache
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -193,7 +189,7 @@ jobs:
         run: python -m pip cache dir
 
       - name: Cache pip
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/Library/Caches/pip
           key: pip-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
@@ -201,7 +197,7 @@ jobs:
             pip-${{ runner.os }}-
       
       - name: Cache Nuitka
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.NUITKA_CACHE_DIR }}
           key: nuitka-${{ runner.os }}-${{ hashFiles('build_requirements.txt') }}
@@ -241,6 +237,6 @@ jobs:
           prerelease: true
           title: "${{ needs.generate-release-candidate-version.outputs.version }}"
           files: |
-            "The_Bibites_Mod_Manager_windows.zip" 
+            "The Bibites Mod Manager.exe" 
             "The_Bibites_Mod_Manager_linux.zip" 
             "The_Bibites_Mod_Manager_macos.zip"
