@@ -1157,16 +1157,14 @@ if os.path.isfile(cache_file) and os.stat(cache_file).st_size != 0: # I have no 
             last_updated_time = all_cache_data["last_updated_time"]
 
 # Check for newer version
-if True or (time.time() - last_updated_time > update_duration):
+if (time.time() - last_updated_time > update_duration):
     last_updated_time = time.time()
     save_cache_to_file(cache_time)
-    is_nightly = True
     if is_nightly:
         newer_version = update_check(nightly_version, log, is_nightly)
     else:
         newer_version = update_check(version_number, log, is_nightly)
 
-    newer_version = True
     if newer_version:
         download_new_version_button_old.grid(row=2, column=4, pady=120, sticky="n")
         download_new_version_button.grid(row=2, column=4, pady=160, sticky="n")

@@ -1,9 +1,10 @@
 # Anything that accesses the internet, for example if "import requests" is needed
-import requests, webbrowser, os, time, re, shutil, io, base64
+import requests, webbrowser, os, time, re, shutil, io, base64, sys
 from zipfile import ZipFile
 from threading import Thread
 from urllib.parse import urlparse, unquote
 from UI import messagebox_showinfo
+from pathlib import Path
 
 windows_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workflows/build-nightly/main/TBMM-Windows.zip"
 linux_nightly_download_link = "https://nightly.link/MeltingDiamond/TBMM/workflows/build-nightly/main/TBMM-Linux.zip"
@@ -37,15 +38,31 @@ def download_new_tbmm_version_old(os, nightly = False):
 
 def download_tbmm_update(download_link, tbmm_folder, downloading, log, status_label, safe_unlink, log_file, get_time):
     try:
+        current_exe = Path(sys.argv[0])
         start_download(url=download_link, location=str(tbmm_folder), log=log, status_label=status_label, downloading=downloading, safe_unlink=safe_unlink, log_file=log_file, get_time=get_time)
+        extract_path = os.path.join(tbmm_folder, "staging_dir")
         with ZipFile(os.path.join(tbmm_folder, get_filename_from_response(download_link)), "r") as update_zip:
-            for file_info in update_zip.infolist():
-                extract_path = os.path.join(tbmm_folder, file_info)
-                if os.path.exists(extract_path):
-                    safe_unlink(extract_path)
-                    print("Remove the current existing TBMM file")
-            update_zip.extractall(tbmm_folder)
+            update_zip.extractall(extract_path)
+        
+        new_exe = extract_path / current_exe.name
+        if not new_exe.exists():
+            raise FileNotFoundError(f"Executable not found in zip: {current_exe.name}")
+        
+        log("Backing up TBMM", save_to_file=False)
+
+        backup_exe = current_exe.with_suffix('.bak')
+
+        if current_exe.exists():
+            shutil.copy2(current_exe, backup_exe)
+            log("Backing up done", save_to_file=False)
+        
+        log("Replacing the current executable", save_to_file=False)
+        shutil.copy2(new_exe, current_exe)
+
+        log("Cleaning up the temporary files", save_to_file=False)
+        safe_unlink(new_exe.parent)
         safe_unlink(os.path.join(tbmm_folder, get_filename_from_response(download_link)))
+        
         status_label.config(text="Restart TBMM to update to the new version")
         messagebox_showinfo("Restart TBMM to update", "Restart TBMM to update to the new version")
     except Exception as e:
