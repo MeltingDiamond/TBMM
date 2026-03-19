@@ -109,10 +109,6 @@ jobs:
         run: |
           nuitka --mingw64 --onefile --windows-console-mode=attach --windows-icon-from-ico="Images\TBMM icon.ico" --include-data-dir="Images=Images" --include-data-dir="translations=translations" --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod Manager.py"
 
-      - name: Create Release Zip
-        run: |
-          tar.exe acvf -r The_Bibites_Mod_Manager_windows.zip "D:\a\TBMM\TBMM\The Bibites Mod Manager.exe"
-
   build-linux:
     needs: generate-release-candidate-version
     runs-on: ubuntu-latest
@@ -241,6 +237,6 @@ jobs:
           prerelease: true
           title: "${{ needs.generate-release-candidate-version.outputs.version }}"
           files: |
-            "The_Bibites_Mod_Manager_windows.zip" 
+            "The Bibites Mod Manager.exe" 
             "The_Bibites_Mod_Manager_linux.zip" 
             "The_Bibites_Mod_Manager_macos.zip"

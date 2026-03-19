@@ -43,6 +43,7 @@ def download_tbmm_update(download_link, tbmm_folder, downloading, log, status_la
                 extract_path = os.path.join(tbmm_folder, file_info)
                 if os.path.exists(extract_path):
                     safe_unlink(extract_path)
+                    print("Remove the current existing TBMM file")
             update_zip.extractall(tbmm_folder)
         safe_unlink(os.path.join(tbmm_folder, get_filename_from_response(download_link)))
         status_label.config(text="Restart TBMM to update to the new version")
@@ -109,26 +110,28 @@ def update_check(version, log, nightly=False):
                 return True
 
             return False
-
+        
         log("Checking nightly version...", save_to_file=False)
-        response = requests.get("https://raw.githubusercontent.com/MeltingDiamond/TBMM/main/version.txt")
+        # Get latest successful action workflow run number
+        response = requests.get("https://api.github.com/repos/MeltingDiamond/TBMM/actions/runs")
         if response.status_code != 200:
             log("Failed to fetch version info.", save_to_file=False)
             return False
+        responseJson = response.json()
 
-        latest_version = response.text.strip()
-        log(f"Latest nightly version: {latest_version}", save_to_file=False)
-
-        # Extract numeric part of nightly version and compare as integers
         local_num = int(version.split("-")[1])
-        latest_num = int(latest_version.split("-")[1])
-
-        if local_num < latest_num:
-            log(f"A newer nightly version is available: {latest_version}", save_to_file=False)
+        for i in responseJson["workflow_runs"]:
+            if i["head_branch"] == "main" and i["status"] == "completed" and i["conclusion"] == "success":
+                runNumber = i["run_number"]
+                log(f"Latest successful nightly build: {runNumber}", save_to_file=False)
+                break
+        
+        if runNumber > local_num:
+            log(f"A newer nightly build is available: {runNumber}", save_to_file=False)
             return True
-
-        log("You are using the latest nightly version.", save_to_file=False)
-        return False
+        else:
+            log("You are using the latest nightly version.", save_to_file=False)
+            return False
 
     except Exception as e:
         log(f"Error during version check: {e}", save_to_file=True)

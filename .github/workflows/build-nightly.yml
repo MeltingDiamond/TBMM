@@ -18,7 +18,7 @@ jobs:
       - name: Generate nightly version
         id: set-version
         run: |
-          VERSION=nightly-$(date +'%Y%m%d%H%M%S')
+          VERSION=nightly-${{ github.run_number }}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
   build-windows:
@@ -215,23 +215,25 @@ jobs:
           name: TBMM-MacOS
           path: "The Bibites Mod Manager.app"
 
-  finalize-nightly-version:
-    needs: [generate-nightly-version, build-windows, build-linux, build-macos]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+## Do not use anymore Found a better way
 
-      - name: Set nightly version
-        run: echo "${{ needs.generate-nightly-version.outputs.version }}" > version.txt
+  #finalize-nightly-version:
+   # needs: [generate-nightly-version, build-windows, build-linux, build-macos]
+    #runs-on: ubuntu-latest
+    #steps:
+     # - name: Checkout repository
+      #  uses: actions/checkout@v4
 
-      - name: Commit and push nightly version
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
-          git add version.txt "The Bibites Mod Manager.py"
-          git commit -m "Nightly build: update version to ${{ needs.generate-nightly-version.outputs.version }}" || echo "No changes to commit"
-          git push origin HEAD:${{ github.ref_name }}
+      #- name: Set nightly version
+       # run: echo "${{ needs.generate-nightly-version.outputs.version }}" > version.txt
+
+      #- name: Commit and push nightly version
+       # env:
+        #  TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #run: |
+         # git config user.name "github-actions"
+          #git config user.email "github-actions@github.com"
+          #git remote set-url origin https://x-access-token:${TOKEN}@github.com/${{ github.repository }}
+          #git add version.txt "The Bibites Mod Manager.py"
+          #git commit -m "Nightly build: update version to ${{ needs.generate-nightly-version.outputs.version }}" || echo "No changes to commit"
+          #git push origin HEAD:${{ github.ref_name }}
