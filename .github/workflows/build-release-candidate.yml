@@ -222,9 +222,9 @@ jobs:
       #    --enable-plugin=tk-inter --assume-yes-for-downloads "The Bibites Mod
        #   Manager.py"
       
-      - name: Create Release Zip
-        run: |
-          zip -r The_Bibites_Mod_Manager_macos.zip "The Bibites Mod Manager.app"
+      #- name: Create Release Zip
+       # run: |
+        #  zip -r The_Bibites_Mod_Manager_macos.zip "The Bibites Mod Manager.app"
 
   release:
     runs-on: ubuntu-latest
