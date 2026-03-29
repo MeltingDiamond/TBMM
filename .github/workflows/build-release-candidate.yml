@@ -230,13 +230,19 @@ jobs:
     needs: [build-windows, build-linux, build-macos]
     steps:
       - name: Release Release Candidate
-        uses: marvinpinto/action-automatic-releases@latest
+        uses: softprops/action-gh-release@v2
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "${{ needs.generate-release-candidate-version.outputs.version }}"
+          tag_name: "${{ needs.generate-release-candidate-version.outputs.version }}"
           prerelease: true
           title: "${{ needs.generate-release-candidate-version.outputs.version }}"
+          body: |
+            ## Release Candidate Build
+            Built from commit: ${{ github.sha }}
+            Build number: ${{ github.run_number }}
           files: |
             "The Bibites Mod Manager.exe" 
             "The_Bibites_Mod_Manager_linux.zip" 
             "The_Bibites_Mod_Manager_macos.zip"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
