@@ -231,6 +231,13 @@ jobs:
     needs: [generate-release-candidate-version, build-windows, build-linux]
     #, build-macos]
     steps:
+      - name: Create git tag
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git tag "${{ needs.generate-release-candidate-version.outputs.version }}"
+          git push origin "${{ needs.generate-release-candidate-version.outputs.version }}"
+
       - name: Release Release Candidate
         uses: softprops/action-gh-release@v2
         with:
