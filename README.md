@@ -1,3 +1,7 @@
+> [!NOTE]
+> Repository has been archived because my interest has change to other projects.<br>
+> I haven't fully quit on creating a mod manager for the bibites as of writing this August 5th 2026
+
 # The Bibites Mod Manager
 The Bibites Mod Manager is the unofficial mod manager for The Bibite programmed in python (3.12) using tkinter. TBMM allows users to install mods with a simple gui instead off having to replace any dll manually.
 You can download and install mods with a few button clicks.
